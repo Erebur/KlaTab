@@ -1,4 +1,4 @@
-package com.example.klatab
+package net.erebur.klatab
 
 import io.flutter.embedding.android.FlutterActivity
 

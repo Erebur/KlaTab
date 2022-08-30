@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.klatab">
+    package="net.erebur.klatab">
    <application
-        android:label="klatab"
+        android:label="KlaTab"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
