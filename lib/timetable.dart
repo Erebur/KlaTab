@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,10 +26,6 @@ Future<List<List>> loadTimeTable(token) async {
 
     try {
       week = jsonDecode(response.body);
-      if (kDebugMode) {
-        print(jsonDecode(response.body)!);
-        print(token!);
-      }
     } catch (e) {
       if (token != null) {
         Fluttertoast.showToast(
@@ -95,4 +90,56 @@ Future<List<List>> loadTimeTable(token) async {
   print(timetable);
   return timetable;
 }
-// {"fach": "Java","lehrer": "Ro","raum": 110,"istVertretung": true,"fach2": "MeSo","lehrer2": "Fe","raum2": 2025},
+//  <DataCell>[
+//                   DataCell(Text('08:00\n08:45')),
+//                 ],
+//               ),
+//               DataRow(
+//                 cells: <DataCell>[
+//                   DataCell(Text('08:45\n09:30')),
+//                 ],
+//               ),
+//               DataRow(
+//                 cells: <DataCell>[
+//                   DataCell(Text('09:45\n10:30')),
+//                 ],
+//               ),
+//               DataRow(
+//                 cells: <DataCell>[
+//                   DataCell(Text('10:30\n11:15')),
+//                 ],
+//               ),
+//               DataRow(
+//                 cells: <DataCell>[
+//                   DataCell(Text('11:30\n12:15')),
+//                 ],
+//               ),
+//               DataRow(
+//                 cells: <DataCell>[
+//                   DataCell(Text('12:15\n13:00')),
+//                 ],
+//               ),
+//               DataRow(
+//                 cells: <DataCell>[
+//                   DataCell(Text('13:00\n13:45')),
+//                 ],
+//               ),
+//               DataRow(
+//                 cells: <DataCell>[
+//                   DataCell(Text('13:45\n14:30')),
+//                 ],
+//               ),
+//               DataRow(
+//                 cells: <DataCell>[
+//                   DataCell(Text('14:45\n15:30')),
+//                 ],
+//               ),
+//               DataRow(
+//                 cells: <DataCell>[
+//                   DataCell(Text('15:30\n16:15')),
+//                 ],
+//               ),
+//               DataRow(
+//                 cells: <DataCell>[
+//                   DataCell(Text('16:15\n17:00')),
+//                 ],

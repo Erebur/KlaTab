@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/gestures.dart';
+import 'package:flutter_timetable/flutter_timetable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:klatab/color_schemes.g.dart';
 import 'package:klatab/exams.dart';
 import 'package:klatab/timetable.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const _lightColorScheme = lightColorScheme_green;
 const _darkColorScheme = darkColorScheme_green;
@@ -15,7 +18,7 @@ const _darkColorScheme = darkColorScheme_green;
 String? token;
 bool loggedIn = false;
 List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
-List exams = [];
+List<Map> exams = [];
 
 Future<void> main() async {
   await Hive.initFlutter();
@@ -74,7 +77,7 @@ class _MainPageState extends State<MainPage> {
   String username = "";
   String password = "";
 
-  var screens = [const PageStundenplan(), const Page_Pruefeungstermine()];
+  var screens = [const PageStundenplan(), const PagePruefeungstermine()];
 
   @override
   Widget build(BuildContext context) {
@@ -211,68 +214,23 @@ class _PageStundenplanState extends State<PageStundenplan> {
         verticalDirection: VerticalDirection.up,
         children: [
           DataTable(
-            // columnSpacing: 30,
-            columns: const <DataColumn>[
-              DataColumn(label: Text("Zeit")),
-            ],
-            rows: const [
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('08:00\n08:45')),
-                ],
-              ),
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('08:45\n09:30')),
-                ],
-              ),
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('09:45\n10:30')),
-                ],
-              ),
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('10:30\n11:15')),
-                ],
-              ),
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('11:30\n12:15')),
-                ],
-              ),
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('12:15\n13:00')),
-                ],
-              ),
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('13:00\n13:45')),
-                ],
-              ),
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('13:45\n14:30')),
-                ],
-              ),
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('14:45\n15:30')),
-                ],
-              ),
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('15:30\n16:15')),
-                ],
-              ),
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text('16:15\n17:00')),
-                ],
-              ),
-            ],
-          ),
+              // columnSpacing: 30,
+              columns: const <DataColumn>[
+                DataColumn(label: Text("Zeit")),
+              ],
+              rows: [
+                "08:00\n08:45",
+                '08:45\n09:30',
+                '09:45\n10:30',
+                '10:30\n11:15',
+                '11:30\n12:15',
+                '12:15\n13:00',
+                '13:00\n13:45',
+                '13:45\n14:30',
+                '14:45\n15:30',
+                '15:30\n16:15',
+                '16:15\n17:00',
+              ].map((e) => DataRow(cells: [DataCell(Text(e))])).toList()),
           Expanded(
             child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -323,18 +281,283 @@ class _PageStundenplanState extends State<PageStundenplan> {
   }
 }
 
-class Page_Pruefeungstermine extends StatefulWidget {
-  const Page_Pruefeungstermine({Key? key}) : super(key: key);
+class PagePruefeungstermine extends StatefulWidget {
+  const PagePruefeungstermine({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _Page_PruefeungstermineState();
+  State<StatefulWidget> createState() => _PagePruefeungstermineState();
 }
 
-class _Page_PruefeungstermineState extends State<Page_Pruefeungstermine> {
+class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
+  bool wochenuebersicht = false;
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(children: exams.map((e) => Text("$e\n")).toList())),
-      );
+  Widget build(BuildContext context) {
+    loadExams();
+    return Scaffold(
+      appBar: AppBar(
+        title: TextButton(
+          onPressed: () {
+            setState(() {
+              wochenuebersicht = !wochenuebersicht;
+            });
+          },
+          child: Text(
+            wochenuebersicht ? "Calendar" : "Compact",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+        toolbarHeight:
+            (Theme.of(context).textTheme.bodyMedium?.fontSize ?? 10) + 10,
+        backgroundColor: Theme.of(context).colorScheme.background,
+      ),
+      body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Stack(
+            children: [
+              Visibility(
+                maintainState: true,
+                visible: wochenuebersicht,
+                child: Timetable(
+                    controller:
+                        TimetableController(start: DateTime(2022, 05, 01, 08)),
+                    itemBuilder: (item) => Container(
+                          decoration: BoxDecoration(
+                            color: (item.data as Map)["art"] == "SA"
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: TextButton(
+                            onPressed: () {},
+                            child: Center(
+                              child: Text(
+                                "${(item.data as Map)["fach"]} ${(item.data as Map)["art"]}",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .background),
+                              ),
+                            ),
+                          ),
+                        ),
+                    items: exams
+                        .map((item) => TimetableItem(item["start"], item["end"],
+                            data: item))
+                        .toList()),
+              ),
+              Visibility(
+                  maintainState: true,
+                  visible: !wochenuebersicht,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      children: exams
+                          .map(
+                            (item) => Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Card(
+                                    child: SizedBox(
+                                      height: 100,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              SizedBox(
+                                                  width: 50,
+                                                  child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Text(
+                                                          item["fach"],
+                                                          style: TextStyle(
+                                                              color: item["art"] ==
+                                                                      "SA"
+                                                                  ? Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .primary
+                                                                  : Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .bodyMedium
+                                                                      ?.color),
+                                                        ),
+                                                        Text(
+                                                          item["art"],
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodySmall,
+                                                        )
+                                                      ])),
+                                              Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(((item["start"]
+                                                                as DateTime)
+                                                            .toLocal()
+                                                            .toString())
+                                                        .substring(0, 10)),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 5),
+                                                      child: Text(
+                                                          "${((item["start"] as DateTime).toLocal().toString()).substring(11, 16)}-${((item["end"] as DateTime).toLocal().toString()).substring(11, 16)}"),
+                                                    )
+                                                  ]),
+                                              SizedBox(
+                                                width: 60,
+                                                child: Center(
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                          "${item["start_hour"]} - ${item["end_hour"]}"),
+                                                      Text(
+                                                          "${item["raum"]} - ${item["lehrer"]}")
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  var stunden = const [
+                                                    [
+                                                      Duration(
+                                                          hours: 8,
+                                                          minutes: 00),
+                                                      Duration(
+                                                          hours: 8, minutes: 45)
+                                                    ],
+                                                    [
+                                                      Duration(
+                                                          hours: 8,
+                                                          minutes: 45),
+                                                      Duration(
+                                                          hours: 9, minutes: 30)
+                                                    ],
+                                                    [
+                                                      Duration(
+                                                          hours: 9,
+                                                          minutes: 30),
+                                                      Duration(
+                                                          hours: 10,
+                                                          minutes: 30)
+                                                    ],
+                                                    [
+                                                      Duration(
+                                                          hours: 10,
+                                                          minutes: 30),
+                                                      Duration(
+                                                          hours: 11,
+                                                          minutes: 15)
+                                                    ],
+                                                    [
+                                                      Duration(
+                                                          hours: 11,
+                                                          minutes: 30),
+                                                      Duration(
+                                                          hours: 12,
+                                                          minutes: 15)
+                                                    ],
+                                                    [
+                                                      Duration(
+                                                          hours: 12,
+                                                          minutes: 15),
+                                                      Duration(
+                                                          hours: 13,
+                                                          minutes: 00)
+                                                    ],
+                                                    [
+                                                      Duration(
+                                                          hours: 13,
+                                                          minutes: 00),
+                                                      Duration(
+                                                          hours: 13,
+                                                          minutes: 45)
+                                                    ],
+                                                    [
+                                                      Duration(
+                                                          hours: 13,
+                                                          minutes: 45),
+                                                      Duration(
+                                                          hours: 14,
+                                                          minutes: 30)
+                                                    ],
+                                                    [
+                                                      Duration(
+                                                          hours: 14,
+                                                          minutes: 45),
+                                                      Duration(
+                                                          hours: 15,
+                                                          minutes: 30)
+                                                    ],
+                                                    [
+                                                      Duration(
+                                                          hours: 15,
+                                                          minutes: 30),
+                                                      Duration(
+                                                          hours: 16,
+                                                          minutes: 15)
+                                                    ],
+                                                    [
+                                                      Duration(
+                                                          hours: 16,
+                                                          minutes: 15),
+                                                      Duration(
+                                                          hours: 17,
+                                                          minutes: 00)
+                                                    ],
+                                                  ];
+                                                  launchUrl(
+                                                      Uri.parse(
+                                                          "https://www.google.com/calendar/render?action=TEMPLATE&text=${item["fach"]}+${item["art"]}&details=Lehrer%3A+${item["lehrer"]}&location=Raum%3A+${item["raum"]}&dates=${DateTime.parse(item["datum"]).add(stunden[item["von"] - 1][0]).toIso8601String()}%2F${DateTime.parse(item["datum"]).add(stunden[item["bis"] - 1][0]).toIso8601String()}"),
+                                                      mode: LaunchMode
+                                                          .externalApplication);
+                                                },
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.calendar_month),
+                                                    Text(
+                                                      "Add",
+                                                      style: TextStyle(
+                                                          fontSize:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodySmall
+                                                                  ?.fontSize),
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            ]),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ))
+            ],
+          )),
+    );
+  }
 }
