@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_timetable/flutter_timetable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -12,8 +13,8 @@ import 'package:klatab/exams.dart';
 import 'package:klatab/timetable.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const _lightColorScheme = lightColorScheme_green;
-const _darkColorScheme = darkColorScheme_green;
+const _lightColorScheme = lightColorScheme_purple;
+const _darkColorScheme = darkColorScheme_purple;
 
 String? token;
 bool loggedIn = false;
@@ -74,10 +75,14 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int index = 0;
+  bool settings = false;
   String username = "";
   String password = "";
 
-  var screens = [const PageStundenplan(), const PagePruefeungstermine()];
+  var screens = [
+    const PageStundenplan(),
+    const PagePruefeungstermine(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -184,13 +189,42 @@ class _MainPageState extends State<MainPage> {
             NavigationDestination(
               icon: Icon(Icons.calendar_today),
               label: "Schulaufgaben",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.calendar_today),
+              label: "Freihe Raume",
             )
           ],
         ),
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(
+            widget.title,
+          ),
+          actions: [
+            PopupMenuButton(
+              color: Theme.of(context).colorScheme.background,
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    child: TextButton(
+                        child: const Text("Logout"),
+                        onPressed: () {
+                          token = null;
+                          Hive.box('myBox').delete("token");
+                          setState(() {
+                            loggedIn = false;
+                          });
+                        }),
+                  ),
+                  PopupMenuItem(
+                    child: TextButton(child: Text("test"), onPressed: () {}),
+                  )
+                ];
+              },
+            )
+          ],
         ),
-        body: screens[index],
+        body: !settings ? screens[index] : const PageSettings(),
         backgroundColor: Theme.of(context).colorScheme.background);
   }
 }
@@ -210,8 +244,6 @@ class _PageStundenplanState extends State<PageStundenplan> {
       scrollDirection: Axis.vertical,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        verticalDirection: VerticalDirection.up,
         children: [
           DataTable(
               // columnSpacing: 30,
@@ -293,7 +325,6 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
 
   @override
   Widget build(BuildContext context) {
-    loadExams();
     return Scaffold(
       appBar: AppBar(
         title: TextButton(
@@ -312,15 +343,15 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
         backgroundColor: Theme.of(context).colorScheme.background,
       ),
       body: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.only(left: 20, right: 20),
           child: Stack(
             children: [
               Visibility(
                 maintainState: true,
                 visible: wochenuebersicht,
                 child: Timetable(
-                    controller:
-                        TimetableController(start: DateTime(2022, 05, 01, 08)),
+                    controller: TimetableController(
+                        start: DateTime(2022, 05, 01, 08), cellHeight: 40),
                     itemBuilder: (item) => Container(
                           decoration: BoxDecoration(
                             color: (item.data as Map)["art"] == "SA"
@@ -361,7 +392,7 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
                                 Expanded(
                                   child: Card(
                                     child: SizedBox(
-                                      height: 100,
+                                      height: 130,
                                       child: Padding(
                                         padding: const EdgeInsets.all(10),
                                         child: Row(
@@ -369,7 +400,7 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
                                                 MainAxisAlignment.spaceEvenly,
                                             children: [
                                               SizedBox(
-                                                  width: 50,
+                                                  width: 70,
                                                   child: Column(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
@@ -416,7 +447,7 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
                                                     )
                                                   ]),
                                               SizedBox(
-                                                width: 60,
+                                                width: 80,
                                                 child: Center(
                                                   child: Column(
                                                     mainAxisAlignment:
@@ -433,97 +464,8 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
                                               ),
                                               TextButton(
                                                 onPressed: () {
-                                                  var stunden = const [
-                                                    [
-                                                      Duration(
-                                                          hours: 8,
-                                                          minutes: 00),
-                                                      Duration(
-                                                          hours: 8, minutes: 45)
-                                                    ],
-                                                    [
-                                                      Duration(
-                                                          hours: 8,
-                                                          minutes: 45),
-                                                      Duration(
-                                                          hours: 9, minutes: 30)
-                                                    ],
-                                                    [
-                                                      Duration(
-                                                          hours: 9,
-                                                          minutes: 30),
-                                                      Duration(
-                                                          hours: 10,
-                                                          minutes: 30)
-                                                    ],
-                                                    [
-                                                      Duration(
-                                                          hours: 10,
-                                                          minutes: 30),
-                                                      Duration(
-                                                          hours: 11,
-                                                          minutes: 15)
-                                                    ],
-                                                    [
-                                                      Duration(
-                                                          hours: 11,
-                                                          minutes: 30),
-                                                      Duration(
-                                                          hours: 12,
-                                                          minutes: 15)
-                                                    ],
-                                                    [
-                                                      Duration(
-                                                          hours: 12,
-                                                          minutes: 15),
-                                                      Duration(
-                                                          hours: 13,
-                                                          minutes: 00)
-                                                    ],
-                                                    [
-                                                      Duration(
-                                                          hours: 13,
-                                                          minutes: 00),
-                                                      Duration(
-                                                          hours: 13,
-                                                          minutes: 45)
-                                                    ],
-                                                    [
-                                                      Duration(
-                                                          hours: 13,
-                                                          minutes: 45),
-                                                      Duration(
-                                                          hours: 14,
-                                                          minutes: 30)
-                                                    ],
-                                                    [
-                                                      Duration(
-                                                          hours: 14,
-                                                          minutes: 45),
-                                                      Duration(
-                                                          hours: 15,
-                                                          minutes: 30)
-                                                    ],
-                                                    [
-                                                      Duration(
-                                                          hours: 15,
-                                                          minutes: 30),
-                                                      Duration(
-                                                          hours: 16,
-                                                          minutes: 15)
-                                                    ],
-                                                    [
-                                                      Duration(
-                                                          hours: 16,
-                                                          minutes: 15),
-                                                      Duration(
-                                                          hours: 17,
-                                                          minutes: 00)
-                                                    ],
-                                                  ];
                                                   launchUrl(
-                                                      Uri.parse(
-                                                          "https://www.google.com/calendar/render?action=TEMPLATE&text=${item["fach"]}+${item["art"]}&details=Lehrer%3A+${item["lehrer"]}&location=Raum%3A+${item["raum"]}&dates=${DateTime.parse(item["datum"]).add(stunden[item["von"] - 1][0]).toIso8601String()}%2F${DateTime.parse(item["datum"]).add(stunden[item["bis"] - 1][0]).toIso8601String()}"),
+                                                      Uri.parse(item["link"]),
                                                       mode: LaunchMode
                                                           .externalApplication);
                                                 },
@@ -558,6 +500,35 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
                   ))
             ],
           )),
+    );
+  }
+}
+
+class PageSettings extends StatefulWidget {
+  const PageSettings({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _PageSettingsState();
+}
+
+class _PageSettingsState extends State<PageSettings> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            TextButton.icon(
+                style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.bodyMedium,
+                    surfaceTintColor: Colors.white),
+                onPressed: () {},
+                icon: const Icon(Icons.notes_outlined),
+                label: Text("toggle Notes"))
+          ],
+        ),
+      ),
     );
   }
 }

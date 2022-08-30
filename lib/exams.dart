@@ -41,6 +41,8 @@ Future<List<Map>> loadExams() async {
               "end": DateTime.parse(item["datum"])
                   .add(stunden[item["bis"] - 1][1]),
               "end_hour": item["bis"],
+              "link":
+                  "https://www.google.com/calendar/render?action=TEMPLATE&text=${item["fach"]}+${item["art"]}&details=Lehrer%3A+${item["lehrer"]}&location=Raum%3A+${item["raum"]}&dates=${DateTime.parse(item["datum"]).add(stunden[item["von"] - 1][0]).toIso8601String().replaceAll("-", "").replaceAll(":", "").replaceAll(".000", "")}%2F${DateTime.parse(item["datum"]).add(stunden[item["bis"] - 1][1]).toIso8601String().replaceAll("-", "").replaceAll(":", "").replaceAll(".000", "")}",
             })
         .toList();
     return exams2;
@@ -48,3 +50,4 @@ Future<List<Map>> loadExams() async {
     return [];
   }
 }
+// https://www.google.com/calendar/render?action=TEMPLATE&text=PuG+KA&details=Lehrer%3A+me&location=Raum%3A+107&dates=2022-05-18T15:30:00.000Z%2F2022-05-18T15:30:00.000Z
