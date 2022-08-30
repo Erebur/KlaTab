@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
             colorScheme: darkColorScheme ?? _darkColorScheme,
             useMaterial3: true,
             scaffoldBackgroundColor: Colors.transparent),
-        themeMode: ThemeMode.light,
+        themeMode: ThemeMode.system,
         home: const MainPage(title: 'KlaTab'),
       );
     });
@@ -80,65 +80,78 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     if (!loggedIn) {
       return Scaffold(
-          body: Center(
-            child: Container(
-              padding: const EdgeInsets.all(30),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                      ),
-                      autofillHints: const [AutofillHints.username],
-                      keyboardType: TextInputType.text,
-                      onChanged: (value) => setState((() => username = value))),
-                  TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                      ),
-                      autofillHints: const [AutofillHints.password],
-                      obscureText: true,
-                      keyboardType: TextInputType.visiblePassword,
-                      onChanged: (value) => setState((() => password = value))),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextButton.icon(
-                        onPressed: () async {
-                          var post = await http.post(
-                              Uri.parse(
-                                  "https://ux4.edvschule-plattling.de/klatab-reader/user/login"),
-                              headers: {
-                                "content-type": "application/json",
-                                "accept": "application/json",
-                              },
-                              body: json.encode({
-                                "username": username,
-                                "password": password
-                              }));
+          body: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.all(30),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TextField(
+                        decoration: const InputDecoration(
+                          labelText: 'Username',
+                        ),
+                        autofillHints: const [AutofillHints.username],
+                        keyboardType: TextInputType.text,
+                        onChanged: (value) =>
+                            setState((() => username = value))),
+                    TextField(
+                        decoration: const InputDecoration(
+                          labelText: 'Password',
+                        ),
+                        autofillHints: const [AutofillHints.password],
+                        obscureText: true,
+                        keyboardType: TextInputType.visiblePassword,
+                        onChanged: (value) =>
+                            setState((() => password = value))),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextButton.icon(
+                          onPressed: () async {
+                            var post = await http.post(
+                                Uri.parse(
+                                    "https://ux4.edvschule-plattling.de/klatab-reader/user/login"),
+                                headers: {
+                                  "content-type": "application/json",
+                                  "accept": "application/json",
+                                },
+                                body: json.encode({
+                                  "username": username,
+                                  "password": password
+                                }));
 
-                          Fluttertoast.showToast(
-                              msg: jsonDecode(post.body)["token"] != null
-                                  ? "Logged in"
-                                  : "Error logging in",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              fontSize: 14.0);
-                          if (jsonDecode(post.body)["token"] != null) {
-                            var box = Hive.box('myBox');
-                            box.put('token', jsonDecode(post.body)["token"]);
-                            setState(() async {
-                              timetable = await loadTimeTable();
-                              exams = await loadExams();
-                              loggedIn = true;
-                            });
-                          }
-                        },
-                        label: const Text('Login'),
-                        icon: const Icon(Icons.login_outlined)),
-                  ),
-                ],
+                            Fluttertoast.showToast(
+                                msg: jsonDecode(post.body)["token"] != null
+                                    ? "Logged in"
+                                    : "Error logging in",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                fontSize: 14.0);
+                            if (jsonDecode(post.body)["token"] != null) {
+                              var box = Hive.box('myBox');
+                              box.put('token', jsonDecode(post.body)["token"]);
+                              await loadTimeTable().then((value) => setState(
+                                    () {
+                                      timetable = value;
+                                    },
+                                  ));
+                              await loadExams().then((value) => setState(
+                                    () {
+                                      exams = value;
+                                    },
+                                  ));
+                              setState(() {
+                                loggedIn = true;
+                              });
+                            }
+                          },
+                          label: const Text('Login'),
+                          icon: const Icon(Icons.login_outlined)),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -186,117 +199,120 @@ class _PageStundenplanState extends State<PageStundenplan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      verticalDirection: VerticalDirection.up,
-      children: [
-        DataTable(
-          // columnSpacing: 30,
-          columns: const <DataColumn>[
-            DataColumn(label: Text("Zeit")),
-          ],
-          rows: const [
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('08:00\n08:45')),
-              ],
-            ),
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('08:45\n09:30')),
-              ],
-            ),
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('09:45\n10:30')),
-              ],
-            ),
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('10:30\n11:15')),
-              ],
-            ),
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('11:30\n12:15')),
-              ],
-            ),
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('12:15\n13:00')),
-              ],
-            ),
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('13:00\n13:45')),
-              ],
-            ),
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('13:45\n14:30')),
-              ],
-            ),
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('14:45\n15:30')),
-              ],
-            ),
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('15:30\n16:15')),
-              ],
-            ),
-            DataRow(
-              cells: <DataCell>[
-                DataCell(Text('16:15\n17:00')),
-              ],
-            ),
-          ],
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.all(10),
-              child: DataTable(
-                // columnSpacing: 30,
-                columns: const <DataColumn>[
-                  DataColumn(label: Text("Montag")),
-                  DataColumn(label: Text("Dienstag")),
-                  DataColumn(label: Text("Mittwoch")),
-                  DataColumn(label: Text("Donerstag")),
-                  DataColumn(label: Text("Freitag")),
+        body: SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        verticalDirection: VerticalDirection.up,
+        children: [
+          DataTable(
+            // columnSpacing: 30,
+            columns: const <DataColumn>[
+              DataColumn(label: Text("Zeit")),
+            ],
+            rows: const [
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('08:00\n08:45')),
                 ],
-                rows: timetable
-                    .map((day) => DataRow(
-                        cells: day
-                            .map((hour) => DataCell(RichText(
-                                softWrap: false,
-                                text: TextSpan(text: "", children: [
-                                  TextSpan(
-                                      text:
-                                          "${hour["raum"]} ${hour["raum2"] != "" ? ' -\t ${hour["raum2"]}' : hour["lehrer"]}\n",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall),
-                                  TextSpan(
-                                      text:
-                                          "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |\t ${hour["fach2"]}' : ""}",
-                                      style: TextStyle(
-                                          color: hour["istVertretung"] == true
-                                              ? Theme.of(context)
-                                                  .colorScheme
-                                                  .primary
-                                              : Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.color))
-                                ]))))
-                            .toList()))
-                    .toList(),
-              )),
-        ),
-      ],
+              ),
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('08:45\n09:30')),
+                ],
+              ),
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('09:45\n10:30')),
+                ],
+              ),
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('10:30\n11:15')),
+                ],
+              ),
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('11:30\n12:15')),
+                ],
+              ),
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('12:15\n13:00')),
+                ],
+              ),
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('13:00\n13:45')),
+                ],
+              ),
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('13:45\n14:30')),
+                ],
+              ),
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('14:45\n15:30')),
+                ],
+              ),
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('15:30\n16:15')),
+                ],
+              ),
+              DataRow(
+                cells: <DataCell>[
+                  DataCell(Text('16:15\n17:00')),
+                ],
+              ),
+            ],
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.all(10),
+                child: DataTable(
+                  // columnSpacing: 30,
+                  columns: const <DataColumn>[
+                    DataColumn(label: Text("Montag")),
+                    DataColumn(label: Text("Dienstag")),
+                    DataColumn(label: Text("Mittwoch")),
+                    DataColumn(label: Text("Donerstag")),
+                    DataColumn(label: Text("Freitag")),
+                  ],
+                  rows: timetable
+                      .map((day) => DataRow(
+                          cells: day
+                              .map((hour) => DataCell(RichText(
+                                  softWrap: false,
+                                  text: TextSpan(text: "", children: [
+                                    TextSpan(
+                                        text:
+                                            "${hour["raum"]} ${hour["raum2"] != "" ? ' -\t ${hour["raum2"]}' : hour["lehrer"]}\n",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall),
+                                    TextSpan(
+                                        text:
+                                            "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |\t ${hour["fach2"]}' : ""}",
+                                        style: TextStyle(
+                                            color: hour["istVertretung"] == true
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .primary
+                                                : Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.color))
+                                  ]))))
+                              .toList()))
+                      .toList(),
+                )),
+          ),
+        ],
+      ),
     ));
   }
 }
