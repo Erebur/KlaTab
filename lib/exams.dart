@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:klatab/main.dart';
 
@@ -11,7 +12,13 @@ Future<List> loadExams() async {
         "authorization": "Basic $token",
         "content-type": "application/json"
       });
-  print(jsonDecode(response.body));
-  print(token);
-  return jsonDecode(response.body);
+  try {
+    if (kDebugMode) {
+      print(jsonDecode(response.body));
+      print(token);
+    }
+    return jsonDecode(response.body);
+  } catch (e) {
+    return [];
+  }
 }

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:klatab/main.dart';
 
@@ -13,11 +15,36 @@ Future<List<List>> loadTimeTable() async {
       });
   var timetable = [[], [], [], [], [], [], [], [], [], [], []];
   var days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"];
-  print(token);
-  var week = jsonDecode(response.body);
+
+  Map week = {
+    "montag": [],
+    "dienstag": [],
+    "mittwoch": [],
+    "donnerstag": [],
+    "freitag": []
+  };
+
+  try {
+    week = jsonDecode(response.body);
+    if (kDebugMode) {
+      print(jsonDecode(response.body));
+      print(token);
+    }
+  } catch (e) {
+    if (token != null) {
+      Fluttertoast.showToast(
+          msg: "not able to load Timetable",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          // backgroundColor:
+          //     Theme.of(context).colorScheme.background,
+          fontSize: 14.0);
+    }
+  }
 
   for (var i = 0; i < 5; i++) {
-    List day = week[days[i]];
+    List? day = week[days[i]];
     int hour = 0;
     for (var ii = 0; ii < 11; ii++) {
       Map currentHour = {
@@ -33,9 +60,7 @@ Future<List<List>> loadTimeTable() async {
         "raumId": ""
       };
 
-      if (day.isNotEmpty &&
-          day.length > hour &&
-          day[hour]["stunde"] == ii + 1) {
+      if (day != null && day.length > hour && day[hour]["stunde"] == ii + 1) {
         currentHour = day[hour];
 
         if (currentHour["gruppe"] != 0 && day.length > hour + 1) {
@@ -56,7 +81,7 @@ Future<List<List>> loadTimeTable() async {
       if (currentHour["gruppe"] != 0) {
         hour++;
       }
-      if (day.length > hour && day[hour]["stunde"] == ii + 1) {
+      if (day != null && day.length > hour && day[hour]["stunde"] == ii + 1) {
         hour++;
       }
     }

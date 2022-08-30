@@ -1,25 +1,16 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:klatab/color_schemes.g.dart';
 import 'package:klatab/exams.dart';
 import 'package:klatab/timetable.dart';
 
-var _defaultLightColorScheme = ColorScheme.fromSwatch(
-  primarySwatch: Colors.purple,
-  accentColor: Colors.purple,
-  backgroundColor: Colors.white,
-  brightness: Brightness.light,
-);
-var _defaultDarkColorScheme = ColorScheme.fromSwatch(
-    primarySwatch: Colors.purple,
-    accentColor: Colors.purple,
-    backgroundColor: Colors.black,
-    brightness: Brightness.dark);
+const _lightColorScheme = lightColorScheme_green;
+const _darkColorScheme = darkColorScheme_green;
 
 String? token;
 bool loggedIn = false;
@@ -27,21 +18,14 @@ List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
 List exams = [];
 
 Future<void> main() async {
-  await initData();
-  runApp(const MyApp());
-}
-
-Future<void> initWebData() async {
-  timetable = await loadTimeTable();
-  exams = await loadExams();
-}
-
-Future<void> initData() async {
   await Hive.initFlutter();
   await Hive.openBox("myBox");
   token = Hive.box('myBox').get('token');
   loggedIn = token != null;
-  if (loggedIn) initWebData();
+  timetable = await loadTimeTable();
+  exams = await loadExams();
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -63,14 +47,14 @@ class MyApp extends StatelessWidget {
         title: 'KlaTab',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            colorScheme: lightColorScheme ?? _defaultLightColorScheme,
+            colorScheme: lightColorScheme ?? _lightColorScheme,
             useMaterial3: true,
             scaffoldBackgroundColor: Colors.transparent),
         darkTheme: ThemeData(
-            colorScheme: darkColorScheme ?? _defaultDarkColorScheme,
+            colorScheme: darkColorScheme ?? _darkColorScheme,
             useMaterial3: true,
             scaffoldBackgroundColor: Colors.transparent),
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.light,
         home: const MainPage(title: 'KlaTab'),
       );
     });
@@ -133,14 +117,6 @@ class _MainPageState extends State<MainPage> {
                                 "password": password
                               }));
 
-                          if (jsonDecode(post.body)["token"] != null) {
-                            var box = Hive.box('myBox');
-                            box.put('token', jsonDecode(post.body)["token"]);
-                            initWebData();
-                            setState(() {
-                              loggedIn = true;
-                            });
-                          }
                           Fluttertoast.showToast(
                               msg: jsonDecode(post.body)["token"] != null
                                   ? "Logged in"
@@ -148,9 +124,16 @@ class _MainPageState extends State<MainPage> {
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               timeInSecForIosWeb: 1,
-                              // backgroundColor:
-                              //     Theme.of(context).colorScheme.background,
                               fontSize: 14.0);
+                          if (jsonDecode(post.body)["token"] != null) {
+                            var box = Hive.box('myBox');
+                            box.put('token', jsonDecode(post.body)["token"]);
+                            setState(() async {
+                              timetable = await loadTimeTable();
+                              exams = await loadExams();
+                              loggedIn = true;
+                            });
+                          }
                         },
                         label: const Text('Login'),
                         icon: const Icon(Icons.login_outlined)),
@@ -160,8 +143,11 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           appBar: AppBar(
-            title: Text(widget.title),
-          ),
+              title: Text(widget.title),
+              backgroundColor: Theme.of(context).colorScheme.background,
+              bottomOpacity: 0,
+              centerTitle: true,
+              scrolledUnderElevation: 3),
           backgroundColor: Theme.of(context).colorScheme.background);
     }
     return Scaffold(
@@ -325,6 +311,8 @@ class Page_Pruefeungstermine extends StatefulWidget {
 class _Page_PruefeungstermineState extends State<Page_Pruefeungstermine> {
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: Row(children: []),
+        body: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(children: exams.map((e) => Text("$e\n")).toList())),
       );
 }
