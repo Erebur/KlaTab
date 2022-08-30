@@ -3,19 +3,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:klatab/main.dart';
 
-Future<List<List>> loadTimeTable() async {
-  var response = await http.get(
-      Uri.parse(
-          "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=bfs2020fi&datum=2022-07-18"),
-      headers: {
-        "authorization": "Basic $token",
-        "undefinedaccept": "application/json"
-      });
-  var timetable = [[], [], [], [], [], [], [], [], [], [], []];
-  var days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"];
-
+Future<List<List>> loadTimeTable(token) async {
   Map week = {
     "montag": [],
     "dienstag": [],
@@ -24,22 +13,35 @@ Future<List<List>> loadTimeTable() async {
     "freitag": []
   };
 
-  try {
-    week = jsonDecode(response.body);
-    if (kDebugMode) {
-      print(jsonDecode(response.body));
-      print(token);
-    }
-  } catch (e) {
-    if (token != null) {
-      Fluttertoast.showToast(
-          msg: "not able to load Timetable",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          // backgroundColor:
-          //     Theme.of(context).colorScheme.background,
-          fontSize: 14.0);
+  var timetable = [[], [], [], [], [], [], [], [], [], [], []];
+  var days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"];
+
+  if (token != null) {
+    var response = await http.get(
+        Uri.parse(
+            "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=bfs2020fi&datum=2022-07-18"),
+        headers: {
+          "authorization": "Basic $token",
+          "undefinedaccept": "application/json"
+        });
+
+    try {
+      week = jsonDecode(response.body);
+      if (kDebugMode) {
+        print(jsonDecode(response.body)!);
+        print(token!);
+      }
+    } catch (e) {
+      if (token != null) {
+        Fluttertoast.showToast(
+            msg: "not able to load Timetable",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            // backgroundColor:
+            //     Theme.of(context).colorScheme.background,
+            fontSize: 14.0);
+      }
     }
   }
 
@@ -52,12 +54,14 @@ Future<List<List>> loadTimeTable() async {
         "mitarbeiterKuerzel": "",
         "raumId": "",
         "istVertretung": "",
+        "notiz": "",
         "gruppe": 0
       };
       Map currentHour2 = {
         "fachKuerzel": "",
         "mitarbeiterKuerzel": "",
-        "raumId": ""
+        "raumId": "",
+        "notiz": ""
       };
 
       if (day != null && day.length > hour && day[hour]["stunde"] == ii + 1) {
@@ -73,6 +77,8 @@ Future<List<List>> loadTimeTable() async {
         "lehrer": currentHour["mitarbeiterKuerzel"],
         "raum": currentHour["raumId"],
         "istVertretung": currentHour["istVertretung"],
+        "notiz": currentHour["notiz"],
+        "notiz2": currentHour2["notiz"],
         "fach2": currentHour2["fachKuerzel"],
         "lehrer2": currentHour2["mitarbeiterKuerzel"],
         "raum2": currentHour2["raumId"]

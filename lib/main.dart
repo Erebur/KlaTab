@@ -22,7 +22,7 @@ Future<void> main() async {
   await Hive.openBox("myBox");
   token = Hive.box('myBox').get('token');
   loggedIn = token != null;
-  timetable = await loadTimeTable();
+  timetable = await loadTimeTable(token);
   exams = await loadExams();
 
   runApp(const MyApp());
@@ -132,11 +132,15 @@ class _MainPageState extends State<MainPage> {
                             if (jsonDecode(post.body)["token"] != null) {
                               var box = Hive.box('myBox');
                               box.put('token', jsonDecode(post.body)["token"]);
-                              await loadTimeTable().then((value) => setState(
-                                    () {
-                                      timetable = value;
-                                    },
-                                  ));
+
+                              token = jsonDecode(post.body)["token"];
+
+                              await loadTimeTable(token)
+                                  .then((value) => setState(
+                                        () {
+                                          timetable = value;
+                                        },
+                                      ));
                               await loadExams().then((value) => setState(
                                     () {
                                       exams = value;
@@ -296,16 +300,18 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                             .bodySmall),
                                     TextSpan(
                                         text:
-                                            "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |\t ${hour["fach2"]}' : ""}",
+                                            "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |\t ${hour["fach2"]}' : ""}${hour["notiz"] != "" ? '\n${hour["notiz"]}' : ''}",
                                         style: TextStyle(
-                                            color: hour["istVertretung"] == true
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.color))
+                                            color:
+                                                hour["istVertretung"] == true &&
+                                                        hour["notiz"] != ""
+                                                    ? Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                    : Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.color))
                                   ]))))
                               .toList()))
                       .toList(),
