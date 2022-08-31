@@ -10,12 +10,13 @@
   "friday": "Freitag",
   "calendar": "Kalender",
   "compact": "kompakt",
-  "add": "hinzufügen",
+  "add": "Hinzufügen",
   "login_res": "Angemeldet",
   "login_res_fail": "Anmelden Fehlgeschlagen",
   "logout": "Abmelden",
   "login": "Anmelden",
   "username": "Benutzername",
-  "password": "Passwort"
-  
+  "password": "Passwort",
+  "highlightExams": "Prüfungen Hervorheben",
+  "settings":"Einstellungen"
 }

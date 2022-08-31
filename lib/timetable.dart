@@ -99,7 +99,6 @@ Future<List<List>> loadTimeTable(token) async {
       }
     }
   }
-  print("breakpoint");
   exams = await loadExams();
   // add exams
   for (var exam in exams) {
@@ -107,8 +106,18 @@ Future<List<List>> loadTimeTable(token) async {
         (exam["end"] as DateTime)
             .isBefore(monday.add(const Duration(days: 5)))) {
       for (var i = exam["start_hour"]; i <= exam["end_hour"]; i++) {
-        timetable[i - 1][(exam["start"] as DateTime).weekday - 1]["isExam"] =
-            true;
+        timetable[i - 1][(exam["start"] as DateTime).weekday - 1] = {
+          "fach": exam["fach"],
+          "lehrer": exam["lehrer"],
+          "raum": exam["raum"],
+          "istVertretung": "false",
+          "notiz": exam["bemerkung"],
+          "notiz2": "",
+          "fach2": "",
+          "lehrer2": "",
+          "raum2": exam["art"],
+          "isExam": true
+        };
       }
     }
   }

@@ -160,10 +160,10 @@ class S {
     );
   }
 
-  /// `add`
+  /// `Add`
   String get add {
     return Intl.message(
-      'add',
+      'Add',
       name: 'add',
       desc: '',
       args: [],
@@ -225,6 +225,26 @@ class S {
     return Intl.message(
       'Login',
       name: 'login',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Highlight Exams`
+  String get highlightExams {
+    return Intl.message(
+      'Highlight Exams',
+      name: 'highlightExams',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Settings`
+  String get settings {
+    return Intl.message(
+      'Settings',
+      name: 'settings',
       desc: '',
       args: [],
     );

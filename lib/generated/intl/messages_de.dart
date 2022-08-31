@@ -22,12 +22,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "add": MessageLookupByLibrary.simpleMessage("hinzufügen"),
+        "add": MessageLookupByLibrary.simpleMessage("Hinzufügen"),
         "calendar": MessageLookupByLibrary.simpleMessage("Kalender"),
         "compact": MessageLookupByLibrary.simpleMessage("kompakt"),
         "empty_rooms": MessageLookupByLibrary.simpleMessage("Freihe Raume"),
         "exams": MessageLookupByLibrary.simpleMessage("Prüfungen"),
         "friday": MessageLookupByLibrary.simpleMessage("Freitag"),
+        "highlightExams":
+            MessageLookupByLibrary.simpleMessage("Prüfungen Hervorheben"),
         "login": MessageLookupByLibrary.simpleMessage("Anmelden"),
         "login_res": MessageLookupByLibrary.simpleMessage("Angemeldet"),
         "login_res_fail":
@@ -35,6 +37,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "logout": MessageLookupByLibrary.simpleMessage("Abmelden"),
         "monday": MessageLookupByLibrary.simpleMessage("Montag"),
         "password": MessageLookupByLibrary.simpleMessage("Passwort"),
+        "settings": MessageLookupByLibrary.simpleMessage("Einstellungen"),
         "thursday": MessageLookupByLibrary.simpleMessage("Donerstag"),
         "time": MessageLookupByLibrary.simpleMessage("Zeit"),
         "timetable": MessageLookupByLibrary.simpleMessage("Stundenplan"),

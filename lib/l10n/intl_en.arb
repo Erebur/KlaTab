@@ -10,11 +10,13 @@
   "friday": "Friday",
   "calendar": "Calendar",
   "compact": "Compact",
-  "add": "add",
+  "add": "Add",
   "login_res": "Logged in",
   "login_res_fail": "Error logging in",
   "logout": "Logout",
   "username": "Username",
   "password": "Password",
-  "login": "Login"
+  "login": "Login",
+  "highlightExams": "Highlight Exams",
+  "settings":"Settings"
 }

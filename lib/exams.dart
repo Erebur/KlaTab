@@ -34,6 +34,7 @@ Future<List<Map>> loadExams() async {
               "lehrer": item["lehrer"],
               "raum": item["raum"],
               "art": item["art"],
+              "bemerkung": item["bemerkung"],
               "start": DateTime.parse(item["datum"])
                   .add(stunden[item["von"] - 1][0])
                   .subtract(const Duration(hours: 2)),
@@ -52,3 +53,19 @@ Future<List<Map>> loadExams() async {
   }
 }
 // https://www.google.com/calendar/render?action=TEMPLATE&text=PuG+KA&details=Lehrer%3A+me&location=Raum%3A+107&dates=2022-05-18T15:30:00.000Z%2F2022-05-18T15:30:00.000Z
+
+// <DataColumn>[
+//                         DataColumn(
+//                             label: Text(),
+//                         DataColumn(
+//                             label: Text()),
+//                         DataColumn(
+//                             label:
+//                                 Text()),
+//                         DataColumn(
+//                             label:
+//                                 Text()),
+//                         DataColumn(
+//                             label: Text(AppLocalizations.of(context)!.friday)),
+//                       ],
+

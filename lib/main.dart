@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_timetable/flutter_timetable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -6,8 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:klatab/color_schemes.g.dart';
-import 'package:klatab/exams.dart';
 import 'package:klatab/timetable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -19,7 +21,9 @@ String? token;
 bool loggedIn = false;
 DateTime today = DateTime.parse("2022-07-07");
 List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
+
 List<Map> exams = [];
+bool showExams = true;
 
 Future<void> main() async {
   await Hive.initFlutter();
@@ -79,6 +83,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int index = 0;
+  bool settings = false;
   String username = "";
   String password = "";
 
@@ -175,6 +180,7 @@ class _MainPageState extends State<MainPage> {
           backgroundColor: Theme.of(context).colorScheme.background);
     }
     return Scaffold(
+        primary: true,
         bottomNavigationBar: NavigationBar(
           selectedIndex: index,
           onDestinationSelected: (index) => setState(() {
@@ -201,29 +207,30 @@ class _MainPageState extends State<MainPage> {
           ),
           actions: [
             PopupMenuButton(
+              onSelected: (item) {},
               color: Theme.of(context).colorScheme.background,
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(
-                    child: TextButton(
-                        child: Text(AppLocalizations.of(context)!.logout),
-                        onPressed: () {
-                          token = null;
-                          Hive.box('myBox').delete("token");
-                          setState(() {
-                            loggedIn = false;
-                          });
-                        }),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  onTap: () {
+                    token = null;
+                    Hive.box('myBox').delete("token");
+                    setState(() {
+                      loggedIn = false;
+                    });
+                  },
+                  child: Text(AppLocalizations.of(context)!.logout),
+                ),
+                PopupMenuItem(
+                  onTap: () => setState(() => settings = !settings),
+                  child: Text(
+                    AppLocalizations.of(context)!.settings,
                   ),
-                  PopupMenuItem(
-                    child: TextButton(child: const Text(""), onPressed: () {}),
-                  )
-                ];
-              },
+                )
+              ],
             )
           ],
         ),
-        body: screens[index],
+        body: settings ? const PageSettings() : screens[index],
         backgroundColor: Theme.of(context).colorScheme.background);
   }
 }
@@ -236,8 +243,7 @@ class PageStundenplan extends StatefulWidget {
 }
 
 class _PageStundenplanState extends State<PageStundenplan> {
-  var showExams = true;
-
+  bool showNotes = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -246,6 +252,10 @@ class _PageStundenplanState extends State<PageStundenplan> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
+                  enableFeedback: false,
+                  hoverColor: Theme.of(context).colorScheme.background,
+                  splashColor: Theme.of(context).colorScheme.background,
+                  highlightColor: Theme.of(context).colorScheme.background,
                   onPressed: () async {
                     today = today.subtract(const Duration(days: 7));
                     await loadTimeTable(token).then((value) => setState(
@@ -259,6 +269,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
                     size: Theme.of(context).textTheme.bodyLarge?.fontSize,
                   )),
               TextButton(
+                  style: buttonStyleNoReaction(context),
                   onPressed: () async {
                     today = DateTime.now();
                     await loadTimeTable(token).then((value) => setState(
@@ -272,6 +283,9 @@ class _PageStundenplanState extends State<PageStundenplan> {
                     style: Theme.of(context).textTheme.bodyLarge,
                   )),
               IconButton(
+                  hoverColor: Theme.of(context).colorScheme.background,
+                  splashColor: Theme.of(context).colorScheme.background,
+                  highlightColor: Theme.of(context).colorScheme.background,
                   onPressed: () async {
                     today = today.add(const Duration(days: 7));
                     await loadTimeTable(token).then((value) => setState(
@@ -342,20 +356,30 @@ class _PageStundenplanState extends State<PageStundenplan> {
                     padding: const EdgeInsets.all(10),
                     child: DataTable(
                       // columnSpacing: 30,
-                      columns: <DataColumn>[
-                        DataColumn(
-                            label: Text(AppLocalizations.of(context)!.monday)),
-                        DataColumn(
-                            label: Text(AppLocalizations.of(context)!.tuesday)),
-                        DataColumn(
-                            label:
-                                Text(AppLocalizations.of(context)!.wednesday)),
-                        DataColumn(
-                            label:
-                                Text(AppLocalizations.of(context)!.thursday)),
-                        DataColumn(
-                            label: Text(AppLocalizations.of(context)!.friday)),
-                      ],
+                      columns: [
+                        AppLocalizations.of(context)!.monday,
+                        AppLocalizations.of(context)!.tuesday,
+                        AppLocalizations.of(context)!.wednesday,
+                        AppLocalizations.of(context)!.thursday,
+                        AppLocalizations.of(context)!.friday
+                      ]
+                          .map((e) => DataColumn(
+                              label: Text(e,
+                                  style: TextStyle(
+                                      color:
+                                          DateFormat.EEEE(Platform.localeName)
+                                                          .dateSymbols
+                                                          .STANDALONEWEEKDAYS[
+                                                      today.weekday] ==
+                                                  e
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                              : Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.color))))
+                          .toList(),
                       rows: timetable
                           .map((day) => DataRow(
                               cells: day
@@ -370,14 +394,15 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                                 .bodySmall),
                                         TextSpan(
                                             text:
-                                                "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${hour["notiz"] != "" ? '\n${hour["notiz"]}' : ''}",
+                                                "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${showNotes ? '\n${hour["notiz"]}' : ''}",
                                             style: TextStyle(
                                                 color: hour["istVertretung"] ==
                                                         true
                                                     ? Theme.of(context)
                                                         .colorScheme
                                                         .primary
-                                                    : hour["isExam"] as bool
+                                                    : hour["isExam"] &&
+                                                            showExams
                                                         ? Theme.of(context)
                                                             .colorScheme
                                                             .error
@@ -393,6 +418,14 @@ class _PageStundenplanState extends State<PageStundenplan> {
             ],
           ),
         ));
+  }
+
+  ButtonStyle buttonStyleNoReaction(BuildContext context) {
+    return ButtonStyle(
+        overlayColor: MaterialStateProperty.resolveWith(
+            (states) => Theme.of(context).colorScheme.background),
+        backgroundColor: MaterialStateProperty.resolveWith(
+            (states) => Theme.of(context).colorScheme.background));
   }
 }
 
@@ -435,8 +468,8 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
                 maintainState: true,
                 visible: weeklyOverview,
                 child: Timetable(
-                    controller: TimetableController(
-                        start: DateTime(2022, 05, 01, 08), cellHeight: 40),
+                    controller:
+                        TimetableController(start: today, cellHeight: 40),
                     itemBuilder: (item) => Container(
                           decoration: BoxDecoration(
                             color: (item.data as Map)["art"] == "SA"
@@ -618,4 +651,16 @@ class _PageFreeRoomsState extends State<PageFreeRooms> {
       ),
     );
   }
+}
+
+class PageSettings extends StatefulWidget {
+  const PageSettings({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _PageSettingsState();
+}
+
+class _PageSettingsState extends State<PageSettings> {
+  @override
+  Widget build(BuildContext context) => Container();
 }
