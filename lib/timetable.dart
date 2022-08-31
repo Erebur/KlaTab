@@ -2,8 +2,12 @@ import 'dart:convert';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:klatab/main.dart';
 
 Future<List<List>> loadTimeTable(token) async {
+  var monday = DateTime.parse("2022-05-17")
+      .subtract(Duration(days: DateTime.now().weekday - 1));
+
   Map week = {
     "montag": [],
     "dienstag": [],
@@ -18,7 +22,7 @@ Future<List<List>> loadTimeTable(token) async {
   if (token != null) {
     var response = await http.get(
         Uri.parse(
-            "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=bfs2020fi&datum=2022-07-18"),
+            "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=bfs2020fi&datum=${monday.toUtc().toString().substring(0, 10)}"),
         headers: {
           "authorization": "Basic $token",
           "undefinedaccept": "application/json"
@@ -76,8 +80,10 @@ Future<List<List>> loadTimeTable(token) async {
         "notiz2": currentHour2["notiz"],
         "fach2": currentHour2["fachKuerzel"],
         "lehrer2": currentHour2["mitarbeiterKuerzel"],
-        "raum2": currentHour2["raumId"]
+        "raum2": currentHour2["raumId"],
+        "isExam": false
       });
+
       // if the group of the current dataset is not 0, then we have 2 entrys for one hour
       if (currentHour["gruppe"] != 0) {
         hour++;
@@ -87,59 +93,16 @@ Future<List<List>> loadTimeTable(token) async {
       }
     }
   }
+  // add exams
   print(timetable);
+  for (var exam in exams) {
+    if ((exam["start"] as DateTime).isAfter(monday) &&
+        (exam["end"] as DateTime)
+            .isBefore(monday.add(const Duration(days: 4)))) {
+      timetable[exam["start_hour"]][(exam["start"] as DateTime).weekday - 1]
+          ["isExam"] = true;
+    }
+  }
+
   return timetable;
 }
-//  <DataCell>[
-//                   DataCell(Text('08:00\n08:45')),
-//                 ],
-//               ),
-//               DataRow(
-//                 cells: <DataCell>[
-//                   DataCell(Text('08:45\n09:30')),
-//                 ],
-//               ),
-//               DataRow(
-//                 cells: <DataCell>[
-//                   DataCell(Text('09:45\n10:30')),
-//                 ],
-//               ),
-//               DataRow(
-//                 cells: <DataCell>[
-//                   DataCell(Text('10:30\n11:15')),
-//                 ],
-//               ),
-//               DataRow(
-//                 cells: <DataCell>[
-//                   DataCell(Text('11:30\n12:15')),
-//                 ],
-//               ),
-//               DataRow(
-//                 cells: <DataCell>[
-//                   DataCell(Text('12:15\n13:00')),
-//                 ],
-//               ),
-//               DataRow(
-//                 cells: <DataCell>[
-//                   DataCell(Text('13:00\n13:45')),
-//                 ],
-//               ),
-//               DataRow(
-//                 cells: <DataCell>[
-//                   DataCell(Text('13:45\n14:30')),
-//                 ],
-//               ),
-//               DataRow(
-//                 cells: <DataCell>[
-//                   DataCell(Text('14:45\n15:30')),
-//                 ],
-//               ),
-//               DataRow(
-//                 cells: <DataCell>[
-//                   DataCell(Text('15:30\n16:15')),
-//                 ],
-//               ),
-//               DataRow(
-//                 cells: <DataCell>[
-//                   DataCell(Text('16:15\n17:00')),
-//                 ],

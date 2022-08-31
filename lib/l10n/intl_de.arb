@@ -1,0 +1,21 @@
+{
+  "timetable": "Stundenplan",
+  "exams": "Prüfungen",
+  "empty_rooms": "Freihe Raume",
+  "time": "Zeit",
+  "monday": "Montag",
+  "tuesday": "Dienstag",
+  "wednesday": "Mittwoch",
+  "thursday": "Donerstag",
+  "friday": "Freitag",
+  "calendar": "Kalender",
+  "compact": "kompakt",
+  "add": "hinzufügen",
+  "login_res": "Angemeldet",
+  "login_res_fail": "Anmelden Fehlgeschlagen",
+  "logout": "Abmelden",
+  "login": "Anmelden",
+  "username": "Benutzername",
+  "password": "Passwort"
+  
+}

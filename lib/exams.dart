@@ -36,10 +36,12 @@ Future<List<Map>> loadExams() async {
               "raum": item["raum"],
               "art": item["art"],
               "start": DateTime.parse(item["datum"])
-                  .add(stunden[item["von"] - 1][0]),
+                  .add(stunden[item["von"] - 1][0])
+                  .subtract(const Duration(hours: 2)),
               "start_hour": item["von"],
               "end": DateTime.parse(item["datum"])
-                  .add(stunden[item["bis"] - 1][1]),
+                  .add(stunden[item["bis"] - 1][1])
+                  .subtract(const Duration(hours: 2)),
               "end_hour": item["bis"],
               "link":
                   "https://www.google.com/calendar/render?action=TEMPLATE&text=${item["fach"]}+${item["art"]}&details=Lehrer%3A+${item["lehrer"]}&location=Raum%3A+${item["raum"]}&dates=${DateTime.parse(item["datum"]).add(stunden[item["von"] - 1][0]).toIso8601String().replaceAll("-", "").replaceAll(":", "").replaceAll(".000", "")}%2F${DateTime.parse(item["datum"]).add(stunden[item["bis"] - 1][1]).toIso8601String().replaceAll("-", "").replaceAll(":", "").replaceAll(".000", "")}",

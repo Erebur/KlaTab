@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_timetable/flutter_timetable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -12,6 +10,9 @@ import 'package:klatab/color_schemes.g.dart';
 import 'package:klatab/exams.dart';
 import 'package:klatab/timetable.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'dart:convert';
+import 'generated/l10n.dart';
 
 const _lightColorScheme = lightColorScheme_purple;
 const _darkColorScheme = darkColorScheme_purple;
@@ -26,8 +27,11 @@ Future<void> main() async {
   await Hive.openBox("myBox");
   token = Hive.box('myBox').get('token');
   loggedIn = token != null;
-  timetable = await loadTimeTable(token);
+  // String decoded = utf8.decode(
+  //     base64Url.decode((token ?? "").split(".")[1])); // username:password
+  // print(decoded);
   exams = await loadExams();
+  timetable = await loadTimeTable(token);
 
   runApp(const MyApp());
 }
@@ -48,6 +52,8 @@ class MyApp extends StatelessWidget {
 
     return DynamicColorBuilder(builder: (lightColorScheme, darkColorScheme) {
       return MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         title: 'KlaTab',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -75,13 +81,13 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int index = 0;
-  bool settings = false;
   String username = "";
   String password = "";
 
   var screens = [
     const PageStundenplan(),
     const PagePruefeungstermine(),
+    const PageFreeRooms()
   ];
 
   @override
@@ -97,16 +103,16 @@ class _MainPageState extends State<MainPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     TextField(
-                        decoration: const InputDecoration(
-                          labelText: 'Username',
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.username,
                         ),
-                        autofillHints: const [AutofillHints.username],
+                        autofillHints: const [AutofillHints.email],
                         keyboardType: TextInputType.text,
                         onChanged: (value) =>
                             setState((() => username = value))),
                     TextField(
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.password,
                         ),
                         autofillHints: const [AutofillHints.password],
                         obscureText: true,
@@ -131,8 +137,9 @@ class _MainPageState extends State<MainPage> {
 
                             Fluttertoast.showToast(
                                 msg: jsonDecode(post.body)["token"] != null
-                                    ? "Logged in"
-                                    : "Error logging in",
+                                    ? AppLocalizations.of(context)!.login_res
+                                    : AppLocalizations.of(context)!
+                                        .login_res_fail,
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 timeInSecForIosWeb: 1,
@@ -140,26 +147,25 @@ class _MainPageState extends State<MainPage> {
                             if (jsonDecode(post.body)["token"] != null) {
                               var box = Hive.box('myBox');
                               box.put('token', jsonDecode(post.body)["token"]);
-
                               token = jsonDecode(post.body)["token"];
-
+                              await loadExams().then((value) => setState(
+                                    () {
+                                      exams = value;
+                                    },
+                                  ));
                               await loadTimeTable(token)
                                   .then((value) => setState(
                                         () {
                                           timetable = value;
                                         },
                                       ));
-                              await loadExams().then((value) => setState(
-                                    () {
-                                      exams = value;
-                                    },
-                                  ));
+
                               setState(() {
                                 loggedIn = true;
                               });
                             }
                           },
-                          label: const Text('Login'),
+                          label: Text(AppLocalizations.of(context)!.login),
                           icon: const Icon(Icons.login_outlined)),
                     ),
                   ],
@@ -181,18 +187,18 @@ class _MainPageState extends State<MainPage> {
           onDestinationSelected: (index) => setState(() {
             this.index = index;
           }),
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.calendar_view_week_rounded),
-              label: "Stundenplan",
+              icon: const Icon(Icons.calendar_view_week_rounded),
+              label: AppLocalizations.of(context)!.timetable,
             ),
             NavigationDestination(
-              icon: Icon(Icons.calendar_today),
-              label: "Schulaufgaben",
+              icon: const Icon(Icons.calendar_today),
+              label: AppLocalizations.of(context)!.exams,
             ),
             NavigationDestination(
-              icon: Icon(Icons.calendar_today),
-              label: "Freihe Raume",
+              icon: const Icon(Icons.calendar_today),
+              label: AppLocalizations.of(context)!.empty_rooms,
             )
           ],
         ),
@@ -207,7 +213,7 @@ class _MainPageState extends State<MainPage> {
                 return [
                   PopupMenuItem(
                     child: TextButton(
-                        child: const Text("Logout"),
+                        child: Text(AppLocalizations.of(context)!.logout),
                         onPressed: () {
                           token = null;
                           Hive.box('myBox').delete("token");
@@ -217,14 +223,15 @@ class _MainPageState extends State<MainPage> {
                         }),
                   ),
                   PopupMenuItem(
-                    child: TextButton(child: Text("test"), onPressed: () {}),
+                    child:
+                        TextButton(child: const Text("test"), onPressed: () {}),
                   )
                 ];
               },
             )
           ],
         ),
-        body: !settings ? screens[index] : const PageSettings(),
+        body: screens[index],
         backgroundColor: Theme.of(context).colorScheme.background);
   }
 }
@@ -237,6 +244,8 @@ class PageStundenplan extends StatefulWidget {
 }
 
 class _PageStundenplanState extends State<PageStundenplan> {
+  var showExams = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,8 +256,8 @@ class _PageStundenplanState extends State<PageStundenplan> {
         children: [
           DataTable(
               // columnSpacing: 30,
-              columns: const <DataColumn>[
-                DataColumn(label: Text("Zeit")),
+              columns: <DataColumn>[
+                DataColumn(label: Text(AppLocalizations.of(context)!.time)),
               ],
               rows: [
                 "08:00\n08:45",
@@ -262,19 +271,50 @@ class _PageStundenplanState extends State<PageStundenplan> {
                 '14:45\n15:30',
                 '15:30\n16:15',
                 '16:15\n17:00',
-              ].map((e) => DataRow(cells: [DataCell(Text(e))])).toList()),
+              ]
+                  .map((e) => DataRow(cells: [
+                        DataCell(Text(
+                          e,
+                          style: TextStyle(
+                              color: DateTime.now().isAfter(DateTime(
+                                          DateTime.now().year,
+                                          DateTime.now().month,
+                                          DateTime.now().day,
+                                          int.parse(
+                                              e.split("\n")[0].split(":")[0]),
+                                          int.parse(e
+                                              .split("\n")[0]
+                                              .split(":")[1]))) &&
+                                      DateTime.now().isBefore(DateTime(
+                                          DateTime.now().year,
+                                          DateTime.now().month,
+                                          DateTime.now().day,
+                                          int.parse(
+                                              e.split("\n")[1].split(":")[0]),
+                                          int.parse(
+                                              e.split("\n")[1].split(":")[1])))
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).textTheme.bodyMedium?.color),
+                        ))
+                      ]))
+                  .toList()),
           Expanded(
             child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.all(10),
                 child: DataTable(
                   // columnSpacing: 30,
-                  columns: const <DataColumn>[
-                    DataColumn(label: Text("Montag")),
-                    DataColumn(label: Text("Dienstag")),
-                    DataColumn(label: Text("Mittwoch")),
-                    DataColumn(label: Text("Donerstag")),
-                    DataColumn(label: Text("Freitag")),
+                  columns: <DataColumn>[
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.monday)),
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.tuesday)),
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.wednesday)),
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.thursday)),
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.friday)),
                   ],
                   rows: timetable
                       .map((day) => DataRow(
@@ -284,24 +324,29 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                   text: TextSpan(text: "", children: [
                                     TextSpan(
                                         text:
-                                            "${hour["raum"]} ${hour["raum2"] != "" ? ' -\t ${hour["raum2"]}' : hour["lehrer"]}\n",
+                                            "${hour["raum"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]}' : hour["lehrer"]}\n",
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall),
                                     TextSpan(
                                         text:
-                                            "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |\t ${hour["fach2"]}' : ""}${hour["notiz"] != "" ? '\n${hour["notiz"]}' : ''}",
+                                            "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${hour["notiz"] != "" ? '\n${hour["notiz"]}' : ''}",
                                         style: TextStyle(
                                             color:
-                                                hour["istVertretung"] == true &&
+                                                hour["istVertretung"] == true ||
                                                         hour["notiz"] != ""
                                                     ? Theme.of(context)
                                                         .colorScheme
                                                         .primary
-                                                    : Theme.of(context)
-                                                        .textTheme
-                                                        .bodyMedium
-                                                        ?.color))
+                                                    : hour["isExam"] == true &&
+                                                            showExams
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .error
+                                                        : Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.color))
                                   ]))))
                               .toList()))
                       .toList(),
@@ -321,7 +366,7 @@ class PagePruefeungstermine extends StatefulWidget {
 }
 
 class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
-  bool wochenuebersicht = false;
+  bool weeklyOverview = false;
 
   @override
   Widget build(BuildContext context) {
@@ -330,11 +375,13 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
         title: TextButton(
           onPressed: () {
             setState(() {
-              wochenuebersicht = !wochenuebersicht;
+              weeklyOverview = !weeklyOverview;
             });
           },
           child: Text(
-            wochenuebersicht ? "Calendar" : "Compact",
+            weeklyOverview
+                ? AppLocalizations.of(context)!.calendar
+                : AppLocalizations.of(context)!.compact,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
         ),
@@ -348,7 +395,7 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
             children: [
               Visibility(
                 maintainState: true,
-                visible: wochenuebersicht,
+                visible: weeklyOverview,
                 child: Timetable(
                     controller: TimetableController(
                         start: DateTime(2022, 05, 01, 08), cellHeight: 40),
@@ -380,7 +427,7 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
               ),
               Visibility(
                   maintainState: true,
-                  visible: !wochenuebersicht,
+                  visible: !weeklyOverview,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.vertical,
                     child: Column(
@@ -476,7 +523,9 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
                                                     const Icon(
                                                         Icons.calendar_month),
                                                     Text(
-                                                      "Add",
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .add,
                                                       style: TextStyle(
                                                           fontSize:
                                                               Theme.of(context)
@@ -504,14 +553,14 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
   }
 }
 
-class PageSettings extends StatefulWidget {
-  const PageSettings({Key? key}) : super(key: key);
+class PageFreeRooms extends StatefulWidget {
+  const PageFreeRooms({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _PageSettingsState();
+  State<StatefulWidget> createState() => _PageFreeRoomsState();
 }
 
-class _PageSettingsState extends State<PageSettings> {
+class _PageFreeRoomsState extends State<PageFreeRooms> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -525,7 +574,7 @@ class _PageSettingsState extends State<PageSettings> {
                     surfaceTintColor: Colors.white),
                 onPressed: () {},
                 icon: const Icon(Icons.notes_outlined),
-                label: Text("toggle Notes"))
+                label: const Text("toggle Notes"))
           ],
         ),
       ),

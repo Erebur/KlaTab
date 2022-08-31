@@ -1,0 +1,20 @@
+{
+  "timetable": "Timetable",
+  "exams": "Exams",
+  "empty_rooms": "Empty Rooms",
+  "time": "Time",
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "calendar": "Calendar",
+  "compact": "Compact",
+  "add": "add",
+  "login_res": "Logged in",
+  "login_res_fail": "Error logging in",
+  "logout": "Logout",
+  "username": "Username",
+  "password": "Password",
+  "login": "Login"
+}
