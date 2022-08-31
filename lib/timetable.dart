@@ -5,8 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:klatab/main.dart';
 
 Future<List<List>> loadTimeTable(token) async {
-  var monday = DateTime.parse("2022-05-17")
-      .subtract(Duration(days: DateTime.now().weekday - 1));
+  var monday = today;
 
   Map week = {
     "montag": [],
@@ -22,7 +21,7 @@ Future<List<List>> loadTimeTable(token) async {
   if (token != null) {
     var response = await http.get(
         Uri.parse(
-            "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=bfs2020fi&datum=${monday.toUtc().toString().substring(0, 10)}"),
+            "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=bfs2020fi&datum=${monday.toString().substring(0, 10)}"),
         headers: {
           "authorization": "Basic $token",
           "undefinedaccept": "application/json"
@@ -68,6 +67,11 @@ Future<List<List>> loadTimeTable(token) async {
 
         if (currentHour["gruppe"] != 0 && day.length > hour + 1) {
           currentHour2 = day[hour + 1];
+          if (currentHour["gruppe"] == 2 && currentHour2["gruppe"] == 1) {
+            var tmp = currentHour;
+            currentHour = currentHour2;
+            currentHour2 = tmp;
+          }
         }
       }
 
@@ -94,7 +98,6 @@ Future<List<List>> loadTimeTable(token) async {
     }
   }
   // add exams
-  print(timetable);
   for (var exam in exams) {
     if ((exam["start"] as DateTime).isAfter(monday) &&
         (exam["end"] as DateTime)

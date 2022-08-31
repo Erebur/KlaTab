@@ -19,6 +19,7 @@ const _darkColorScheme = darkColorScheme_purple;
 
 String? token;
 bool loggedIn = false;
+DateTime today = DateTime.parse("2022-07-18");
 List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
 List<Map> exams = [];
 
@@ -27,9 +28,9 @@ Future<void> main() async {
   await Hive.openBox("myBox");
   token = Hive.box('myBox').get('token');
   loggedIn = token != null;
-  // String decoded = utf8.decode(
-  //     base64Url.decode((token ?? "").split(".")[1])); // username:password
-  // print(decoded);
+  String decoded = utf8.decode(
+      base64Url.decode((token ?? "").split(".")[1])); // username:password
+  print(decoded);
   exams = await loadExams();
   timetable = await loadTimeTable(token);
 
@@ -223,8 +224,7 @@ class _MainPageState extends State<MainPage> {
                         }),
                   ),
                   PopupMenuItem(
-                    child:
-                        TextButton(child: const Text("test"), onPressed: () {}),
+                    child: TextButton(child: const Text(""), onPressed: () {}),
                   )
                 ];
               },
@@ -249,97 +249,136 @@ class _PageStundenplanState extends State<PageStundenplan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              IconButton(
+                  onPressed: () async {
+                    today = today.subtract(const Duration(days: 7));
+                    await loadTimeTable(token).then((value) => setState(
+                          () {
+                            timetable = value;
+                          },
+                        ));
+                  },
+                  icon: Icon(
+                    Icons.arrow_back_rounded,
+                    size: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                  )),
+              TextButton(
+                  onPressed: () => setState(() => today = DateTime.now()),
+                  child: Text(
+                    today.toString().substring(0, 10),
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  )),
+              IconButton(
+                  onPressed: () async {
+                    today = today.add(const Duration(days: 7));
+                    await loadTimeTable(token).then((value) => setState(
+                          () {
+                            timetable = value;
+                          },
+                        ));
+                  },
+                  icon: Icon(
+                    Icons.arrow_forward_rounded,
+                    size: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                  ))
+            ],
+          ),
+        ),
         body: SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          DataTable(
-              // columnSpacing: 30,
-              columns: <DataColumn>[
-                DataColumn(label: Text(AppLocalizations.of(context)!.time)),
-              ],
-              rows: [
-                "08:00\n08:45",
-                '08:45\n09:30',
-                '09:45\n10:30',
-                '10:30\n11:15',
-                '11:30\n12:15',
-                '12:15\n13:00',
-                '13:00\n13:45',
-                '13:45\n14:30',
-                '14:45\n15:30',
-                '15:30\n16:15',
-                '16:15\n17:00',
-              ]
-                  .map((e) => DataRow(cells: [
-                        DataCell(Text(
-                          e,
-                          style: TextStyle(
-                              color: DateTime.now().isAfter(DateTime(
-                                          DateTime.now().year,
-                                          DateTime.now().month,
-                                          DateTime.now().day,
-                                          int.parse(
-                                              e.split("\n")[0].split(":")[0]),
-                                          int.parse(e
-                                              .split("\n")[0]
-                                              .split(":")[1]))) &&
-                                      DateTime.now().isBefore(DateTime(
-                                          DateTime.now().year,
-                                          DateTime.now().month,
-                                          DateTime.now().day,
-                                          int.parse(
-                                              e.split("\n")[1].split(":")[0]),
-                                          int.parse(
-                                              e.split("\n")[1].split(":")[1])))
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).textTheme.bodyMedium?.color),
-                        ))
-                      ]))
-                  .toList()),
-          Expanded(
-            child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.all(10),
-                child: DataTable(
+          scrollDirection: Axis.vertical,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              DataTable(
                   // columnSpacing: 30,
                   columns: <DataColumn>[
-                    DataColumn(
-                        label: Text(AppLocalizations.of(context)!.monday)),
-                    DataColumn(
-                        label: Text(AppLocalizations.of(context)!.tuesday)),
-                    DataColumn(
-                        label: Text(AppLocalizations.of(context)!.wednesday)),
-                    DataColumn(
-                        label: Text(AppLocalizations.of(context)!.thursday)),
-                    DataColumn(
-                        label: Text(AppLocalizations.of(context)!.friday)),
+                    DataColumn(label: Text(AppLocalizations.of(context)!.time)),
                   ],
-                  rows: timetable
-                      .map((day) => DataRow(
-                          cells: day
-                              .map((hour) => DataCell(RichText(
-                                  softWrap: false,
-                                  text: TextSpan(text: "", children: [
-                                    TextSpan(
-                                        text:
-                                            "${hour["raum"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]}' : hour["lehrer"]}\n",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall),
-                                    TextSpan(
-                                        text:
-                                            "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${hour["notiz"] != "" ? '\n${hour["notiz"]}' : ''}",
-                                        style: TextStyle(
-                                            color:
-                                                hour["istVertretung"] == true ||
-                                                        hour["notiz"] != ""
+                  rows: [
+                    "08:00\n08:45",
+                    '08:45\n09:30',
+                    '09:45\n10:30',
+                    '10:30\n11:15',
+                    '11:30\n12:15',
+                    '12:15\n13:00',
+                    '13:00\n13:45',
+                    '13:45\n14:30',
+                    '14:45\n15:30',
+                    '15:30\n16:15',
+                    '16:15\n17:00',
+                  ]
+                      .map((e) => DataRow(cells: [
+                            DataCell(Text(
+                              e,
+                              style: TextStyle(
+                                  color: DateTime.now().isAfter(DateTime(
+                                              DateTime.now().year,
+                                              DateTime.now().month,
+                                              DateTime.now().day,
+                                              int.parse(e
+                                                  .split("\n")[0]
+                                                  .split(":")[0]),
+                                              int.parse(e
+                                                  .split("\n")[0]
+                                                  .split(":")[1]))) &&
+                                          DateTime.now().isBefore(DateTime(
+                                              DateTime.now().year,
+                                              DateTime.now().month,
+                                              DateTime.now().day,
+                                              int.parse(
+                                                  e.split("\n")[1].split(":")[0]),
+                                              int.parse(e.split("\n")[1].split(":")[1])))
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).textTheme.bodyMedium?.color),
+                            ))
+                          ]))
+                      .toList()),
+              Expanded(
+                child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.all(10),
+                    child: DataTable(
+                      // columnSpacing: 30,
+                      columns: <DataColumn>[
+                        DataColumn(
+                            label: Text(AppLocalizations.of(context)!.monday)),
+                        DataColumn(
+                            label: Text(AppLocalizations.of(context)!.tuesday)),
+                        DataColumn(
+                            label:
+                                Text(AppLocalizations.of(context)!.wednesday)),
+                        DataColumn(
+                            label:
+                                Text(AppLocalizations.of(context)!.thursday)),
+                        DataColumn(
+                            label: Text(AppLocalizations.of(context)!.friday)),
+                      ],
+                      rows: timetable
+                          .map((day) => DataRow(
+                              cells: day
+                                  .map((hour) => DataCell(RichText(
+                                      softWrap: false,
+                                      text: TextSpan(text: "", children: [
+                                        TextSpan(
+                                            text:
+                                                "${hour["raum"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]}' : hour["lehrer"]}\n",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall),
+                                        TextSpan(
+                                            text:
+                                                "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${hour["notiz"] != "" ? '\n${hour["notiz"]}' : ''}",
+                                            style: TextStyle(
+                                                color: hour["istVertretung"] ==
+                                                        true
                                                     ? Theme.of(context)
                                                         .colorScheme
                                                         .primary
-                                                    : hour["isExam"] == true &&
-                                                            showExams
+                                                    : hour["isExam"] as bool
                                                         ? Theme.of(context)
                                                             .colorScheme
                                                             .error
@@ -347,14 +386,14 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                                             .textTheme
                                                             .bodyMedium
                                                             ?.color))
-                                  ]))))
-                              .toList()))
-                      .toList(),
-                )),
+                                      ]))))
+                                  .toList()))
+                          .toList(),
+                    )),
+              ),
+            ],
           ),
-        ],
-      ),
-    ));
+        ));
   }
 }
 
@@ -385,8 +424,8 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
             style: Theme.of(context).textTheme.bodyLarge,
           ),
         ),
-        toolbarHeight:
-            (Theme.of(context).textTheme.bodyMedium?.fontSize ?? 10) + 10,
+        // toolbarHeight:
+        //     (Theme.of(context).textTheme.bodyMedium?.fontSize ?? 10) + 10,
         backgroundColor: Theme.of(context).colorScheme.background,
       ),
       body: Padding(
