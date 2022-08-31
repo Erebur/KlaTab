@@ -1,14 +1,13 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter_timetable/flutter_timetable.dart';
 import 'package:http/http.dart' as http;
 import 'package:klatab/main.dart';
 
 Future<List<Map>> loadExams() async {
+  var monday = today.subtract(Duration(days: today.weekday - 1));
   var response = await http.get(
       Uri.parse(
-          "https://ux4.edvschule-plattling.de/klatab-reader/pruefungstermine/klasse?klasse=bfs2020fi&datum=2022-05-01"),
+          "https://ux4.edvschule-plattling.de/klatab-reader/pruefungstermine/klasse?klasse=bfs2020fi&datum=${monday.toString().substring(0, 10)}"),
       headers: {
         "authorization": "Basic $token",
         "content-type": "application/json"

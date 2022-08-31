@@ -11,15 +11,13 @@ import 'package:klatab/exams.dart';
 import 'package:klatab/timetable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'dart:convert';
-import 'generated/l10n.dart';
 
 const _lightColorScheme = lightColorScheme_purple;
 const _darkColorScheme = darkColorScheme_purple;
 
 String? token;
 bool loggedIn = false;
-DateTime today = DateTime.parse("2022-07-18");
+DateTime today = DateTime.parse("2022-07-07");
 List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
 List<Map> exams = [];
 
@@ -28,10 +26,9 @@ Future<void> main() async {
   await Hive.openBox("myBox");
   token = Hive.box('myBox').get('token');
   loggedIn = token != null;
-  String decoded = utf8.decode(
-      base64Url.decode((token ?? "").split(".")[1])); // username:password
-  print(decoded);
-  exams = await loadExams();
+  // String decoded = utf8.decode(
+  //     base64Url.decode((token ?? "").split(".")[1])); // username:password
+  // print(decoded);
   timetable = await loadTimeTable(token);
 
   runApp(const MyApp());
@@ -149,11 +146,6 @@ class _MainPageState extends State<MainPage> {
                               var box = Hive.box('myBox');
                               box.put('token', jsonDecode(post.body)["token"]);
                               token = jsonDecode(post.body)["token"];
-                              await loadExams().then((value) => setState(
-                                    () {
-                                      exams = value;
-                                    },
-                                  ));
                               await loadTimeTable(token)
                                   .then((value) => setState(
                                         () {
@@ -267,7 +259,14 @@ class _PageStundenplanState extends State<PageStundenplan> {
                     size: Theme.of(context).textTheme.bodyLarge?.fontSize,
                   )),
               TextButton(
-                  onPressed: () => setState(() => today = DateTime.now()),
+                  onPressed: () async {
+                    today = DateTime.now();
+                    await loadTimeTable(token).then((value) => setState(
+                          () {
+                            timetable = value;
+                          },
+                        ));
+                  },
                   child: Text(
                     today.toString().substring(0, 10),
                     style: Theme.of(context).textTheme.bodyLarge,
