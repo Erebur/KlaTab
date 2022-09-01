@@ -8,7 +8,7 @@ Future<List> loadRooms(stunde1, stunde2, {Function()? onNetworkError}) async {
   try {
     response = await http.get(
         Uri.parse(
-            "https://11.edvschule-plattling.de/klatab-reader/freie-raeume/heute?stundeVon=$stunde1&stundeBis=$stunde2"),
+            "https://ux4.edvschule-plattling.de/klatab-reader/freie-raeume/heute?stundeVon=$stunde1&stundeBis=$stunde2"),
         headers: {
           "authorization": "Basic $token",
           "undefinedaccept": "application/json"

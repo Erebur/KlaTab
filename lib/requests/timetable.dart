@@ -69,7 +69,6 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
 
       if (day != null && day.length > hour && day[hour]["stunde"] == ii + 1) {
         currentHour = day[hour];
-
         if (currentHour["gruppe"] != 0 && day.length > hour + 1) {
           currentHour2 = day[hour + 1];
           if (currentHour["gruppe"] == 2 && currentHour2["gruppe"] == 1) {
@@ -105,7 +104,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
   if (viewExams) {
     exams = await loadExams();
     // add exams
-    for (var exam in exams) {
+    for (var exam in exams.where((element) => element["isExam"])) {
       if ((exam["start"] as DateTime).isAfter(monday) &&
           (exam["end"] as DateTime)
               .isBefore(monday.add(const Duration(days: 5)))) {

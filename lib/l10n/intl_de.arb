@@ -18,9 +18,10 @@
   "username": "Benutzername",
   "password": "Passwort",
   "highlightExams": "Prüfungen Hervorheben",
-  "settings":"Einstellungen",
-  "viewNotes":"Notizen Anzeigen",
-  "viewNotesDesc":"Notizen unter den Fächern können bei Vertretungsstunden (oder Selten auch bei Prüfungen) eingetragen sein",
-  "networkError":"wir konnten keine verbindung mit der Netzwerkwolke herstellen",
-  "networkErrorDescription":"Die Daten aus der Wolke konnten nicht gezogen werden"
+  "settings": "Einstellungen",
+  "viewNotes": "Notizen Anzeigen",
+  "viewNotesDesc": "Notizen unter den Fächern können bei Vertretungsstunden (oder Selten auch bei Prüfungen) eingetragen sein",
+  "networkError": "wir konnten keine verbindung mit der Netzwerkwolke herstellen",
+  "networkErrorDescription": "Die Daten aus der Wolke konnten nicht gezogen werden",
+  "event": "Event"
 }

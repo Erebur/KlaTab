@@ -21,13 +21,15 @@ DateTime today = DateTime.parse("2022-07-07");
 
 // maybe offline storage
 List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
-List<Map> exams = [];
+List exams = [];
 List rooms = [];
 
 // to be persisted
 bool viewExams = true;
 bool viewNotes = true;
 bool viewRooms = true;
+// don't, seriously don't
+bool addTermine = false;
 String? token;
 String? clasz;
 

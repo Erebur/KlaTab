@@ -37,7 +37,7 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
         backgroundColor: Theme.of(context).colorScheme.background,
       ),
       body: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 5),
           child: Stack(
             children: [
               Visibility(
@@ -83,111 +83,205 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
                             (item) => Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Expanded(
-                                  child: Card(
-                                    child: SizedBox(
-                                      height: 130,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              SizedBox(
-                                                  width: 70,
-                                                  child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          item["fach"],
-                                                          style: TextStyle(
-                                                              color: item["art"] ==
-                                                                      "SA"
-                                                                  ? Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .primary
-                                                                  : Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .bodyMedium
-                                                                      ?.color),
-                                                        ),
-                                                        Text(
-                                                          item["art"],
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodySmall,
-                                                        )
-                                                      ])),
-                                              Column(
+                                item["isExam"]
+                                    ? Expanded(
+                                        child: Card(
+                                          child: SizedBox(
+                                            height: 130,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(10),
+                                              child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.center,
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
                                                   children: [
-                                                    Text(((item["start"]
-                                                                as DateTime)
-                                                            .toLocal()
-                                                            .toString())
-                                                        .substring(0, 10)),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 5),
-                                                      child: Text(
-                                                          "${((item["start"] as DateTime).toLocal().toString()).substring(11, 16)}-${((item["end"] as DateTime).toLocal().toString()).substring(11, 16)}"),
+                                                    SizedBox(
+                                                        width: 70,
+                                                        child: Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Text(
+                                                                item["fach"],
+                                                                style: TextStyle(
+                                                                    color: item["art"] ==
+                                                                            "SA"
+                                                                        ? Theme.of(context)
+                                                                            .colorScheme
+                                                                            .primary
+                                                                        : Theme.of(context)
+                                                                            .textTheme
+                                                                            .bodyMedium
+                                                                            ?.color),
+                                                              ),
+                                                              Text(
+                                                                item["art"],
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodySmall,
+                                                              )
+                                                            ])),
+                                                    Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text(((item["start"]
+                                                                      as DateTime)
+                                                                  .toLocal()
+                                                                  .toString())
+                                                              .substring(
+                                                                  0, 10)),
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .only(
+                                                                    top: 5),
+                                                            child: Text(
+                                                                "${((item["start"] as DateTime).toLocal().toString()).substring(11, 16)}-${((item["end"] as DateTime).toLocal().toString()).substring(11, 16)}"),
+                                                          )
+                                                        ]),
+                                                    SizedBox(
+                                                      width: 80,
+                                                      child: Center(
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Text(
+                                                                "${item["start_hour"]} - ${item["end_hour"]}"),
+                                                            Text(
+                                                                "${item["raum"]} - ${item["lehrer"]}")
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        launchUrl(
+                                                            Uri.parse(
+                                                                item["link"]),
+                                                            mode: LaunchMode
+                                                                .externalApplication);
+                                                      },
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          const Icon(Icons
+                                                              .calendar_month),
+                                                          Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .add,
+                                                            style: TextStyle(
+                                                                fontSize: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodySmall
+                                                                    ?.fontSize),
+                                                          )
+                                                        ],
+                                                      ),
                                                     )
                                                   ]),
-                                              SizedBox(
-                                                width: 80,
-                                                child: Center(
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                          "${item["start_hour"]} - ${item["end_hour"]}"),
-                                                      Text(
-                                                          "${item["raum"]} - ${item["lehrer"]}")
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  launchUrl(
-                                                      Uri.parse(item["link"]),
-                                                      mode: LaunchMode
-                                                          .externalApplication);
-                                                },
-                                                child: Column(
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : Expanded(
+                                        child: Card(
+                                          child: SizedBox(
+                                            height: 130,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(10),
+                                              child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.center,
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
                                                   children: [
-                                                    const Icon(
-                                                        Icons.calendar_month),
-                                                    Text(
-                                                      AppLocalizations.of(
-                                                              context)!
-                                                          .add,
-                                                      style: TextStyle(
-                                                          fontSize:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodySmall
-                                                                  ?.fontSize),
+                                                    SizedBox(
+                                                        width: 300,
+                                                        child: Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Text(
+                                                                item["fach"],
+                                                                style: TextStyle(
+                                                                    color: item["art"] ==
+                                                                            "SA"
+                                                                        ? Theme.of(context)
+                                                                            .colorScheme
+                                                                            .primary
+                                                                        : Theme.of(context)
+                                                                            .textTheme
+                                                                            .bodyMedium
+                                                                            ?.color),
+                                                              ),
+                                                              Text(
+                                                                item["art"],
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodySmall,
+                                                              )
+                                                            ])),
+                                                    SizedBox(
+                                                        width: 150,
+                                                        child: Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Text(
+                                                                (item["start"]
+                                                                        as DateTime)
+                                                                    .toLocal()
+                                                                    .toString()
+                                                                    .substring(
+                                                                        0, 11),
+                                                              ),
+                                                            ])),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        launchUrl(
+                                                            Uri.parse(
+                                                                item["link"]),
+                                                            mode: LaunchMode
+                                                                .externalApplication);
+                                                      },
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          const Icon(Icons
+                                                              .calendar_month),
+                                                          Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .add,
+                                                            style: TextStyle(
+                                                                fontSize: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodySmall
+                                                                    ?.fontSize),
+                                                          )
+                                                        ],
+                                                      ),
                                                     )
-                                                  ],
-                                                ),
-                                              )
-                                            ]),
-                                      ),
-                                    ),
-                                  ),
-                                )
+                                                  ]),
+                                            ),
+                                          ),
+                                        ),
+                                      )
                               ],
                             ),
                           )
