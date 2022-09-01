@@ -249,6 +249,26 @@ class S {
       args: [],
     );
   }
+
+  /// `View Notes`
+  String get viewNotes {
+    return Intl.message(
+      'View Notes',
+      name: 'viewNotes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notes under the subjects can be entered for substitution hours (or rarely also for examinations).`
+  String get viewNotesDesc {
+    return Intl.message(
+      'Notes under the subjects can be entered for substitution hours (or rarely also for examinations).',
+      name: 'viewNotesDesc',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

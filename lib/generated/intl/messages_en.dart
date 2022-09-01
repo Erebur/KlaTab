@@ -43,6 +43,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "timetable": MessageLookupByLibrary.simpleMessage("Timetable"),
         "tuesday": MessageLookupByLibrary.simpleMessage("Tuesday"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
+        "viewNotes": MessageLookupByLibrary.simpleMessage("View Notes"),
+        "viewNotesDesc": MessageLookupByLibrary.simpleMessage(
+            "Notes under the subjects can be entered for substitution hours (or rarely also for examinations)."),
         "wednesday": MessageLookupByLibrary.simpleMessage("Wednesday")
       };
 }

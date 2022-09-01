@@ -27,8 +27,7 @@ Future<List<Map>> loadExams() async {
       [Duration(hours: 16, minutes: 15), Duration(hours: 17, minutes: 00)],
     ];
     // https://decomaan.github.io/google-calendar-link-generator/
-    List exams = jsonDecode(response.body);
-    var exams2 = exams
+    var exams = jsonDecode(response.body)
         .map((item) => {
               "fach": item["fach"],
               "lehrer": item["lehrer"],
@@ -47,7 +46,8 @@ Future<List<Map>> loadExams() async {
                   "https://www.google.com/calendar/render?action=TEMPLATE&text=${item["fach"]}+${item["art"]}&details=Lehrer%3A+${item["lehrer"]}&location=Raum%3A+${item["raum"]}&dates=${DateTime.parse(item["datum"]).add(stunden[item["von"] - 1][0]).toIso8601String().replaceAll("-", "").replaceAll(":", "").replaceAll(".000", "")}%2F${DateTime.parse(item["datum"]).add(stunden[item["bis"] - 1][1]).toIso8601String().replaceAll("-", "").replaceAll(":", "").replaceAll(".000", "")}",
             })
         .toList();
-    return exams2;
+
+    return exams;
   } catch (e) {
     return [];
   }

@@ -18,5 +18,7 @@
   "username": "Benutzername",
   "password": "Passwort",
   "highlightExams": "Prüfungen Hervorheben",
-  "settings":"Einstellungen"
+  "settings":"Einstellungen",
+  "viewNotes":"Notizen Anzeigen",
+  "viewNotesDesc":"Notizen unter den Fächern können bei Vertretungsstunden (oder Selten auch bei Prüfungen) eingetragen sein"
 }

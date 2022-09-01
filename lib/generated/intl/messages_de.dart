@@ -43,6 +43,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "timetable": MessageLookupByLibrary.simpleMessage("Stundenplan"),
         "tuesday": MessageLookupByLibrary.simpleMessage("Dienstag"),
         "username": MessageLookupByLibrary.simpleMessage("Benutzername"),
+        "viewNotes": MessageLookupByLibrary.simpleMessage("Notizen Anzeigen"),
+        "viewNotesDesc": MessageLookupByLibrary.simpleMessage(
+            "Notizen unter den Fächern können bei Vertretungsstunden (oder Selten auch bei Prüfungen) eingetragen sein"),
         "wednesday": MessageLookupByLibrary.simpleMessage("Mittwoch")
       };
 }

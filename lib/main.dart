@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_timetable/flutter_timetable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,7 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:klatab/color_schemes.g.dart';
+import 'package:klatab/generated/l10n.dart';
 import 'package:klatab/timetable.dart';
+import 'package:universal_io/io.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -24,6 +25,7 @@ List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
 
 List<Map> exams = [];
 bool showExams = true;
+bool viewNotes = true;
 
 Future<void> main() async {
   await Hive.initFlutter();
@@ -59,13 +61,25 @@ class MyApp extends StatelessWidget {
         title: 'KlaTab',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+            hoverColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
             colorScheme: lightColorScheme ?? _lightColorScheme,
             useMaterial3: true,
             scaffoldBackgroundColor: Colors.transparent),
         darkTheme: ThemeData(
-            colorScheme: darkColorScheme ?? _darkColorScheme,
-            useMaterial3: true,
-            scaffoldBackgroundColor: Colors.transparent),
+          hoverColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          colorScheme: darkColorScheme ?? _darkColorScheme,
+          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.transparent,
+          tooltipTheme: const TooltipThemeData(
+              textStyle: TextStyle(color: Colors.transparent),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+              )),
+        ),
         themeMode: ThemeMode.system,
         home: const MainPage(title: 'KlaTab'),
       );
@@ -182,6 +196,9 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
         primary: true,
         bottomNavigationBar: NavigationBar(
+          // backgroundColor: Theme.of(context).colorScheme.background,
+          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+          height: 70,
           selectedIndex: index,
           onDestinationSelected: (index) => setState(() {
             this.index = index;
@@ -196,7 +213,7 @@ class _MainPageState extends State<MainPage> {
               label: AppLocalizations.of(context)!.exams,
             ),
             NavigationDestination(
-              icon: const Icon(Icons.calendar_today),
+              icon: const Icon(Icons.room_outlined),
               label: AppLocalizations.of(context)!.empty_rooms,
             )
           ],
@@ -219,18 +236,12 @@ class _MainPageState extends State<MainPage> {
                     });
                   },
                   child: Text(AppLocalizations.of(context)!.logout),
-                ),
-                PopupMenuItem(
-                  onTap: () => setState(() => settings = !settings),
-                  child: Text(
-                    AppLocalizations.of(context)!.settings,
-                  ),
                 )
               ],
             )
           ],
         ),
-        body: settings ? const PageSettings() : screens[index],
+        body: screens[index],
         backgroundColor: Theme.of(context).colorScheme.background);
   }
 }
@@ -243,7 +254,57 @@ class PageStundenplan extends StatefulWidget {
 }
 
 class _PageStundenplanState extends State<PageStundenplan> {
-  bool showNotes = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Future<void> showInformationDialog(BuildContext context) async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              title: Text(AppLocalizations.of(context)!.settings),
+              // actions: <Widget>[
+              //   InkWell(
+              //     child: Text('OK   '),
+              //     onTap: () {
+              //       if (_formKey.currentState!.validate()) {
+              //         // Do something like updating SharedPreferences or User Settings etc.
+              //         Navigator.of(context).pop();
+              //       }
+              //     },
+              //   ),
+              // ],
+              content: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      SwitchListTile(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        title: Text(AppLocalizations.of(context)!.viewNotes),
+                        subtitle:
+                            Text(AppLocalizations.of(context)!.viewNotesDesc),
+                        value: viewNotes,
+                        onChanged: (value) =>
+                            setState(() => viewNotes = !viewNotes),
+                      ),
+                      SwitchListTile(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        title:
+                            Text(AppLocalizations.of(context)!.highlightExams),
+                        value: showExams,
+                        onChanged: (value) async {
+                          setState(() => showExams = !showExams);
+                          timetable = await loadTimeTable(token);
+                        },
+                      )
+                    ],
+                  )),
+            );
+          });
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -269,6 +330,10 @@ class _PageStundenplanState extends State<PageStundenplan> {
                     size: Theme.of(context).textTheme.bodyLarge?.fontSize,
                   )),
               TextButton(
+                  onLongPress: () async {
+                    await showInformationDialog(context)
+                        .then((value) => setState(() {}));
+                  },
                   style: buttonStyleNoReaction(context),
                   onPressed: () async {
                     today = DateTime.now();
@@ -279,7 +344,10 @@ class _PageStundenplanState extends State<PageStundenplan> {
                         ));
                   },
                   child: Text(
-                    today.toString().substring(0, 10),
+                    today
+                        .subtract(Duration(days: today.weekday - 1))
+                        .toString()
+                        .substring(0, 10),
                     style: Theme.of(context).textTheme.bodyLarge,
                   )),
               IconButton(
@@ -394,7 +462,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                                 .bodySmall),
                                         TextSpan(
                                             text:
-                                                "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${showNotes ? '\n${hour["notiz"]}' : ''}",
+                                                "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${viewNotes && hour["notiz"] != "" ? '\n${hour["notiz"]}' : ''}",
                                             style: TextStyle(
                                                 color: hour["istVertretung"] ==
                                                         true
@@ -422,10 +490,11 @@ class _PageStundenplanState extends State<PageStundenplan> {
 
   ButtonStyle buttonStyleNoReaction(BuildContext context) {
     return ButtonStyle(
-        overlayColor: MaterialStateProperty.resolveWith(
-            (states) => Theme.of(context).colorScheme.background),
-        backgroundColor: MaterialStateProperty.resolveWith(
-            (states) => Theme.of(context).colorScheme.background));
+      overlayColor: MaterialStateProperty.resolveWith(
+          (states) => Theme.of(context).colorScheme.background),
+      // backgroundColor: MaterialStateProperty.resolveWith(
+      //     (states) => Theme.of(context).colorScheme.background)
+    );
   }
 }
 
@@ -662,5 +731,7 @@ class PageSettings extends StatefulWidget {
 
 class _PageSettingsState extends State<PageSettings> {
   @override
-  Widget build(BuildContext context) => Container();
+  Widget build(BuildContext context) {
+    return Scaffold();
+  }
 }

@@ -99,6 +99,9 @@ Future<List<List>> loadTimeTable(token) async {
       }
     }
   }
+  if (!showExams) {
+    return timetable;
+  }
   exams = await loadExams();
   // add exams
   for (var exam in exams) {
