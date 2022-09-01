@@ -1,21 +1,10 @@
-import 'dart:convert';
-import 'package:flutter/gestures.dart';
-import 'package:flutter_timetable/flutter_timetable.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:klatab/color_schemes.g.dart';
-import 'package:klatab/generated/l10n.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:universal_io/io.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../main.dart';
+import 'package:klatab/main.dart';
 
 class PageStundenplan extends StatefulWidget {
   const PageStundenplan({Key? key}) : super(key: key);
@@ -35,17 +24,6 @@ class _PageStundenplanState extends State<PageStundenplan> {
             return AlertDialog(
               backgroundColor: Theme.of(context).colorScheme.background,
               title: Text(AppLocalizations.of(context)!.settings),
-              // actions: <Widget>[
-              //   InkWell(
-              //     child: Text('OK   '),
-              //     onTap: () {
-              //       if (_formKey.currentState!.validate()) {
-              //         // Do something like updating SharedPreferences or User Settings etc.
-              //         Navigator.of(context).pop();
-              //       }
-              //     },
-              //   ),
-              // ],
               content: Form(
                   key: _formKey,
                   child: Column(
@@ -63,9 +41,9 @@ class _PageStundenplanState extends State<PageStundenplan> {
                         activeColor: Theme.of(context).colorScheme.primary,
                         title:
                             Text(AppLocalizations.of(context)!.highlightExams),
-                        value: showExams,
+                        value: viewExams,
                         onChanged: (value) async {
-                          setState(() => showExams = !showExams);
+                          setState(() => viewExams = !viewExams);
                           timetable = await loadTimeTable(token);
                         },
                       )
@@ -241,7 +219,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                                         .colorScheme
                                                         .primary
                                                     : hour["isExam"] &&
-                                                            showExams
+                                                            viewExams
                                                         ? Theme.of(context)
                                                             .colorScheme
                                                             .error

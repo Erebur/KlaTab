@@ -6,7 +6,8 @@ import 'package:klatab/main.dart';
 
 import 'exams.dart';
 
-Future<List<List>> loadTimeTable(token) async {
+Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
+  bool online = true;
   var monday = today.subtract(Duration(days: today.weekday - 1));
 
   Map week = {
@@ -21,17 +22,19 @@ Future<List<List>> loadTimeTable(token) async {
   var days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"];
 
   if (token != null) {
-    var response = await http.get(
-        Uri.parse(
-            "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=bfs2020fi&datum=${monday.toString().substring(0, 10)}"),
-        headers: {
-          "authorization": "Basic $token",
-          "undefinedaccept": "application/json"
-        });
-
+    var response;
     try {
+      response = await http.get(
+          Uri.parse(
+              "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=bfs2020fi&datum=${monday.toString().substring(0, 10)}"),
+          headers: {
+            "authorization": "Basic $token",
+            "undefinedaccept": "application/json"
+          });
       week = jsonDecode(response.body);
     } catch (e) {
+      onNetworkError!.call();
+      online = false;
       if (token != null) {
         Fluttertoast.showToast(
             msg: "not able to load Timetable",
@@ -99,31 +102,32 @@ Future<List<List>> loadTimeTable(token) async {
       }
     }
   }
-  if (!showExams) {
-    return timetable;
-  }
-  exams = await loadExams();
-  // add exams
-  for (var exam in exams) {
-    if ((exam["start"] as DateTime).isAfter(monday) &&
-        (exam["end"] as DateTime)
-            .isBefore(monday.add(const Duration(days: 5)))) {
-      for (var i = exam["start_hour"]; i <= exam["end_hour"]; i++) {
-        timetable[i - 1][(exam["start"] as DateTime).weekday - 1] = {
-          "fach": exam["fach"],
-          "lehrer": exam["lehrer"],
-          "raum": exam["raum"],
-          "istVertretung": "false",
-          "notiz": exam["bemerkung"],
-          "notiz2": "",
-          "fach2": "",
-          "lehrer2": "",
-          "raum2": exam["art"],
-          "isExam": true
-        };
+  if (viewExams) {
+    exams = await loadExams();
+    // add exams
+    for (var exam in exams) {
+      if ((exam["start"] as DateTime).isAfter(monday) &&
+          (exam["end"] as DateTime)
+              .isBefore(monday.add(const Duration(days: 5)))) {
+        for (var i = exam["start_hour"]; i <= exam["end_hour"]; i++) {
+          timetable[i - 1][(exam["start"] as DateTime).weekday - 1] = {
+            "fach": exam["fach"],
+            "lehrer": exam["lehrer"],
+            "raum": exam["raum"],
+            "istVertretung": "false",
+            "notiz": exam["bemerkung"],
+            "notiz2": "",
+            "fach2": "",
+            "lehrer2": "",
+            "raum2": exam["art"],
+            "isExam": true
+          };
+        }
       }
     }
   }
+
+  if (viewRooms) {}
 
   return timetable;
 }

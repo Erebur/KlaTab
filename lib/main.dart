@@ -8,38 +8,48 @@ import 'package:flutter/services.dart';
 import 'package:klatab/color_schemes.g.dart';
 import 'package:klatab/pages/exams.dart';
 import 'package:klatab/pages/rooms.dart';
-import 'package:klatab/pages/timeTable.dart';
+import 'package:klatab/pages/time_table.dart';
+import 'package:klatab/requests/rooms.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+// should be changeable
 const _lightColorScheme = lightColorScheme_purple;
 const _darkColorScheme = darkColorScheme_purple;
 
-String? token;
-bool loggedIn = false;
+// should be today
 DateTime today = DateTime.parse("2022-07-07");
-List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
 
+// maybe offline storage
+List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
 List<Map> exams = [];
-bool showExams = true;
+List rooms = [];
+
+// to be persisted
+bool viewExams = true;
 bool viewNotes = true;
+bool viewRooms = true;
+String? token;
+String? clasz;
+
+// auto generated
+bool loggedIn = false;
 
 Future<void> main() async {
   await Hive.initFlutter();
   await Hive.openBox("myBox");
   token = Hive.box('myBox').get('token');
   loggedIn = token != null;
+
   // String decoded = utf8.decode(
   //     base64Url.decode((token ?? "").split(".")[1])); // username:password
   // print(decoded);
-  timetable = await loadTimeTable(token);
-
+  timetable = await loadTimeTable(token, onNetworkError: () {});
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -94,7 +104,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int index = 0;
-  bool settings = false;
   String username = "";
   String password = "";
 
@@ -243,16 +252,16 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-class PageSettings extends StatefulWidget {
-  const PageSettings({Key? key}) : super(key: key);
+// class PageSettings extends StatefulWidget {
+//   const PageSettings({Key? key}) : super(key: key);
 
-  @override
-  State<StatefulWidget> createState() => _PageSettingsState();
-}
+//   @override
+//   State<StatefulWidget> createState() => _PageSettingsState();
+// }
 
-class _PageSettingsState extends State<PageSettings> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
-  }
-}
+// class _PageSettingsState extends State<PageSettings> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold();
+//   }
+// }
