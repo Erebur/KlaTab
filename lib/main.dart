@@ -9,7 +9,6 @@ import 'package:klatab/color_schemes.g.dart';
 import 'package:klatab/pages/exams.dart';
 import 'package:klatab/pages/rooms.dart';
 import 'package:klatab/pages/time_table.dart';
-import 'package:klatab/requests/rooms.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -113,6 +112,17 @@ class _MainPageState extends State<MainPage> {
     const PageFreeRooms()
   ];
 
+  void networkError() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              title: Text(AppLocalizations.of(context)!.networkError),
+              content: Text(AppLocalizations.of(context)!.networkError),
+            ));
+  }
+
+// AppLocalizations.of(context)!
   @override
   Widget build(BuildContext context) {
     if (!loggedIn) {

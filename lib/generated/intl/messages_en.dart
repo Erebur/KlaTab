@@ -36,6 +36,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Error logging in"),
         "logout": MessageLookupByLibrary.simpleMessage("Logout"),
         "monday": MessageLookupByLibrary.simpleMessage("Monday"),
+        "networkError":
+            MessageLookupByLibrary.simpleMessage("Connection not possible "),
+        "networkErrorDescription":
+            MessageLookupByLibrary.simpleMessage("Unable to connect to server"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
         "thursday": MessageLookupByLibrary.simpleMessage("Thursday"),

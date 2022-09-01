@@ -20,5 +20,8 @@
   "highlightExams": "Highlight Exams",
   "settings":"Settings",
   "viewNotes":"View Notes",
-  "viewNotesDesc":"Notes under the subjects can be entered for substitution hours (or rarely also for examinations)."
+  "viewNotesDesc":"Notes under the subjects can be entered for substitution hours (or rarely also for examinations).",
+  "networkError":"Connection not possible ",
+  "networkErrorDescription":"Unable to connect to server"
+
 }

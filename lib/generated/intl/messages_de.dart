@@ -36,6 +36,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Anmelden Fehlgeschlagen"),
         "logout": MessageLookupByLibrary.simpleMessage("Abmelden"),
         "monday": MessageLookupByLibrary.simpleMessage("Montag"),
+        "networkError": MessageLookupByLibrary.simpleMessage(
+            "wir konnten keine verbindung mit der Netzwerkwolke herstellen"),
+        "networkErrorDescription": MessageLookupByLibrary.simpleMessage(
+            "Die Daten aus der Wolke konnten nicht gezogen werden"),
         "password": MessageLookupByLibrary.simpleMessage("Passwort"),
         "settings": MessageLookupByLibrary.simpleMessage("Einstellungen"),
         "thursday": MessageLookupByLibrary.simpleMessage("Donerstag"),

@@ -269,6 +269,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Connection not possible `
+  String get networkError {
+    return Intl.message(
+      'Connection not possible ',
+      name: 'networkError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to connect to server`
+  String get networkErrorDescription {
+    return Intl.message(
+      'Unable to connect to server',
+      name: 'networkErrorDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
