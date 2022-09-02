@@ -299,6 +299,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Show Empty rooms`
+  String get viewRooms {
+    return Intl.message(
+      'Show Empty rooms',
+      name: 'viewRooms',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

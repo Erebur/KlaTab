@@ -28,6 +28,8 @@ List rooms = [];
 bool viewExams = true;
 bool viewNotes = true;
 bool viewRooms = true;
+int group = 1;
+Set wantedRoomsUserdefined = {206, 2052, 2051, 207, 208};
 // don't, seriously don't
 bool addTermine = false;
 String? token;

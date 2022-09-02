@@ -46,6 +46,16 @@ class _PageStundenplanState extends State<PageStundenplan> {
                           setState(() => viewExams = !viewExams);
                           timetable = await loadTimeTable(token);
                         },
+                      ),
+                      SwitchListTile(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        title: Text(AppLocalizations.of(context)!.viewRooms),
+                        value: viewRooms,
+                        onChanged: (value) async {
+                          viewRooms = !viewRooms;
+                          timetable = await loadTimeTable(token);
+                          setState(() => {});
+                        },
                       )
                     ],
                   )),

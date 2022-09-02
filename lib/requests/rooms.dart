@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:klatab/main.dart';
 
-Future<List> loadRooms(stunde1, stunde2, {Function()? onNetworkError}) async {
+Future<Set> loadRooms(stunde1, stunde2, {Function()? onNetworkError}) async {
   var response;
   try {
     response = await http.get(
@@ -13,11 +13,12 @@ Future<List> loadRooms(stunde1, stunde2, {Function()? onNetworkError}) async {
           "authorization": "Basic $token",
           "undefinedaccept": "application/json"
         });
-    return jsonDecode(response.body).map((value) {
+    List jsonDecode2 = jsonDecode(response.body).map((value) {
       return value["raumNr"];
     }).toList();
+    return jsonDecode2.toSet();
   } catch (e) {
     onNetworkError!.call();
-    return [];
+    return {};
   }
 }

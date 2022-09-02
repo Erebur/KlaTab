@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:klatab/main.dart';
+import 'package:klatab/requests/rooms.dart';
 
 import 'exams.dart';
 
@@ -22,7 +23,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
   var days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"];
 
   if (token != null) {
-    var response;
+    http.Response response;
     try {
       response = await http.get(
           Uri.parse(
@@ -60,7 +61,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
         "notiz": "",
         "gruppe": 0
       };
-      Map currentHour2 = {
+      Map currentHourNextGroup = {
         "fachKuerzel": "",
         "mitarbeiterKuerzel": "",
         "raumId": "",
@@ -68,13 +69,17 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
       };
 
       if (day != null && day.length > hour && day[hour]["stunde"] == ii + 1) {
+        // if there is no entry for this hour dont try and load one
         currentHour = day[hour];
+
         if (currentHour["gruppe"] != 0 && day.length > hour + 1) {
-          currentHour2 = day[hour + 1];
-          if (currentHour["gruppe"] == 2 && currentHour2["gruppe"] == 1) {
+          // check if the next entry is the same hour but another group
+          currentHourNextGroup = day[hour + 1];
+          if (currentHour["gruppe"] == 2 &&
+              currentHourNextGroup["gruppe"] == 1) {
             var tmp = currentHour;
-            currentHour = currentHour2;
-            currentHour2 = tmp;
+            currentHour = currentHourNextGroup;
+            currentHourNextGroup = tmp;
           }
         }
       }
@@ -85,19 +90,39 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
         "raum": currentHour["raumId"],
         "istVertretung": currentHour["istVertretung"],
         "notiz": currentHour["notiz"],
-        "notiz2": currentHour2["notiz"],
-        "fach2": currentHour2["fachKuerzel"],
-        "lehrer2": currentHour2["mitarbeiterKuerzel"],
-        "raum2": currentHour2["raumId"],
-        "isExam": false
+        "notiz2": currentHourNextGroup["notiz"],
+        "fach2": currentHourNextGroup["fachKuerzel"],
+        "lehrer2": currentHourNextGroup["mitarbeiterKuerzel"],
+        "raum2": currentHourNextGroup["raumId"],
+        "isExam": false,
+        "isRoom": false
       });
 
       // if the group of the current dataset is not 0, then we have 2 entrys for one hour
       if (currentHour["gruppe"] != 0) {
         hour++;
       }
+
       if (day != null && day.length > hour && day[hour]["stunde"] == ii + 1) {
         hour++;
+      } else if (viewRooms &&
+          day != null &&
+          day.length >= hour + 1 &&
+          day[hour + 1] != null) {
+        Set rooms = await loadRooms(ii + 1, ii + 1);
+
+        var wantedRooms = {
+          day[hour]["gruppe"] == 0 || day[hour]["gruppe"] == group
+              ? day[hour]["raumId"]
+              : day[hour + 1]["raumId"],
+          timetable[ii - 1][i]["raum"],
+          ...wantedRoomsUserdefined
+        };
+
+        timetable[ii][i]
+          ..["isRoom"] = true
+          ..["raum"] = wantedRooms.intersection(rooms).toList()[0]
+          ..["allRooms"] = wantedRooms.intersection(rooms).toList();
       }
     }
   }
@@ -125,8 +150,6 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
       }
     }
   }
-
-  if (viewRooms) {}
 
   return timetable;
 }
