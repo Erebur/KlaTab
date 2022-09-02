@@ -24,11 +24,15 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "add": MessageLookupByLibrary.simpleMessage("Hinzufügen"),
         "calendar": MessageLookupByLibrary.simpleMessage("Kalender"),
+        "clasz": MessageLookupByLibrary.simpleMessage("Klasse"),
         "compact": MessageLookupByLibrary.simpleMessage("kompakt"),
         "empty_rooms": MessageLookupByLibrary.simpleMessage("Freihe Raume"),
         "event": MessageLookupByLibrary.simpleMessage("Event"),
         "exams": MessageLookupByLibrary.simpleMessage("Prüfungen"),
         "friday": MessageLookupByLibrary.simpleMessage("Freitag"),
+        "group": MessageLookupByLibrary.simpleMessage("Gruppe"),
+        "groupInputs":
+            MessageLookupByLibrary.simpleMessage("Klassen Einstellunen"),
         "highlightExams":
             MessageLookupByLibrary.simpleMessage("Prüfungen Hervorheben"),
         "login": MessageLookupByLibrary.simpleMessage("Anmelden"),

@@ -27,7 +27,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
     try {
       response = await http.get(
           Uri.parse(
-              "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=bfs2020fi&datum=${monday.toString().substring(0, 10)}"),
+              "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=$clasz&datum=${monday.toString().substring(0, 10)}"),
           headers: {
             "authorization": "Basic $token",
             "undefinedaccept": "application/json"
@@ -109,6 +109,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
           day != null &&
           day.length >= hour + 1 &&
           day[hour + 1] != null) {
+        // empty rooms to stay in your brake
         Set rooms = await loadRooms(ii + 1, ii + 1);
 
         var wantedRooms = {

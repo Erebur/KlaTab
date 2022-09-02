@@ -56,7 +56,28 @@ class _PageStundenplanState extends State<PageStundenplan> {
                           timetable = await loadTimeTable(token);
                           setState(() => {});
                         },
-                      )
+                      ),
+                      ExpansionTile(
+                          title:
+                              Text(AppLocalizations.of(context)!.groupInputs),
+                          children: [
+                            ListTile(
+                              title: Text(AppLocalizations.of(context)!.group),
+                              subtitle: TextField(
+                                keyboardType: TextInputType.number,
+                                controller: TextEditingController(
+                                    text: group.toString()),
+                                onChanged: (value) async {
+                                  setState(() => group = int.parse(value));
+                                  timetable = await loadTimeTable(token);
+                                },
+                              ),
+                            ),
+                            ListTile(
+                                title:
+                                    Text(AppLocalizations.of(context)!.clasz),
+                                subtitle: Text(clasz ?? "")),
+                          ])
                     ],
                   )),
             );

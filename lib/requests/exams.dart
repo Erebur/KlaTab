@@ -8,7 +8,7 @@ Future<List> loadExams() async {
   try {
     var response = await http.get(
         Uri.parse(
-            "https://ux4.edvschule-plattling.de/klatab-reader/pruefungstermine/klasse?klasse=bfs2020fi&datum=${monday.toString().substring(0, 10)}"),
+            "https://ux4.edvschule-plattling.de/klatab-reader/pruefungstermine/klasse?klasse=$clasz&datum=${monday.toString().substring(0, 10)}"),
         headers: {
           "authorization": "Basic $token",
           "content-type": "application/json"

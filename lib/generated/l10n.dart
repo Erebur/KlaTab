@@ -309,6 +309,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Group`
+  String get group {
+    return Intl.message(
+      'Group',
+      name: 'group',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class`
+  String get clasz {
+    return Intl.message(
+      'Class',
+      name: 'clasz',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class Settings`
+  String get groupInputs {
+    return Intl.message(
+      'Class Settings',
+      name: 'groupInputs',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

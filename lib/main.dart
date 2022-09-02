@@ -44,9 +44,11 @@ Future<void> main() async {
   token = Hive.box('myBox').get('token');
   loggedIn = token != null;
 
-  // String decoded = utf8.decode(
-  //     base64Url.decode((token ?? "").split(".")[1])); // username:password
-  // print(decoded);
+  try {
+    var decoded =
+        jsonDecode(utf8.decode(base64Url.decode((token ?? "").split(".")[1])));
+    clasz = decoded["typValue"];
+  } catch (e) {}
   timetable = await loadTimeTable(token, onNetworkError: () {});
   runApp(const MyApp());
 }
@@ -126,7 +128,6 @@ class _MainPageState extends State<MainPage> {
             ));
   }
 
-// AppLocalizations.of(context)!
   @override
   Widget build(BuildContext context) {
     if (!loggedIn) {
@@ -265,17 +266,3 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: Theme.of(context).colorScheme.background);
   }
 }
-
-// class PageSettings extends StatefulWidget {
-//   const PageSettings({Key? key}) : super(key: key);
-
-//   @override
-//   State<StatefulWidget> createState() => _PageSettingsState();
-// }
-
-// class _PageSettingsState extends State<PageSettings> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold();
-//   }
-// }

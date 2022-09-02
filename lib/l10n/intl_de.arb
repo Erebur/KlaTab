@@ -24,5 +24,8 @@
   "networkError": "wir konnten keine verbindung mit der Netzwerkwolke herstellen",
   "networkErrorDescription": "Die Daten aus der Wolke konnten nicht gezogen werden",
   "event": "Event",
-  "viewRooms": "Freihe Raume anzeigen"
+  "viewRooms": "Freihe Raume anzeigen",
+  "group":"Gruppe",  
+  "clasz":"Klasse",
+  "groupInputs":"Klassen Einstellunen"
 }

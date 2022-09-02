@@ -24,5 +24,8 @@
   "networkError": "Connection not possible ",
   "networkErrorDescription": "Unable to connect to server",
   "event": "Event",
-  "viewRooms": "Show Empty rooms"
+  "viewRooms": "Show Empty rooms",
+  "group":"Group",
+  "clasz":"Class",
+  "groupInputs":"Class Settings"
 }
