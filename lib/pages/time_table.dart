@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:universal_io/io.dart';
@@ -34,25 +35,34 @@ class _PageStundenplanState extends State<PageStundenplan> {
                         subtitle:
                             Text(AppLocalizations.of(context)!.viewNotesDesc),
                         value: viewNotes,
-                        onChanged: (value) =>
-                            setState(() => viewNotes = !viewNotes),
+                        onChanged: (value) {
+                          setState(() => viewNotes = !viewNotes);
+                          hiveBox.put('viewNotes', viewNotes);
+                        },
                       ),
                       SwitchListTile(
                         activeColor: Theme.of(context).colorScheme.primary,
                         title:
                             Text(AppLocalizations.of(context)!.highlightExams),
-                        value: viewExams,
+                        subtitle: Text(
+                            AppLocalizations.of(context)!.highlightExamsDesc),
+                        value: Hive.box("myBox").get("viewExams"),
                         onChanged: (value) async {
                           setState(() => viewExams = !viewExams);
+                          hiveBox.put('viewExams', viewExams);
                           timetable = await loadTimeTable(token);
                         },
                       ),
                       SwitchListTile(
                         activeColor: Theme.of(context).colorScheme.primary,
                         title: Text(AppLocalizations.of(context)!.viewRooms),
+                        subtitle:
+                            Text(AppLocalizations.of(context)!.viewRoomsDesc),
                         value: viewRooms,
                         onChanged: (value) async {
                           viewRooms = !viewRooms;
+                          hiveBox.put('viewRooms', viewRooms);
+
                           timetable = await loadTimeTable(token);
                           setState(() => {});
                         },
@@ -67,8 +77,29 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                 keyboardType: TextInputType.number,
                                 controller: TextEditingController(
                                     text: group.toString()),
-                                onChanged: (value) async {
+                                onSubmitted: (value) async {
                                   setState(() => group = int.parse(value));
+                                  hiveBox.put('group', group);
+                                  timetable = await loadTimeTable(token);
+                                },
+                              ),
+                            ),
+                            ListTile(
+                              title: Text(
+                                  AppLocalizations.of(context)!.wantedRooms),
+                              subtitle: TextField(
+                                keyboardType: TextInputType.text,
+                                controller: TextEditingController(
+                                    text: wantedRoomsUserdefined
+                                        .toString()
+                                        .replaceAll("[", "")
+                                        .replaceAll("]", "")
+                                        .replaceAll(" ", "")),
+                                onSubmitted: (value) async {
+                                  setState(() => wantedRoomsUserdefined =
+                                      value.split(",").toList());
+                                  hiveBox.put('wantedRoomsUserdefined',
+                                      wantedRoomsUserdefined);
                                   timetable = await loadTimeTable(token);
                                 },
                               ),

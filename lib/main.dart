@@ -17,7 +17,8 @@ const _lightColorScheme = lightColorScheme_purple;
 const _darkColorScheme = darkColorScheme_purple;
 
 // should be today
-DateTime today = DateTime.parse("2022-07-07");
+DateTime today = DateTime.now();
+late Box hiveBox;
 
 // maybe offline storage
 List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
@@ -27,9 +28,9 @@ List rooms = [];
 // to be persisted
 bool viewExams = true;
 bool viewNotes = true;
-bool viewRooms = true;
+bool viewRooms = false;
 int group = 1;
-Set wantedRoomsUserdefined = {206, 2052, 2051, 207, 208};
+List wantedRoomsUserdefined = [206, 2052, 2051, 207, 208];
 // don't, seriously don't
 bool addTermine = false;
 String? token;
@@ -40,17 +41,32 @@ bool loggedIn = false;
 
 Future<void> main() async {
   await Hive.initFlutter();
-  await Hive.openBox("myBox");
-  token = Hive.box('myBox').get('token');
+  hiveBox = await Hive.openBox("myBox");
+  token = hiveBox.get('token');
   loggedIn = token != null;
-
-  try {
-    var decoded =
-        jsonDecode(utf8.decode(base64Url.decode((token ?? "").split(".")[1])));
-    clasz = decoded["typValue"];
-  } catch (e) {}
+  if (!loggedIn) {
+    hiveBox.put('viewExams', viewExams);
+    hiveBox.put('viewNotes', viewNotes);
+    hiveBox.put('viewRooms', viewRooms);
+    hiveBox.put('group', group);
+    hiveBox.put('wantedRoomsUserdefined', wantedRoomsUserdefined);
+  } else {
+    viewExams = hiveBox.get("viewExams");
+    viewNotes = hiveBox.get("viewNotes");
+    viewRooms = hiveBox.get("viewRooms");
+    group = hiveBox.get("group");
+  }
+  // wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
+  setClasz();
   timetable = await loadTimeTable(token, onNetworkError: () {});
   runApp(const MyApp());
+}
+
+void setClasz() {
+  if (loggedIn) {
+    clasz = jsonDecode(
+        utf8.decode(base64Url.decode((token ?? "").split(".")[1])))["typValue"];
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -183,19 +199,18 @@ class _MainPageState extends State<MainPage> {
                                 timeInSecForIosWeb: 1,
                                 fontSize: 14.0);
                             if (jsonDecode(post.body)["token"] != null) {
-                              var box = Hive.box('myBox');
-                              box.put('token', jsonDecode(post.body)["token"]);
+                              Hive.box('myBox')
+                                  .put('token', jsonDecode(post.body)["token"]);
                               token = jsonDecode(post.body)["token"];
+                              loggedIn = true;
+                              setClasz();
                               await loadTimeTable(token)
                                   .then((value) => setState(
                                         () {
                                           timetable = value;
                                         },
                                       ));
-
-                              setState(() {
-                                loggedIn = true;
-                              });
+                              setState(() {});
                             }
                           },
                           label: Text(AppLocalizations.of(context)!.login),
@@ -232,11 +247,12 @@ class _MainPageState extends State<MainPage> {
             NavigationDestination(
               icon: const Icon(Icons.calendar_today),
               label: AppLocalizations.of(context)!.exams,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.room_outlined),
-              label: AppLocalizations.of(context)!.empty_rooms,
             )
+            // ,
+            // NavigationDestination(
+            //   icon: const Icon(Icons.room_outlined),
+            //   label: AppLocalizations.of(context)!.empty_rooms,
+            // )
           ],
         ),
         appBar: AppBar(

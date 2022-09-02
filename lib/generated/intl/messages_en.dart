@@ -24,16 +24,18 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "add": MessageLookupByLibrary.simpleMessage("Add"),
         "calendar": MessageLookupByLibrary.simpleMessage("Calendar"),
-        "clasz": MessageLookupByLibrary.simpleMessage("Class"),
+        "clasz": MessageLookupByLibrary.simpleMessage("Grade"),
         "compact": MessageLookupByLibrary.simpleMessage("Compact"),
         "empty_rooms": MessageLookupByLibrary.simpleMessage("Empty Rooms"),
         "event": MessageLookupByLibrary.simpleMessage("Event"),
         "exams": MessageLookupByLibrary.simpleMessage("Exams"),
         "friday": MessageLookupByLibrary.simpleMessage("Friday"),
         "group": MessageLookupByLibrary.simpleMessage("Group"),
-        "groupInputs": MessageLookupByLibrary.simpleMessage("Class Settings"),
+        "groupInputs": MessageLookupByLibrary.simpleMessage("Grade Settings"),
         "highlightExams":
             MessageLookupByLibrary.simpleMessage("Highlight Exams"),
+        "highlightExamsDesc": MessageLookupByLibrary.simpleMessage(
+            "If exams take place, they will be displayed in the corresponding hours"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "login_res": MessageLookupByLibrary.simpleMessage("Logged in"),
         "login_res_fail":
@@ -53,8 +55,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "username": MessageLookupByLibrary.simpleMessage("Username"),
         "viewNotes": MessageLookupByLibrary.simpleMessage("View Notes"),
         "viewNotesDesc": MessageLookupByLibrary.simpleMessage(
-            "Notes under the subjects can be entered for substitution hours (or rarely also for examinations)."),
+            "Notes under the subjects can be entered for substitution hours (or rarely also for exams)."),
         "viewRooms": MessageLookupByLibrary.simpleMessage("Show Empty rooms"),
+        "viewRoomsDesc": MessageLookupByLibrary.simpleMessage(
+            "Shows Free rooms in the lunch break\nNote:Rooms of next and previous hour will be prefered"),
+        "wantedRooms":
+            MessageLookupByLibrary.simpleMessage("Free Rooms preferences"),
         "wednesday": MessageLookupByLibrary.simpleMessage("Wednesday")
       };
 }

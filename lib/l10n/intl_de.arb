@@ -1,7 +1,7 @@
 {
   "timetable": "Stundenplan",
   "exams": "Prüfungen",
-  "empty_rooms": "Freihe Raume",
+  "empty_rooms": "Freie Raume",
   "time": "Zeit",
   "monday": "Montag",
   "tuesday": "Dienstag",
@@ -18,14 +18,17 @@
   "username": "Benutzername",
   "password": "Passwort",
   "highlightExams": "Prüfungen Hervorheben",
+  "highlightExamsDesc": "Sollten Prüfungen Statfinden werden sie in den entsprechenden Stunden angezeigt",
   "settings": "Einstellungen",
   "viewNotes": "Notizen Anzeigen",
   "viewNotesDesc": "Notizen unter den Fächern können bei Vertretungsstunden (oder Selten auch bei Prüfungen) eingetragen sein",
   "networkError": "wir konnten keine verbindung mit der Netzwerkwolke herstellen",
   "networkErrorDescription": "Die Daten aus der Wolke konnten nicht gezogen werden",
   "event": "Event",
-  "viewRooms": "Freihe Raume anzeigen",
+  "viewRooms": "Freie Raume anzeigen",
+  "viewRoomsDesc": "Zeigt freihe Raume in den Freistunden an\nHinweis:Raume der nächsten und vorherigen stunde werden vorgezogen",
   "group":"Gruppe",  
   "clasz":"Klasse",
-  "groupInputs":"Klassen Einstellunen"
+  "groupInputs":"Klassen Einstellunen",
+  "wantedRooms":"Vorlieben für Freie Raume"
 }

@@ -240,6 +240,16 @@ class S {
     );
   }
 
+  /// `If exams take place, they will be displayed in the corresponding hours`
+  String get highlightExamsDesc {
+    return Intl.message(
+      'If exams take place, they will be displayed in the corresponding hours',
+      name: 'highlightExamsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Settings`
   String get settings {
     return Intl.message(
@@ -260,10 +270,10 @@ class S {
     );
   }
 
-  /// `Notes under the subjects can be entered for substitution hours (or rarely also for examinations).`
+  /// `Notes under the subjects can be entered for substitution hours (or rarely also for exams).`
   String get viewNotesDesc {
     return Intl.message(
-      'Notes under the subjects can be entered for substitution hours (or rarely also for examinations).',
+      'Notes under the subjects can be entered for substitution hours (or rarely also for exams).',
       name: 'viewNotesDesc',
       desc: '',
       args: [],
@@ -310,6 +320,16 @@ class S {
     );
   }
 
+  /// `Shows Free rooms in the lunch break\nNote:Rooms of next and previous hour will be prefered`
+  String get viewRoomsDesc {
+    return Intl.message(
+      'Shows Free rooms in the lunch break\nNote:Rooms of next and previous hour will be prefered',
+      name: 'viewRoomsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Group`
   String get group {
     return Intl.message(
@@ -320,21 +340,31 @@ class S {
     );
   }
 
-  /// `Class`
+  /// `Grade`
   String get clasz {
     return Intl.message(
-      'Class',
+      'Grade',
       name: 'clasz',
       desc: '',
       args: [],
     );
   }
 
-  /// `Class Settings`
+  /// `Grade Settings`
   String get groupInputs {
     return Intl.message(
-      'Class Settings',
+      'Grade Settings',
       name: 'groupInputs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Free Rooms preferences`
+  String get wantedRooms {
+    return Intl.message(
+      'Free Rooms preferences',
+      name: 'wantedRooms',
       desc: '',
       args: [],
     );

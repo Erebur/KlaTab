@@ -18,14 +18,17 @@
   "password": "Password",
   "login": "Login",
   "highlightExams": "Highlight Exams",
+  "highlightExamsDesc": "If exams take place, they will be displayed in the corresponding hours",
   "settings": "Settings",
   "viewNotes": "View Notes",
-  "viewNotesDesc": "Notes under the subjects can be entered for substitution hours (or rarely also for examinations).",
+  "viewNotesDesc": "Notes under the subjects can be entered for substitution hours (or rarely also for exams).",
   "networkError": "Connection not possible ",
   "networkErrorDescription": "Unable to connect to server",
   "event": "Event",
   "viewRooms": "Show Empty rooms",
+  "viewRoomsDesc": "Shows Free rooms in the lunch break\nNote:Rooms of next and previous hour will be prefered",
   "group":"Group",
-  "clasz":"Class",
-  "groupInputs":"Class Settings"
+  "clasz":"Grade",
+  "groupInputs":"Grade Settings",
+  "wantedRooms":"Free Rooms preferences"  
 }

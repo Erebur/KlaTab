@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:klatab/main.dart';
 import 'package:klatab/requests/rooms.dart';
@@ -107,7 +108,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
         hour++;
       } else if (viewRooms &&
           day != null &&
-          day.length >= hour + 1 &&
+          day.length > hour + 1 &&
           day[hour + 1] != null) {
         // empty rooms to stay in your brake
         Set rooms = await loadRooms(ii + 1, ii + 1);
@@ -117,7 +118,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
               ? day[hour]["raumId"]
               : day[hour + 1]["raumId"],
           timetable[ii - 1][i]["raum"],
-          ...wantedRoomsUserdefined
+          ...wantedRoomsUserdefined.toSet()
         };
 
         timetable[ii][i]

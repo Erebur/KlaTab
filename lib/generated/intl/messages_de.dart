@@ -26,7 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "calendar": MessageLookupByLibrary.simpleMessage("Kalender"),
         "clasz": MessageLookupByLibrary.simpleMessage("Klasse"),
         "compact": MessageLookupByLibrary.simpleMessage("kompakt"),
-        "empty_rooms": MessageLookupByLibrary.simpleMessage("Freihe Raume"),
+        "empty_rooms": MessageLookupByLibrary.simpleMessage("Freie Raume"),
         "event": MessageLookupByLibrary.simpleMessage("Event"),
         "exams": MessageLookupByLibrary.simpleMessage("Prüfungen"),
         "friday": MessageLookupByLibrary.simpleMessage("Freitag"),
@@ -35,6 +35,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Klassen Einstellunen"),
         "highlightExams":
             MessageLookupByLibrary.simpleMessage("Prüfungen Hervorheben"),
+        "highlightExamsDesc": MessageLookupByLibrary.simpleMessage(
+            "Sollten Prüfungen Statfinden werden sie in den entsprechenden Stunden angezeigt"),
         "login": MessageLookupByLibrary.simpleMessage("Anmelden"),
         "login_res": MessageLookupByLibrary.simpleMessage("Angemeldet"),
         "login_res_fail":
@@ -56,7 +58,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewNotesDesc": MessageLookupByLibrary.simpleMessage(
             "Notizen unter den Fächern können bei Vertretungsstunden (oder Selten auch bei Prüfungen) eingetragen sein"),
         "viewRooms":
-            MessageLookupByLibrary.simpleMessage("Freihe Raume anzeigen"),
+            MessageLookupByLibrary.simpleMessage("Freie Raume anzeigen"),
+        "viewRoomsDesc": MessageLookupByLibrary.simpleMessage(
+            "Zeigt freihe Raume in den Freistunden an\nHinweis:Raume der nächsten und vorherigen stunde werden vorgezogen"),
+        "wantedRooms":
+            MessageLookupByLibrary.simpleMessage("Vorlieben für Freie Raume"),
         "wednesday": MessageLookupByLibrary.simpleMessage("Mittwoch")
       };
 }
