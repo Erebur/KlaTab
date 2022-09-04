@@ -13,8 +13,8 @@ import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // should be changeable
-var _lightColorScheme = lightColorScheme_default;
-var _darkColorScheme = darkColorScheme_default;
+var _lightColorScheme = lightColorScheme_pink;
+var _darkColorScheme = darkColorScheme_purple;
 
 // should be today
 DateTime today = DateTime.now();
@@ -29,10 +29,11 @@ Set rooms = {};
 bool viewExams = true;
 bool viewNotes = true;
 bool viewRooms = false;
+bool weeklyOverview = false;
 int group = 1;
 List wantedRoomsUserdefined = [206, 2052, 2051, 207, 208];
 // don't, seriously don't
-bool addTermine = false;
+bool addTermine = true;
 String? token;
 String? clasz;
 
@@ -48,12 +49,15 @@ Future<void> main() async {
     hiveBox.put('viewExams', viewExams);
     hiveBox.put('viewNotes', viewNotes);
     hiveBox.put('viewRooms', viewRooms);
+    hiveBox.put('weeklyOverview', weeklyOverview);
     hiveBox.put('group', group);
     hiveBox.put('wantedRoomsUserdefined', wantedRoomsUserdefined);
   } else {
     viewExams = hiveBox.get("viewExams");
     viewNotes = hiveBox.get("viewNotes");
     viewRooms = hiveBox.get("viewRooms");
+    hiveBox.put('weeklyOverview', weeklyOverview);
+    weeklyOverview = hiveBox.get("weeklyOverview");
     group = hiveBox.get("group");
     wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
   }
@@ -148,138 +152,131 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     if (!loggedIn) {
-      return Scaffold(
-          body: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.all(30),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    TextField(
-                        decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context)!.username,
-                        ),
-                        autofillHints: const [AutofillHints.email],
-                        keyboardType: TextInputType.text,
-                        onChanged: (value) =>
-                            setState((() => username = value))),
-                    TextField(
-                        decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context)!.password,
-                        ),
-                        autofillHints: const [AutofillHints.password],
-                        obscureText: true,
-                        keyboardType: TextInputType.visiblePassword,
-                        onChanged: (value) =>
-                            setState((() => password = value))),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextButton.icon(
-                          onPressed: () async {
-                            var post = await http.post(
-                                Uri.parse(
-                                    "https://ux4.edvschule-plattling.de/klatab-reader/user/login"),
-                                headers: {
-                                  "content-type": "application/json",
-                                  "accept": "application/json",
-                                },
-                                body: json.encode({
-                                  "username": username,
-                                  "password": password
-                                }));
-
-                            Fluttertoast.showToast(
-                                msg: jsonDecode(post.body)["token"] != null
-                                    ? AppLocalizations.of(context)!.login_res
-                                    : AppLocalizations.of(context)!
-                                        .login_res_fail,
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                fontSize: 14.0);
-                            if (jsonDecode(post.body)["token"] != null) {
-                              Hive.box('myBox')
-                                  .put('token', jsonDecode(post.body)["token"]);
-                              token = jsonDecode(post.body)["token"];
-                              loggedIn = true;
-                              setClasz();
-                              await loadTimeTable(token)
-                                  .then((value) => setState(
-                                        () {
-                                          timetable = value;
-                                        },
-                                      ));
-                              setState(() {});
-                            }
-                          },
-                          label: Text(AppLocalizations.of(context)!.login),
-                          icon: const Icon(Icons.login_outlined)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          appBar: AppBar(
-              title: Text(widget.title),
-              backgroundColor: Theme.of(context).colorScheme.background,
-              bottomOpacity: 0,
-              centerTitle: true,
-              scrolledUnderElevation: 3),
-          backgroundColor: Theme.of(context).colorScheme.background);
+      return loginPage();
     }
-    return Scaffold(
-        primary: true,
-        bottomNavigationBar: NavigationBar(
-          // backgroundColor: Theme.of(context).colorScheme.background,
-          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-          height: 70,
-          selectedIndex: index,
-          onDestinationSelected: (index) => setState(() {
-            this.index = index;
-          }),
-          destinations: [
-            NavigationDestination(
-              icon: const Icon(Icons.calendar_view_week_rounded),
-              label: AppLocalizations.of(context)!.timetable,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.calendar_today),
-              label: AppLocalizations.of(context)!.exams,
-            )
-            // ,
-            // NavigationDestination(
-            //   icon: const Icon(Icons.room_outlined),
-            //   label: AppLocalizations.of(context)!.empty_rooms,
-            // )
-          ],
-        ),
-        appBar: AppBar(
-          title: Text(
-            widget.title,
-          ),
-          actions: [
-            PopupMenuButton(
-              onSelected: (item) {},
-              color: Theme.of(context).colorScheme.background,
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  onTap: () {
-                    token = null;
-                    Hive.box('myBox').delete("token");
-                    setState(() {
-                      loggedIn = false;
-                    });
-                  },
-                  child: Text(AppLocalizations.of(context)!.logout),
-                )
-              ],
-            )
-          ],
-        ),
-        body: screens[index],
-        backgroundColor: Theme.of(context).colorScheme.background);
+    return mainPage();
   }
+
+  Scaffold mainPage() => Scaffold(
+      primary: true,
+      bottomNavigationBar: NavigationBar(
+        // backgroundColor: Theme.of(context).colorScheme.background,
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        height: 70,
+        selectedIndex: index,
+        onDestinationSelected: (index) => setState(() {
+          this.index = index;
+        }),
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.calendar_view_week_rounded),
+            label: AppLocalizations.of(context)!.timetable,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.calendar_today),
+            label: AppLocalizations.of(context)!.exams,
+          )
+          // ,
+          // NavigationDestination(
+          //   icon: const Icon(Icons.room_outlined),
+          //   label: AppLocalizations.of(context)!.empty_rooms,
+          // )
+        ],
+      ),
+      appBar: AppBar(
+        title: Text(
+          widget.title,
+        ),
+        actions: [
+          PopupMenuButton(
+            onSelected: (item) {},
+            color: Theme.of(context).colorScheme.background,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                onTap: () {
+                  token = null;
+                  Hive.box('myBox').delete("token");
+                  setState(() {
+                    loggedIn = false;
+                  });
+                },
+                child: Text(AppLocalizations.of(context)!.logout),
+              )
+            ],
+          )
+        ],
+      ),
+      body: screens[index],
+      backgroundColor: Theme.of(context).colorScheme.background);
+
+  Scaffold loginPage() => Scaffold(
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(30),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                TextField(
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.username,
+                    ),
+                    autofillHints: const [AutofillHints.email],
+                    keyboardType: TextInputType.text,
+                    onChanged: (value) => setState((() => username = value))),
+                TextField(
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.password,
+                    ),
+                    autofillHints: const [AutofillHints.password],
+                    obscureText: true,
+                    keyboardType: TextInputType.visiblePassword,
+                    onChanged: (value) => setState((() => password = value))),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton.icon(
+                      onPressed: () async {
+                        var post = await http.post(
+                            Uri.parse(
+                                "https://ux4.edvschule-plattling.de/klatab-reader/user/login"),
+                            headers: {
+                              "content-type": "application/json",
+                              "accept": "application/json",
+                            },
+                            body: json.encode(
+                                {"username": username, "password": password}));
+
+                        Fluttertoast.showToast(
+                            msg: jsonDecode(post.body)["token"] != null
+                                ? AppLocalizations.of(context)!.login_res
+                                : AppLocalizations.of(context)!.login_res_fail,
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            fontSize: 14.0);
+                        if (jsonDecode(post.body)["token"] != null) {
+                          Hive.box('myBox')
+                              .put('token', jsonDecode(post.body)["token"]);
+                          token = jsonDecode(post.body)["token"];
+                          loggedIn = true;
+                          setClasz();
+                          setState(() {});
+                        }
+                      },
+                      label: Text(AppLocalizations.of(context)!.login),
+                      icon: const Icon(Icons.login_outlined)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      appBar: AppBar(
+          title: Text(widget.title),
+          backgroundColor: Theme.of(context).colorScheme.background,
+          bottomOpacity: 0,
+          centerTitle: true,
+          scrolledUnderElevation: 3),
+      backgroundColor: Theme.of(context).colorScheme.background);
 }

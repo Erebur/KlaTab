@@ -57,7 +57,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
       Map currentHour = {
         "fachKuerzel": "",
         "mitarbeiterKuerzel": "",
-        "raumId": "",
+        "raumId": "                           ",
         "istVertretung": "",
         "notiz": "",
         "gruppe": 0

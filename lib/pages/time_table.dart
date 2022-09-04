@@ -49,10 +49,9 @@ class _PageStundenplanState extends State<PageStundenplan> {
                         subtitle: Text(
                             AppLocalizations.of(context)!.highlightExamsDesc),
                         value: Hive.box("myBox").get("viewExams"),
-                        onChanged: (value) async {
+                        onChanged: (value) {
                           setState(() => viewExams = !viewExams);
                           hiveBox.put('viewExams', viewExams);
-                          timetable = await loadTimeTable(token);
                         },
                       ),
                       SwitchListTile(
@@ -61,11 +60,9 @@ class _PageStundenplanState extends State<PageStundenplan> {
                         subtitle:
                             Text(AppLocalizations.of(context)!.viewRoomsDesc),
                         value: viewRooms,
-                        onChanged: (value) async {
-                          viewRooms = !viewRooms;
+                        onChanged: (value) {
+                          setState(() => viewRooms = !viewRooms);
                           hiveBox.put('viewRooms', viewRooms);
-                          timetable = await loadTimeTable(token);
-                          setState(() {});
                         },
                       ),
                       ExpansionTile(
@@ -78,10 +75,9 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                 keyboardType: TextInputType.number,
                                 controller: TextEditingController(
                                     text: group.toString()),
-                                onSubmitted: (value) async {
+                                onSubmitted: (value) {
                                   setState(() => group = int.parse(value));
                                   hiveBox.put('group', group);
-                                  timetable = await loadTimeTable(token);
                                 },
                               ),
                             ),
@@ -103,7 +99,6 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                       .toList());
                                   hiveBox.put('wantedRoomsUserdefined',
                                       wantedRoomsUserdefined);
-                                  timetable = await loadTimeTable(token);
                                 },
                               ),
                             ),
@@ -133,11 +128,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
                   highlightColor: Theme.of(context).colorScheme.background,
                   onPressed: () async {
                     today = today.subtract(const Duration(days: 7));
-                    await loadTimeTable(token).then((value) => setState(
-                          () {
-                            timetable = value;
-                          },
-                        ));
+                    setState(() {});
                   },
                   icon: Icon(
                     Icons.arrow_back_rounded,
@@ -151,11 +142,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
                   style: buttonStyleNoReaction(context),
                   onPressed: () async {
                     today = DateTime.now();
-                    await loadTimeTable(token).then((value) => setState(
-                          () {
-                            timetable = value;
-                          },
-                        ));
+                    setState(() {});
                   },
                   child: Text(
                     today
@@ -170,11 +157,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
                   highlightColor: Theme.of(context).colorScheme.background,
                   onPressed: () async {
                     today = today.add(const Duration(days: 7));
-                    await loadTimeTable(token).then((value) => setState(
-                          () {
-                            timetable = value;
-                          },
-                        ));
+                    setState(() {});
                   },
                   icon: Icon(
                     Icons.arrow_forward_rounded,
@@ -236,20 +219,26 @@ class _PageStundenplanState extends State<PageStundenplan> {
                 child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.all(10),
-                    child: DataTable(
-                      // columnSpacing: 30,
-                      columns: [
-                        AppLocalizations.of(context)!.monday,
-                        AppLocalizations.of(context)!.tuesday,
-                        AppLocalizations.of(context)!.wednesday,
-                        AppLocalizations.of(context)!.thursday,
-                        AppLocalizations.of(context)!.friday
-                      ]
-                          .map((e) => DataColumn(
-                              label: Text(e,
-                                  style: TextStyle(
-                                      color:
-                                          DateFormat.EEEE(Platform.localeName)
+                    child: FutureBuilder(
+                      future: loadTimeTable(token),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          timetable = (snapshot.data as List<List>);
+                        }
+                        return DataTable(
+                          // columnSpacing: 30,
+                          columns: [
+                            AppLocalizations.of(context)!.monday,
+                            AppLocalizations.of(context)!.tuesday,
+                            AppLocalizations.of(context)!.wednesday,
+                            AppLocalizations.of(context)!.thursday,
+                            AppLocalizations.of(context)!.friday
+                          ]
+                              .map((e) => DataColumn(
+                                  label: Text(e,
+                                      style: TextStyle(
+                                          color: DateFormat.EEEE(Platform
+                                                              .localeName)
                                                           .dateSymbols
                                                           .STANDALONEWEEKDAYS[
                                                       today.weekday == 7
@@ -263,88 +252,96 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                                   .textTheme
                                                   .bodyMedium
                                                   ?.color))))
-                          .toList(),
-                      rows: timetable
-                          .map((day) => DataRow(
-                              cells: day
-                                  .map((hour) => DataCell(RichText(
-                                      softWrap: false,
-                                      text: TextSpan(text: "", children: [
-                                        TextSpan(
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        StatefulBuilder(
-                                                            builder: (context,
-                                                                    setState) =>
-                                                                AlertDialog(
-                                                                  scrollable:
-                                                                      true,
-                                                                  backgroundColor: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .background,
-                                                                  title: const Text(
-                                                                      "Empty roooms"),
-                                                                  content:
-                                                                      FutureBuilder(
-                                                                    future: emptyRooms(
-                                                                        hour["allRooms"]
-                                                                            [0],
-                                                                        hour["allRooms"]
-                                                                            [1],
-                                                                        hour["allRooms"]
-                                                                            [
-                                                                            2]),
-                                                                    builder:
-                                                                        (context,
-                                                                            snapshot) {
-                                                                      if (snapshot
-                                                                          .hasData) {
-                                                                        return Column(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.start,
-                                                                          children: (snapshot.data as List)
-                                                                              .map((e) => Text(e.toString()))
-                                                                              .toList(),
-                                                                        );
-                                                                      } else {
-                                                                        return const Text(
-                                                                            "");
-                                                                      }
-                                                                    },
-                                                                  ),
-                                                                )));
-                                                setState(() {});
-                                              },
-                                            text:
-                                                "${hour["raum"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]}' : hour["lehrer"]}\n",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall),
-                                        TextSpan(
-                                            text:
-                                                "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${viewNotes && (hour["notiz"] != "" || hour["notiz2"] != "") ? '\n${hour["notiz"] != "" ? hour["notiz"] : hour["notiz2"]}' : ''}",
-                                            style: TextStyle(
-                                                color: hour["istVertretung"] ==
-                                                        true
-                                                    ? Theme.of(context)
-                                                        .colorScheme
-                                                        .primary
-                                                    : hour["isExam"] &&
-                                                            viewExams
-                                                        ? Theme.of(context)
-                                                            .colorScheme
-                                                            .error
-                                                        : Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium
-                                                            ?.color))
-                                      ]))))
-                                  .toList()))
-                          .toList(),
+                              .toList(),
+                          rows: (snapshot.hasData
+                                  ? (snapshot.data as List<List>)
+                                  : timetable)
+                              .map((day) => DataRow(
+                                  cells: day
+                                      .map((hour) => DataCell(RichText(
+                                          softWrap: false,
+                                          text: TextSpan(text: "", children: [
+                                            TextSpan(
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        showDialog(
+                                                            context: context,
+                                                            builder: (context) =>
+                                                                StatefulBuilder(
+                                                                    builder: (context,
+                                                                            setState) =>
+                                                                        AlertDialog(
+                                                                          scrollable:
+                                                                              true,
+                                                                          backgroundColor: Theme.of(context)
+                                                                              .colorScheme
+                                                                              .background,
+                                                                          title:
+                                                                              const Text("Empty roooms"),
+                                                                          content:
+                                                                              Column(
+                                                                            children: [
+                                                                              // ListTile(
+                                                                              //   title: Text("Day: ${hour["allRooms"][0].toString().substring(0, 10)}"),
+                                                                              // ),
+                                                                              // ListTile(
+                                                                              //   title: Text("From: ${hour["allRooms"][1]}"),
+                                                                              // ),
+                                                                              // ListTile(
+                                                                              //   title: Text("Until: ${hour["allRooms"][2]}"),
+                                                                              // ),
+                                                                              FutureBuilder(
+                                                                                future: emptyRooms(hour["allRooms"][0], hour["allRooms"][1], hour["allRooms"][2]),
+                                                                                builder: (context, snapshot) {
+                                                                                  if (snapshot.hasData) {
+                                                                                    return Column(
+                                                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                                                      children: [
+                                                                                        ...(snapshot.data as List).map((e) => Text(e.toString())).toList()
+                                                                                      ],
+                                                                                    );
+                                                                                  } else {
+                                                                                    return const Text("");
+                                                                                  }
+                                                                                },
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        )));
+                                                        setState(() {});
+                                                      },
+                                                text:
+                                                    "${hour["raum"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]}' : hour["lehrer"]}\n",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall),
+                                            TextSpan(
+                                                text:
+                                                    "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${viewNotes && (hour["notiz"] != "" || hour["notiz2"] != "") ? '\n${hour["notiz"] != "" ? hour["notiz"] : hour["notiz2"]}' : ''}",
+                                                style: TextStyle(
+                                                    color:
+                                                        hour["istVertretung"] ==
+                                                                true
+                                                            ? Theme.of(context)
+                                                                .colorScheme
+                                                                .primary
+                                                            : hour["isExam"] &&
+                                                                    viewExams
+                                                                ? Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .error
+                                                                : Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodyMedium
+                                                                    ?.color))
+                                          ]))))
+                                      .toList()))
+                              .toList(),
+                        );
+                      },
                     )),
               ),
             ],

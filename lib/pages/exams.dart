@@ -13,17 +13,14 @@ class PagePruefeungstermine extends StatefulWidget {
 }
 
 class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
-  bool weeklyOverview = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: TextButton(
           onPressed: () {
-            setState(() {
-              weeklyOverview = !weeklyOverview;
-            });
+            setState(() => weeklyOverview = !weeklyOverview);
+            hiveBox.put('weeklyOverview', weeklyOverview);
           },
           child: Text(
             weeklyOverview
@@ -78,210 +75,56 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.vertical,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: exams
                           .map(
                             (item) => Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                item["isExam"]
-                                    ? Expanded(
-                                        child: Card(
-                                          child: SizedBox(
-                                            height: 130,
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(10),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    SizedBox(
-                                                        width: 70,
-                                                        child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Text(
-                                                                item["fach"],
-                                                                style: TextStyle(
-                                                                    color: item["art"] ==
-                                                                            "SA"
-                                                                        ? Theme.of(context)
-                                                                            .colorScheme
-                                                                            .primary
-                                                                        : Theme.of(context)
-                                                                            .textTheme
-                                                                            .bodyMedium
-                                                                            ?.color),
-                                                              ),
-                                                              Text(
-                                                                item["art"],
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .bodySmall,
-                                                              )
-                                                            ])),
-                                                    Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(((item["start"]
-                                                                      as DateTime)
-                                                                  .toLocal()
-                                                                  .toString())
-                                                              .substring(
-                                                                  0, 10)),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    top: 5),
-                                                            child: Text(
-                                                                "${((item["start"] as DateTime).toLocal().toString()).substring(11, 16)}-${((item["end"] as DateTime).toLocal().toString()).substring(11, 16)}"),
-                                                          )
-                                                        ]),
-                                                    SizedBox(
-                                                      width: 80,
-                                                      child: Center(
-                                                        child: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            Text(
-                                                                "${item["start_hour"]} - ${item["end_hour"]}"),
-                                                            Text(
-                                                                "${item["raum"]} - ${item["lehrer"]}")
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        launchUrl(
-                                                            Uri.parse(
-                                                                item["link"]),
-                                                            mode: LaunchMode
-                                                                .externalApplication);
-                                                      },
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          const Icon(Icons
-                                                              .calendar_month),
-                                                          Text(
-                                                            AppLocalizations.of(
-                                                                    context)!
-                                                                .add,
-                                                            style: TextStyle(
-                                                                fontSize: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .bodySmall
-                                                                    ?.fontSize),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ]),
-                                            ),
-                                          ),
+                                Expanded(
+                                  child: Card(
+                                    child: SizedBox(
+                                      height: 130,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Expanded(
+                                                child: item["isExam"]
+                                                    ? examsItem(item)
+                                                    : eventItem(item)),
+                                            TextButton(
+                                                onPressed: () => launchUrl(
+                                                    Uri.parse(item["link"]),
+                                                    mode: LaunchMode
+                                                        .externalApplication),
+                                                child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      const Icon(
+                                                          Icons.calendar_month),
+                                                      Text(
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .add,
+                                                        style: TextStyle(
+                                                            fontSize: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodySmall
+                                                                ?.fontSize),
+                                                      )
+                                                    ]))
+                                          ],
                                         ),
-                                      )
-                                    : Expanded(
-                                        child: Card(
-                                          child: SizedBox(
-                                            height: 130,
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(10),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    SizedBox(
-                                                        width: 300,
-                                                        child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Text(
-                                                                item["fach"],
-                                                                style: TextStyle(
-                                                                    color: item["art"] ==
-                                                                            "SA"
-                                                                        ? Theme.of(context)
-                                                                            .colorScheme
-                                                                            .primary
-                                                                        : Theme.of(context)
-                                                                            .textTheme
-                                                                            .bodyMedium
-                                                                            ?.color),
-                                                              ),
-                                                              Text(
-                                                                item["art"],
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .bodySmall,
-                                                              )
-                                                            ])),
-                                                    SizedBox(
-                                                        width: 150,
-                                                        child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Text(
-                                                                (item["start"]
-                                                                        as DateTime)
-                                                                    .toLocal()
-                                                                    .toString()
-                                                                    .substring(
-                                                                        0, 11),
-                                                              ),
-                                                            ])),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        launchUrl(
-                                                            Uri.parse(
-                                                                item["link"]),
-                                                            mode: LaunchMode
-                                                                .externalApplication);
-                                                      },
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          const Icon(Icons
-                                                              .calendar_month),
-                                                          Text(
-                                                            AppLocalizations.of(
-                                                                    context)!
-                                                                .add,
-                                                            style: TextStyle(
-                                                                fontSize: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .bodySmall
-                                                                    ?.fontSize),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ]),
-                                            ),
-                                          ),
-                                        ),
-                                      )
+                                      ),
+                                    ),
+                                  ),
+                                )
                               ],
                             ),
                           )
@@ -291,5 +134,106 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
             ],
           )),
     );
+  }
+
+  Widget eventItem(item) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(
+              item["fach"],
+              softWrap: true,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: item["art"] == "SA"
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).textTheme.bodyMedium?.color),
+            ),
+            Text(
+              item["art"],
+              style: Theme.of(context).textTheme.bodySmall,
+            )
+          ]),
+        ),
+        Expanded(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: (item["start"] as DateTime)
+                          .toString()
+                          .substring(0, 11) !=
+                      (item["end"] as DateTime).toString().substring(0, 11)
+                  ? [
+                      Text(
+                        (item["start"] as DateTime).toString().substring(0, 11),
+                      ),
+                      Text(
+                        (item["end"] as DateTime).toString().substring(0, 11),
+                      )
+                    ]
+                  : [
+                      Text(
+                        (item["start"] as DateTime).toString().substring(0, 11),
+                      ),
+                      Text(
+                        (item["start"] as DateTime)
+                                    .toString()
+                                    .substring(11, 16) ==
+                                "00:00"
+                            ? ""
+                            : "${(item["start"] as DateTime).toString().substring(11, 16)}-${(item["end"] as DateTime).toString().substring(11, 16)}",
+                      ),
+                    ]),
+        ),
+      ],
+    );
+  }
+
+  Widget examsItem(item) {
+    return Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+      Expanded(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+            Text(
+              item["fach"],
+              style: TextStyle(
+                  color: item["art"] == "SA"
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).textTheme.bodyMedium?.color),
+            ),
+            Text(
+              item["art"],
+              style: Theme.of(context).textTheme.bodySmall,
+            )
+          ])),
+      Expanded(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(((item["start"] as DateTime).toLocal().toString())
+                  .substring(0, 10)),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Text(
+                    "${((item["start"] as DateTime).toLocal().toString()).substring(11, 16)}-${((item["end"] as DateTime).toLocal().toString()).substring(11, 16)}"),
+              )
+            ]),
+      ),
+      Expanded(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("${item["start_hour"]} - ${item["end_hour"]}"),
+              Text("${item["raum"]} - ${item["lehrer"]}")
+            ],
+          ),
+        ),
+      )
+    ]);
   }
 }
