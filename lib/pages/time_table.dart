@@ -62,11 +62,10 @@ class _PageStundenplanState extends State<PageStundenplan> {
                             Text(AppLocalizations.of(context)!.viewRoomsDesc),
                         value: viewRooms,
                         onChanged: (value) async {
-                          setState(() {
-                            viewRooms = !viewRooms;
-                          });
+                          viewRooms = !viewRooms;
                           hiveBox.put('viewRooms', viewRooms);
                           timetable = await loadTimeTable(token);
+                          setState(() {});
                         },
                       ),
                       ExpansionTile(
@@ -313,7 +312,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                                                         );
                                                                       } else {
                                                                         return const Text(
-                                                                            "...");
+                                                                            "");
                                                                       }
                                                                     },
                                                                   ),

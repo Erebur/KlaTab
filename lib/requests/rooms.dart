@@ -7,8 +7,6 @@ Future<Set> loadRooms(DateTime date, stunde1, stunde2,
     {Function()? onNetworkError}) async {
   var response;
   try {
-    print(
-        "https://ux4.edvschule-plattling.de/klatab-reader/freie-raeume/?datum=${date.toString().substring(0, 10)}&stundeVon=$stunde1&stundeBis=$stunde2");
     response = await http.get(
         Uri.parse(
             "https://ux4.edvschule-plattling.de/klatab-reader/freie-raeume/?datum=${date.toString().substring(0, 10)}&stundeVon=$stunde1&stundeBis=$stunde2"),
