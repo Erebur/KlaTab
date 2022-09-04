@@ -310,10 +310,10 @@ class S {
     );
   }
 
-  /// `Show empty Rooms`
+  /// `Show empty Rooms(Unstable)`
   String get viewRooms {
     return Intl.message(
-      'Show empty Rooms',
+      'Show empty Rooms(Unstable)',
       name: 'viewRooms',
       desc: '',
       args: [],

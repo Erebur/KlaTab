@@ -104,9 +104,6 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                       .toList());
                                   hiveBox.put('wantedRoomsUserdefined',
                                       wantedRoomsUserdefined);
-                                  print(hiveBox
-                                      .get("wantedRoomsUserdefined")
-                                      .runtimeType);
                                   timetable = await loadTimeTable(token);
                                 },
                               ),

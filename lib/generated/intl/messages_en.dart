@@ -56,7 +56,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewNotes": MessageLookupByLibrary.simpleMessage("View Notes"),
         "viewNotesDesc": MessageLookupByLibrary.simpleMessage(
             "Notes under the subjects can be entered for substitution hours (or rarely also for exams)."),
-        "viewRooms": MessageLookupByLibrary.simpleMessage("Show empty Rooms"),
+        "viewRooms":
+            MessageLookupByLibrary.simpleMessage("Show empty Rooms(Unstable)"),
         "viewRoomsDesc": MessageLookupByLibrary.simpleMessage(
             "Shows Free rooms in the lunch break\nNote: Rooms of next and previous hour will be prefered"),
         "wantedRooms":

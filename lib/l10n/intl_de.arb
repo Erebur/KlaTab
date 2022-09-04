@@ -25,7 +25,7 @@
   "networkError": "wir konnten keine verbindung mit der Netzwerkwolke herstellen",
   "networkErrorDescription": "Die Daten aus der Wolke konnten nicht gezogen werden",
   "event": "Event",
-  "viewRooms": "Freie Raume anzeigen",
+  "viewRooms": "Freie Raume anzeigen (Alpha)",
   "viewRoomsDesc": "Zeigt freihe Raume in den Freistunden an\nHinweis: Raume der nächsten und vorherigen stunde werden vorgezogen",
   "group":"Gruppe",  
   "clasz":"Klasse",

@@ -25,7 +25,7 @@
   "networkError": "Connection not possible ",
   "networkErrorDescription": "Unable to connect to server",
   "event": "Event",
-  "viewRooms": "Show empty Rooms",
+  "viewRooms": "Show empty Rooms(Unstable)",
   "viewRoomsDesc": "Shows Free rooms in the lunch break\nNote: Rooms of next and previous hour will be prefered",
   "group":"Group",
   "clasz":"Grade",

@@ -13,8 +13,8 @@ import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // should be changeable
-const _lightColorScheme = lightColorScheme_green;
-const _darkColorScheme = darkColorScheme_green;
+var _lightColorScheme = lightColorScheme_default;
+var _darkColorScheme = darkColorScheme_default;
 
 // should be today
 DateTime today = DateTime.now();

@@ -57,8 +57,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewNotes": MessageLookupByLibrary.simpleMessage("Notizen Anzeigen"),
         "viewNotesDesc": MessageLookupByLibrary.simpleMessage(
             "Notizen unter den Fächern können bei Vertretungsstunden (oder Selten auch bei Prüfungen) eingetragen sein"),
-        "viewRooms":
-            MessageLookupByLibrary.simpleMessage("Freie Raume anzeigen"),
+        "viewRooms": MessageLookupByLibrary.simpleMessage(
+            "Freie Raume anzeigen (Alpha)"),
         "viewRoomsDesc": MessageLookupByLibrary.simpleMessage(
             "Zeigt freihe Raume in den Freistunden an\nHinweis: Raume der nächsten und vorherigen stunde werden vorgezogen"),
         "wantedRooms":
