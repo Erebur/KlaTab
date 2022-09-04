@@ -310,20 +310,20 @@ class S {
     );
   }
 
-  /// `Show Empty rooms`
+  /// `Show empty Rooms`
   String get viewRooms {
     return Intl.message(
-      'Show Empty rooms',
+      'Show empty Rooms',
       name: 'viewRooms',
       desc: '',
       args: [],
     );
   }
 
-  /// `Shows Free rooms in the lunch break\nNote:Rooms of next and previous hour will be prefered`
+  /// `Shows Free rooms in the lunch break\nNote: Rooms of next and previous hour will be prefered`
   String get viewRoomsDesc {
     return Intl.message(
-      'Shows Free rooms in the lunch break\nNote:Rooms of next and previous hour will be prefered',
+      'Shows Free rooms in the lunch break\nNote: Rooms of next and previous hour will be prefered',
       name: 'viewRoomsDesc',
       desc: '',
       args: [],

@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:klatab/main.dart';
 import 'package:klatab/requests/rooms.dart';
@@ -68,6 +68,19 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
         "raumId": "",
         "notiz": ""
       };
+      if (day != null &&
+          day.length > hour + 2 &&
+          day[hour]["stunde"] == day[hour + 1]["stunde"] &&
+          day[hour + 1]["stunde"] == day[hour + 2]["stunde"] &&
+          (day[hour]["gruppe"] == 0 ||
+              day[hour + 1]["gruppe"] == 0 ||
+              day[hour + 2]["gruppe"] == 0)) {
+        // wtf how bad is this api, seriously why ?
+        day.removeWhere(
+            (element) => element["stunde"] == ii && element["gruppe"] == 0);
+        ii--;
+        continue;
+      }
 
       if (day != null && day.length > hour && day[hour]["stunde"] == ii + 1) {
         // if there is no entry for this hour dont try and load one
@@ -89,14 +102,17 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
         "fach": currentHour["fachKuerzel"],
         "lehrer": currentHour["mitarbeiterKuerzel"],
         "raum": currentHour["raumId"],
-        "istVertretung": currentHour["istVertretung"],
+        "istVertretung": currentHour["istVertretung"] == true ||
+            currentHourNextGroup["istVertretung"] == true,
         "notiz": currentHour["notiz"],
         "notiz2": currentHourNextGroup["notiz"],
         "fach2": currentHourNextGroup["fachKuerzel"],
         "lehrer2": currentHourNextGroup["mitarbeiterKuerzel"],
         "raum2": currentHourNextGroup["raumId"],
         "isExam": false,
-        "isRoom": false
+        "isRoom": false,
+        "allRoomsFun": emptyRooms,
+        "allRooms": [monday.add(Duration(days: i)), ii + 1, ii + 1]
       });
 
       // if the group of the current dataset is not 0, then we have 2 entrys for one hour
@@ -111,7 +127,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
           day.length > hour + 1 &&
           day[hour + 1] != null) {
         // empty rooms to stay in your brake
-        Set rooms = await loadRooms(ii + 1, ii + 1);
+        rooms = await loadRooms(monday.add(Duration(days: i)), ii + 1, ii + 1);
 
         var wantedRooms = {
           day[hour]["gruppe"] == 0 || day[hour]["gruppe"] == group
@@ -123,8 +139,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
 
         timetable[ii][i]
           ..["isRoom"] = true
-          ..["raum"] = wantedRooms.intersection(rooms).toList()[0]
-          ..["allRooms"] = wantedRooms.intersection(rooms).toList();
+          ..["raum"] = wantedRooms.intersection(rooms).toList()[0];
       }
     }
   }
@@ -154,4 +169,11 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
   }
 
   return timetable;
+}
+
+Future<List> emptyRooms(day, stunde1, stunde2) async {
+  Set freeRoms = await loadRooms(day, stunde1, stunde2);
+  var wantedFreeRooms = wantedRoomsUserdefined.toSet().intersection(freeRoms);
+
+  return {...wantedFreeRooms, ...freeRoms}.toList();
 }

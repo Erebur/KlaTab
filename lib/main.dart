@@ -13,8 +13,8 @@ import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // should be changeable
-const _lightColorScheme = lightColorScheme_purple;
-const _darkColorScheme = darkColorScheme_purple;
+const _lightColorScheme = lightColorScheme_green;
+const _darkColorScheme = darkColorScheme_green;
 
 // should be today
 DateTime today = DateTime.now();
@@ -23,7 +23,7 @@ late Box hiveBox;
 // maybe offline storage
 List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
 List exams = [];
-List rooms = [];
+Set rooms = {};
 
 // to be persisted
 bool viewExams = true;
@@ -55,8 +55,9 @@ Future<void> main() async {
     viewNotes = hiveBox.get("viewNotes");
     viewRooms = hiveBox.get("viewRooms");
     group = hiveBox.get("group");
+    wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
   }
-  // wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
+
   setClasz();
   timetable = await loadTimeTable(token, onNetworkError: () {});
   runApp(const MyApp());

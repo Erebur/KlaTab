@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -24,6 +25,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
           return StatefulBuilder(builder: (context, setState) {
             return AlertDialog(
               backgroundColor: Theme.of(context).colorScheme.background,
+              scrollable: true,
               title: Text(AppLocalizations.of(context)!.settings),
               content: Form(
                   key: _formKey,
@@ -60,11 +62,11 @@ class _PageStundenplanState extends State<PageStundenplan> {
                             Text(AppLocalizations.of(context)!.viewRoomsDesc),
                         value: viewRooms,
                         onChanged: (value) async {
-                          viewRooms = !viewRooms;
+                          setState(() {
+                            viewRooms = !viewRooms;
+                          });
                           hiveBox.put('viewRooms', viewRooms);
-
                           timetable = await loadTimeTable(token);
-                          setState(() => {});
                         },
                       ),
                       ExpansionTile(
@@ -96,10 +98,15 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                         .replaceAll("]", "")
                                         .replaceAll(" ", "")),
                                 onSubmitted: (value) async {
-                                  setState(() => wantedRoomsUserdefined =
-                                      value.split(",").toList());
+                                  setState(() => wantedRoomsUserdefined = value
+                                      .split(",")
+                                      .map((e) => int.parse(e))
+                                      .toList());
                                   hiveBox.put('wantedRoomsUserdefined',
                                       wantedRoomsUserdefined);
+                                  print(hiveBox
+                                      .get("wantedRoomsUserdefined")
+                                      .runtimeType);
                                   timetable = await loadTimeTable(token);
                                 },
                               ),
@@ -249,7 +256,9 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                           DateFormat.EEEE(Platform.localeName)
                                                           .dateSymbols
                                                           .STANDALONEWEEKDAYS[
-                                                      today.weekday] ==
+                                                      today.weekday == 7
+                                                          ? 0
+                                                          : today.weekday] ==
                                                   e
                                               ? Theme.of(context)
                                                   .colorScheme
@@ -266,6 +275,54 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                       softWrap: false,
                                       text: TextSpan(text: "", children: [
                                         TextSpan(
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        StatefulBuilder(
+                                                            builder: (context,
+                                                                    setState) =>
+                                                                AlertDialog(
+                                                                  scrollable:
+                                                                      true,
+                                                                  backgroundColor: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .background,
+                                                                  title: const Text(
+                                                                      "Empty roooms"),
+                                                                  content:
+                                                                      FutureBuilder(
+                                                                    future: emptyRooms(
+                                                                        hour["allRooms"]
+                                                                            [0],
+                                                                        hour["allRooms"]
+                                                                            [1],
+                                                                        hour["allRooms"]
+                                                                            [
+                                                                            2]),
+                                                                    builder:
+                                                                        (context,
+                                                                            snapshot) {
+                                                                      if (snapshot
+                                                                          .hasData) {
+                                                                        return Column(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.start,
+                                                                          children: (snapshot.data as List)
+                                                                              .map((e) => Text(e.toString()))
+                                                                              .toList(),
+                                                                        );
+                                                                      } else {
+                                                                        return const Text(
+                                                                            "...");
+                                                                      }
+                                                                    },
+                                                                  ),
+                                                                )));
+                                                setState(() {});
+                                              },
                                             text:
                                                 "${hour["raum"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]}' : hour["lehrer"]}\n",
                                             style: Theme.of(context)
@@ -273,7 +330,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                                 .bodySmall),
                                         TextSpan(
                                             text:
-                                                "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${viewNotes && hour["notiz"] != "" ? '\n${hour["notiz"]}' : ''}",
+                                                "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${viewNotes && (hour["notiz"] != "" || hour["notiz2"] != "") ? '\n${hour["notiz"] != "" ? hour["notiz"] : hour["notiz2"]}' : ''}",
                                             style: TextStyle(
                                                 color: hour["istVertretung"] ==
                                                         true

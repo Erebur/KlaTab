@@ -25,7 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "add": MessageLookupByLibrary.simpleMessage("Hinzufügen"),
         "calendar": MessageLookupByLibrary.simpleMessage("Kalender"),
         "clasz": MessageLookupByLibrary.simpleMessage("Klasse"),
-        "compact": MessageLookupByLibrary.simpleMessage("kompakt"),
+        "compact": MessageLookupByLibrary.simpleMessage("Kompakt"),
         "empty_rooms": MessageLookupByLibrary.simpleMessage("Freie Raume"),
         "event": MessageLookupByLibrary.simpleMessage("Event"),
         "exams": MessageLookupByLibrary.simpleMessage("Prüfungen"),
@@ -60,7 +60,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewRooms":
             MessageLookupByLibrary.simpleMessage("Freie Raume anzeigen"),
         "viewRoomsDesc": MessageLookupByLibrary.simpleMessage(
-            "Zeigt freihe Raume in den Freistunden an\nHinweis:Raume der nächsten und vorherigen stunde werden vorgezogen"),
+            "Zeigt freihe Raume in den Freistunden an\nHinweis: Raume der nächsten und vorherigen stunde werden vorgezogen"),
         "wantedRooms":
             MessageLookupByLibrary.simpleMessage("Vorlieben für Freie Raume"),
         "wednesday": MessageLookupByLibrary.simpleMessage("Mittwoch")
