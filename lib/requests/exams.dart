@@ -3,12 +3,25 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:klatab/main.dart';
 
+List _exams = [];
+DateTime? _lastDay;
+String? _lastGrade;
+
 Future<List> loadExams() async {
-  var monday = today.subtract(Duration(days: today.weekday - 1));
+  var monday = wantedWeek.subtract(Duration(days: wantedWeek.weekday - 1));
+
+  if ((_lastDay != null &&
+          monday.toString().substring(0, 11) ==
+              _lastDay.toString().substring(0, 11)) &&
+      (_lastGrade != null && _lastGrade == grade)) {
+    return _exams;
+  }
+  _lastDay = monday;
+  _lastGrade = grade;
   try {
     var response = await http.get(
         Uri.parse(
-            "https://ux4.edvschule-plattling.de/klatab-reader/pruefungstermine/klasse?klasse=$clasz&datum=${monday.toString().substring(0, 10)}"),
+            "https://ux4.edvschule-plattling.de/klatab-reader/pruefungstermine/klasse?klasse=$grade&datum=${(wantedWeek == today ? wantedWeek : wantedWeek).subtract(Duration(days: wantedWeek.weekday - 1)).toString().substring(0, 10)}"),
         headers: {
           "authorization": "Basic $token",
           "content-type": "application/json"
@@ -28,7 +41,7 @@ Future<List> loadExams() async {
       [Duration(hours: 16, minutes: 15), Duration(hours: 17, minutes: 00)],
     ];
     // https://decomaan.github.io/google-calendar-link-generator/
-    List exams = jsonDecode(response.body)
+    _exams = jsonDecode(response.body)
         .map((item) => {
               "isExam": true,
               "fach": item["fach"],
@@ -59,7 +72,7 @@ Future<List> loadExams() async {
             "content-type": "application/json"
           });
       var jsonDecode2 = jsonDecode(response.body);
-      exams.addAll(jsonDecode2.map((item) {
+      _exams.addAll(jsonDecode2.map((item) {
         var start = DateTime.parse(item["datum_start"])
             .subtract(
                 DateTime.parse(item["datum_start"]).toLocal().timeZoneOffset)
@@ -86,7 +99,7 @@ Future<List> loadExams() async {
         };
       }).toList());
     }
-    return exams
+    return _exams
       ..sort(
         (a, b) => (a["start"] as DateTime).compareTo(b["start"] as DateTime),
       );

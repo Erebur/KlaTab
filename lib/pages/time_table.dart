@@ -8,14 +8,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:klatab/main.dart';
 
-class PageStundenplan extends StatefulWidget {
-  const PageStundenplan({Key? key}) : super(key: key);
+class PageTimetable extends StatefulWidget {
+  const PageTimetable({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _PageStundenplanState();
+  State<StatefulWidget> createState() => _PageTimetableState();
 }
 
-class _PageStundenplanState extends State<PageStundenplan> {
+class _PageTimetableState extends State<PageTimetable> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future<void> showInformationDialog(BuildContext context) async {
@@ -70,22 +70,10 @@ class _PageStundenplanState extends State<PageStundenplan> {
                               Text(AppLocalizations.of(context)!.groupInputs),
                           children: [
                             ListTile(
-                              title: Text(AppLocalizations.of(context)!.group),
-                              subtitle: TextField(
-                                keyboardType: TextInputType.number,
-                                controller: TextEditingController(
-                                    text: group.toString()),
-                                onSubmitted: (value) {
-                                  setState(() => group = int.parse(value));
-                                  hiveBox.put('group', group);
-                                },
-                              ),
-                            ),
-                            ListTile(
                               title: Text(
                                   AppLocalizations.of(context)!.wantedRooms),
                               subtitle: TextField(
-                                keyboardType: TextInputType.text,
+                                keyboardType: TextInputType.number,
                                 controller: TextEditingController(
                                     text: wantedRoomsUserdefined
                                         .toString()
@@ -103,9 +91,29 @@ class _PageStundenplanState extends State<PageStundenplan> {
                               ),
                             ),
                             ListTile(
+                              title: Text(AppLocalizations.of(context)!.group),
+                              subtitle: TextField(
+                                keyboardType: TextInputType.number,
+                                controller: TextEditingController(
+                                    text: group.toString()),
+                                onSubmitted: (value) {
+                                  setState(() => group = int.parse(value));
+                                  hiveBox.put('group', group);
+                                },
+                              ),
+                            ),
+                            ListTile(
                                 title:
                                     Text(AppLocalizations.of(context)!.clasz),
-                                subtitle: Text(clasz ?? "")),
+                                subtitle: TextField(
+                                    controller:
+                                        TextEditingController(text: grade),
+                                    onSubmitted: (value) {
+                                      setState(() {
+                                        grade = value;
+                                      });
+                                      hiveBox.put('grade', grade);
+                                    }))
                           ])
                     ],
                   )),
@@ -127,7 +135,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
                   splashColor: Theme.of(context).colorScheme.background,
                   highlightColor: Theme.of(context).colorScheme.background,
                   onPressed: () async {
-                    today = today.subtract(const Duration(days: 7));
+                    wantedWeek = wantedWeek.subtract(const Duration(days: 7));
                     setState(() {});
                   },
                   icon: Icon(
@@ -141,12 +149,12 @@ class _PageStundenplanState extends State<PageStundenplan> {
                   },
                   style: buttonStyleNoReaction(context),
                   onPressed: () async {
-                    today = DateTime.now();
+                    wantedWeek = today;
                     setState(() {});
                   },
                   child: Text(
-                    today
-                        .subtract(Duration(days: today.weekday - 1))
+                    wantedWeek
+                        .subtract(Duration(days: wantedWeek.weekday - 1))
                         .toString()
                         .substring(0, 10),
                     style: Theme.of(context).textTheme.bodyLarge,
@@ -156,7 +164,7 @@ class _PageStundenplanState extends State<PageStundenplan> {
                   splashColor: Theme.of(context).colorScheme.background,
                   highlightColor: Theme.of(context).colorScheme.background,
                   onPressed: () async {
-                    today = today.add(const Duration(days: 7));
+                    wantedWeek = wantedWeek.add(const Duration(days: 7));
                     setState(() {});
                   },
                   icon: Icon(
@@ -241,9 +249,10 @@ class _PageStundenplanState extends State<PageStundenplan> {
                                                               .localeName)
                                                           .dateSymbols
                                                           .STANDALONEWEEKDAYS[
-                                                      today.weekday == 7
+                                                      wantedWeek.weekday == 7
                                                           ? 0
-                                                          : today.weekday] ==
+                                                          : wantedWeek
+                                                              .weekday] ==
                                                   e
                                               ? Theme.of(context)
                                                   .colorScheme

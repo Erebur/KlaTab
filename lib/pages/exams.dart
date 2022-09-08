@@ -5,14 +5,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:klatab/main.dart';
 
-class PagePruefeungstermine extends StatefulWidget {
-  const PagePruefeungstermine({Key? key}) : super(key: key);
+class PageExams extends StatefulWidget {
+  const PageExams({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _PagePruefeungstermineState();
+  State<StatefulWidget> createState() => _PageExamsState();
 }
 
-class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
+class _PageExamsState extends State<PageExams> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,8 +41,12 @@ class _PagePruefeungstermineState extends State<PagePruefeungstermine> {
                 maintainState: true,
                 visible: weeklyOverview,
                 child: Timetable(
-                    controller:
-                        TimetableController(start: today, cellHeight: 40),
+                    controller: TimetableController(
+                        start: wantedWeek == today
+                            ? wantedWeek
+                            : wantedWeek.subtract(
+                                Duration(days: wantedWeek.weekday - 1)),
+                        cellHeight: 40),
                     itemBuilder: (item) => Container(
                           decoration: BoxDecoration(
                             color: (item.data as Map)["art"] == "SA"

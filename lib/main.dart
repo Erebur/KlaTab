@@ -17,7 +17,8 @@ var _lightColorScheme = lightColorScheme_pink;
 var _darkColorScheme = darkColorScheme_purple;
 
 // should be today
-DateTime today = DateTime.now();
+DateTime wantedWeek = DateTime.now();
+DateTime today = wantedWeek;
 late Box hiveBox;
 
 // maybe offline storage
@@ -35,7 +36,7 @@ List wantedRoomsUserdefined = [206, 2052, 2051, 207, 208];
 // don't, seriously don't
 bool addTermine = true;
 String? token;
-String? clasz;
+String? grade;
 
 // auto generated
 bool loggedIn = false;
@@ -56,9 +57,9 @@ Future<void> main() async {
     viewExams = hiveBox.get("viewExams");
     viewNotes = hiveBox.get("viewNotes");
     viewRooms = hiveBox.get("viewRooms");
-    hiveBox.put('weeklyOverview', weeklyOverview);
     weeklyOverview = hiveBox.get("weeklyOverview");
     group = hiveBox.get("group");
+    grade = hiveBox.get("grade");
     wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
   }
 
@@ -69,8 +70,9 @@ Future<void> main() async {
 
 void setClasz() {
   if (loggedIn) {
-    clasz = jsonDecode(
+    grade = jsonDecode(
         utf8.decode(base64Url.decode((token ?? "").split(".")[1])))["typValue"];
+    hiveBox.put('grade', grade);
   }
 }
 
@@ -134,8 +136,8 @@ class _MainPageState extends State<MainPage> {
   String password = "";
 
   var screens = [
-    const PageStundenplan(),
-    const PagePruefeungstermine(),
+    const PageTimetable(),
+    const PageExams(),
     const PageFreeRooms()
   ];
 
@@ -237,25 +239,33 @@ class _MainPageState extends State<MainPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextButton.icon(
                       onPressed: () async {
-                        var post = await http.post(
-                            Uri.parse(
-                                "https://ux4.edvschule-plattling.de/klatab-reader/user/login"),
-                            headers: {
-                              "content-type": "application/json",
-                              "accept": "application/json",
-                            },
-                            body: json.encode(
-                                {"username": username, "password": password}));
+                        var post;
+                        bool? result;
+                        try {
+                          post = await http.post(
+                              Uri.parse(
+                                  "https://ux4.edvschule-plattling.de/klatab-reader/user/login"),
+                              headers: {
+                                "content-type": "application/json",
+                                "accept": "application/json",
+                              },
+                              body: json.encode({
+                                "username": username,
+                                "password": password
+                              }));
+                          result = jsonDecode(post.body);
+                        } catch (e) {}
 
                         Fluttertoast.showToast(
-                            msg: jsonDecode(post.body)["token"] != null
+                            msg: (result != null && result) || result == null
                                 ? AppLocalizations.of(context)!.login_res
                                 : AppLocalizations.of(context)!.login_res_fail,
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
                             timeInSecForIosWeb: 1,
                             fontSize: 14.0);
-                        if (jsonDecode(post.body)["token"] != null) {
+                        if (result == null &&
+                            jsonDecode(post.body)["token"] != null) {
                           Hive.box('myBox')
                               .put('token', jsonDecode(post.body)["token"]);
                           token = jsonDecode(post.body)["token"];

@@ -8,27 +8,34 @@ import 'package:klatab/requests/rooms.dart';
 
 import 'exams.dart';
 
+Map week = {
+  "montag": [],
+  "dienstag": [],
+  "mittwoch": [],
+  "donnerstag": [],
+  "freitag": []
+};
+DateTime? _lastDay;
+String? _lastGrade;
+
 Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
   bool online = true;
-  var monday = today.subtract(Duration(days: today.weekday - 1));
-
-  Map week = {
-    "montag": [],
-    "dienstag": [],
-    "mittwoch": [],
-    "donnerstag": [],
-    "freitag": []
-  };
-
-  var timetable = [[], [], [], [], [], [], [], [], [], [], []];
-  var days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"];
-
-  if (token != null) {
+  var monday = wantedWeek.subtract(Duration(days: wantedWeek.weekday - 1));
+// (_lastDay == null && _lastGrade == null) ||
+  // (monday.toString().substring(0, 11) !=
+  //             _lastDay.toString().substring(0, 11) &&
+//               _lastGrade != grade) &&
+//           token != null
+  if (token != null &&
+      (!(_lastDay != null &&
+              monday.toString().substring(0, 11) ==
+                  _lastDay.toString().substring(0, 11)) ||
+          (_lastGrade != null && _lastGrade != grade))) {
     http.Response response;
     try {
       response = await http.get(
           Uri.parse(
-              "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=$clasz&datum=${monday.toString().substring(0, 10)}"),
+              "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=$grade&datum=${monday.toString().substring(0, 10)}"),
           headers: {
             "authorization": "Basic $token",
             "undefinedaccept": "application/json"
@@ -39,7 +46,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
       online = false;
       if (token != null) {
         Fluttertoast.showToast(
-            msg: "not able to load Timetable",
+            msg: "Not able to load Timetable",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
@@ -49,6 +56,12 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
       }
     }
   }
+
+  _lastDay = monday;
+  _lastGrade = grade;
+
+  List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
+  var days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"];
 
   for (var i = 0; i < 5; i++) {
     List? day = week[days[i]];
