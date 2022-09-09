@@ -21,11 +21,9 @@ String? _lastGrade;
 Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
   bool online = true;
   var monday = wantedWeek.subtract(Duration(days: wantedWeek.weekday - 1));
-// (_lastDay == null && _lastGrade == null) ||
-  // (monday.toString().substring(0, 11) !=
-  //             _lastDay.toString().substring(0, 11) &&
-//               _lastGrade != grade) &&
-//           token != null
+  if (token != null && grade == null) {
+    setGrade();
+  }
   if (token != null &&
       (!(_lastDay != null &&
               monday.toString().substring(0, 11) ==

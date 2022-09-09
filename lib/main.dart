@@ -52,7 +52,7 @@ Future<void> main() async {
     hiveBox.put('viewRooms', viewRooms);
     hiveBox.put('weeklyOverview', weeklyOverview);
     hiveBox.put('group', group);
-    hiveBox.put('grade', null);
+    // hiveBox.put('grade', null);
     hiveBox.put('wantedRoomsUserdefined', wantedRoomsUserdefined);
   } else {
     viewExams = hiveBox.get("viewExams");
@@ -60,23 +60,20 @@ Future<void> main() async {
     viewRooms = hiveBox.get("viewRooms");
     // weeklyOverview = hiveBox.get("weeklyOverview");
     group = hiveBox.get("group");
-    grade = hiveBox.get("grade");
     wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
+    setGrade();
   }
 
-  // setGrade();
   timetable = await loadTimeTable(token, onNetworkError: () {});
   runApp(const MyApp());
 }
 
 void setGrade() {
   try {
-    if (loggedIn) {
-      var loginInformation = (token ?? "").split(".")[1];
-      var tmp = jsonDecode(utf8.decode(base64Url.decode(loginInformation)));
-      grade = tmp["typValue"];
-      hiveBox.put('grade', grade);
-    }
+    var loginInformation = (token ?? "").split(".")[1];
+    var tmp = jsonDecode(utf8.decode(base64Url.decode(loginInformation)));
+    grade = tmp["typValue"];
+    hiveBox.put('grade', grade);
   } catch (e) {
     print(e);
   }
@@ -281,10 +278,9 @@ class _MainPageState extends State<MainPage> {
                           setState(() {
                             token = tmp["token"];
                             loggedIn = true;
+                            setGrade();
                           });
-                          setGrade();
-                          Hive.box('myBox')
-                              .put('token', jsonDecode(post.body)["token"]);
+                          Hive.box('myBox').put('token', tmp["token"]);
                         }
                       },
                       label: Text(AppLocalizations.of(context)!.login),
