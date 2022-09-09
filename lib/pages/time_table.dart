@@ -113,13 +113,7 @@ class _PageTimetableState extends State<PageTimetable> {
                                         grade = value;
                                       });
                                       hiveBox.put('grade', grade);
-                                    })),
-                            ListTile(
-                                title: Text("Token"),
-                                subtitle: TextField(
-                                    controller:
-                                        TextEditingController(text: token),
-                                    ))
+                                    }))
                           ])
                     ],
                   )),
