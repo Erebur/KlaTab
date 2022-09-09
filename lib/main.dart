@@ -14,7 +14,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // should be changeable
 var _lightColorScheme = lightColorScheme_pink;
-var _darkColorScheme = darkColorScheme_purple;
+var _darkColorScheme = darkColorScheme_default;
 
 // should be today
 DateTime wantedWeek = DateTime.now();
@@ -52,27 +52,33 @@ Future<void> main() async {
     hiveBox.put('viewRooms', viewRooms);
     hiveBox.put('weeklyOverview', weeklyOverview);
     hiveBox.put('group', group);
+    hiveBox.put('grade', null);
     hiveBox.put('wantedRoomsUserdefined', wantedRoomsUserdefined);
   } else {
     viewExams = hiveBox.get("viewExams");
     viewNotes = hiveBox.get("viewNotes");
     viewRooms = hiveBox.get("viewRooms");
-    weeklyOverview = hiveBox.get("weeklyOverview");
+    // weeklyOverview = hiveBox.get("weeklyOverview");
     group = hiveBox.get("group");
     grade = hiveBox.get("grade");
     wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
   }
 
-  setClasz();
+  // setGrade();
   timetable = await loadTimeTable(token, onNetworkError: () {});
   runApp(const MyApp());
 }
 
-void setClasz() {
-  if (loggedIn) {
-    grade = jsonDecode(
-        utf8.decode(base64Url.decode((token ?? "").split(".")[1])))["typValue"];
-    hiveBox.put('grade', grade);
+void setGrade() {
+  try {
+    if (loggedIn) {
+      var loginInformation = (token ?? "").split(".")[1];
+      var tmp = jsonDecode(utf8.decode(base64Url.decode(loginInformation)));
+      grade = tmp["typValue"];
+      hiveBox.put('grade', grade);
+    }
+  } catch (e) {
+    print(e);
   }
 }
 
@@ -197,7 +203,13 @@ class _MainPageState extends State<MainPage> {
               PopupMenuItem(
                 onTap: () {
                   token = null;
-                  Hive.box('myBox').delete("token");
+                  hiveBox.delete("token");
+                  hiveBox.delete('viewExams');
+                  hiveBox.delete('viewNotes');
+                  hiveBox.delete('viewRooms');
+                  hiveBox.delete('weeklyOverview');
+                  hiveBox.delete('group');
+                  hiveBox.delete('wantedRoomsUserdefined');
                   setState(() {
                     loggedIn = false;
                   });
@@ -255,7 +267,7 @@ class _MainPageState extends State<MainPage> {
                               }));
                           result = jsonDecode(post.body);
                         } catch (e) {}
-
+                        var tmp = jsonDecode(post.body);
                         Fluttertoast.showToast(
                             msg: (result != null && result) || result == null
                                 ? AppLocalizations.of(context)!.login_res
@@ -264,14 +276,15 @@ class _MainPageState extends State<MainPage> {
                             gravity: ToastGravity.BOTTOM,
                             timeInSecForIosWeb: 1,
                             fontSize: 14.0);
-                        if (result == null &&
-                            jsonDecode(post.body)["token"] != null) {
+
+                        if (tmp["token"] != null) {
+                          setState(() {
+                            token = tmp["token"];
+                            loggedIn = true;
+                          });
+                          setGrade();
                           Hive.box('myBox')
                               .put('token', jsonDecode(post.body)["token"]);
-                          token = jsonDecode(post.body)["token"];
-                          loggedIn = true;
-                          setClasz();
-                          setState(() {});
                         }
                       },
                       label: Text(AppLocalizations.of(context)!.login),
