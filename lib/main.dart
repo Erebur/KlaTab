@@ -52,7 +52,6 @@ Future<void> main() async {
     hiveBox.put('viewRooms', viewRooms);
     hiveBox.put('weeklyOverview', weeklyOverview);
     hiveBox.put('group', group);
-    // hiveBox.put('grade', null);
     hiveBox.put('wantedRoomsUserdefined', wantedRoomsUserdefined);
   } else {
     viewExams = hiveBox.get("viewExams");
@@ -61,7 +60,7 @@ Future<void> main() async {
     // weeklyOverview = hiveBox.get("weeklyOverview");
     group = hiveBox.get("group");
     wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
-    setGrade();
+    // setGrade();
   }
 
   timetable = await loadTimeTable(token, onNetworkError: () {});
@@ -70,8 +69,8 @@ Future<void> main() async {
 
 void setGrade() {
   try {
-    var loginInformation = (token ?? "").split(".")[1];
-    var tmp = jsonDecode(utf8.decode(base64Url.decode(loginInformation)));
+    var tmp = jsonDecode(utf8.decode(
+        base64Url.decode(base64.normalize((token ?? "").split(".")[1]))));
     grade = tmp["typValue"];
     hiveBox.put('grade', grade);
   } catch (e) {
@@ -243,45 +242,15 @@ class _MainPageState extends State<MainPage> {
                     autofillHints: const [AutofillHints.password],
                     obscureText: true,
                     keyboardType: TextInputType.visiblePassword,
+                    onSubmitted: (value) async {
+                      await login();
+                    },
                     onChanged: (value) => setState((() => password = value))),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextButton.icon(
                       onPressed: () async {
-                        var post;
-                        bool? result;
-                        try {
-                          post = await http.post(
-                              Uri.parse(
-                                  "https://ux4.edvschule-plattling.de/klatab-reader/user/login"),
-                              headers: {
-                                "content-type": "application/json",
-                                "accept": "application/json",
-                              },
-                              body: json.encode({
-                                "username": username,
-                                "password": password
-                              }));
-                          result = jsonDecode(post.body);
-                        } catch (e) {}
-                        var tmp = jsonDecode(post.body);
-                        Fluttertoast.showToast(
-                            msg: (result != null && result) || result == null
-                                ? AppLocalizations.of(context)!.login_res
-                                : AppLocalizations.of(context)!.login_res_fail,
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            fontSize: 14.0);
-
-                        if (tmp["token"] != null) {
-                          setState(() {
-                            token = tmp["token"];
-                            loggedIn = true;
-                            setGrade();
-                          });
-                          Hive.box('myBox').put('token', tmp["token"]);
-                        }
+                        await login();
                       },
                       label: Text(AppLocalizations.of(context)!.login),
                       icon: const Icon(Icons.login_outlined)),
@@ -298,4 +267,38 @@ class _MainPageState extends State<MainPage> {
           centerTitle: true,
           scrolledUnderElevation: 3),
       backgroundColor: Theme.of(context).colorScheme.background);
+
+  Future<void> login() async {
+    var post;
+    bool? result;
+    try {
+      post = await http.post(
+          Uri.parse(
+              "https://ux4.edvschule-plattling.de/klatab-reader/user/login"),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json",
+          },
+          body: json.encode({"username": username, "password": password}));
+      result = jsonDecode(post.body);
+    } catch (e) {}
+    var tmp = jsonDecode(post.body);
+    Fluttertoast.showToast(
+        msg: (result != null && result) || result == null
+            ? AppLocalizations.of(context)!.login_res
+            : AppLocalizations.of(context)!.login_res_fail,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        fontSize: 14.0);
+
+    if (tmp["token"] != null) {
+      setState(() {
+        token = tmp["token"];
+        loggedIn = true;
+        setGrade();
+      });
+      Hive.box('myBox').put('token', tmp["token"]);
+    }
+  }
 }

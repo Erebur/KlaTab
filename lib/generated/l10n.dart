@@ -60,10 +60,10 @@ class S {
     );
   }
 
-  /// `Exams`
+  /// `Events`
   String get exams {
     return Intl.message(
-      'Exams',
+      'Events',
       name: 'exams',
       desc: '',
       args: [],
