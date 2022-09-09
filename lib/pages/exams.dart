@@ -33,110 +33,110 @@ class _PageExamsState extends State<PageExams> {
         //     (Theme.of(context).textTheme.bodyMedium?.fontSize ?? 10) + 10,
         backgroundColor: Theme.of(context).colorScheme.background,
       ),
-      body: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 5),
-          child: Stack(
-            children: [
-              Visibility(
-                maintainState: true,
-                visible: weeklyOverview,
-                child: Timetable(
-                    controller: TimetableController(
-                        start: wantedWeek == today
-                            ? wantedWeek
-                            : wantedWeek.subtract(
-                                Duration(days: wantedWeek.weekday - 1)),
-                        cellHeight: 40),
-                    itemBuilder: (item) => Container(
-                          decoration: BoxDecoration(
-                            color: (item.data as Map)["art"] == "SA"
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.secondary,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: TextButton(
-                            onPressed: () {},
-                            child: Center(
-                              child: Text(
-                                "${(item.data as Map)["fach"]} ${(item.data as Map)["art"]}",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .background),
-                              ),
-                            ),
+      body: Stack(
+        children: [
+          Visibility(
+            maintainState: true,
+            visible: weeklyOverview,
+            child: Timetable(
+                controller: TimetableController(
+                    start: wantedWeek == today
+                        ? wantedWeek
+                        : wantedWeek
+                            .subtract(Duration(days: wantedWeek.weekday - 1)),
+                    cellHeight: 40),
+                itemBuilder: (item) => Container(
+                      decoration: BoxDecoration(
+                        color: (item.data as Map)["art"] == "SA"
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.secondary,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: TextButton(
+                        onPressed: () {},
+                        child: Center(
+                          child: Text(
+                            "${(item.data as Map)["fach"]} ${(item.data as Map)["art"]}",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color:
+                                    Theme.of(context).colorScheme.background),
                           ),
                         ),
-                    items: exams
-                        .map((item) => TimetableItem(item["start"], item["end"],
-                            data: item))
-                        .toList()),
-              ),
-              Visibility(
-                  maintainState: true,
-                  visible: !weeklyOverview,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: exams
-                          .map(
-                            (item) => Row(
-                              children: [
-                                Expanded(
-                                  child: Card(
-                                    child: SizedBox(
-                                      height: 130,
-                                      child: Padding(
-                                        padding: EdgeInsets.all(10),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Expanded(
-                                                child: item["isExam"]
-                                                    ? examsItem(item)
-                                                    : eventItem(item)),
-                                            TextButton(
-                                                onPressed: () => launchUrl(
-                                                    Uri.parse(item["link"]),
-                                                    mode: LaunchMode
-                                                        .externalApplication),
-                                                child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      const Icon(
-                                                          Icons.calendar_month),
-                                                      Text(
-                                                        AppLocalizations.of(
-                                                                context)!
-                                                            .add,
-                                                        style: TextStyle(
-                                                            fontSize: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodySmall
-                                                                ?.fontSize),
-                                                      )
-                                                    ]))
-                                          ],
-                                        ),
+                      ),
+                    ),
+                items: exams
+                    .map((item) =>
+                        TimetableItem(item["start"], item["end"], data: item))
+                    .toList()),
+          ),
+          Visibility(
+              maintainState: true,
+              visible: !weeklyOverview,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: exams
+                      .map(
+                        (item) => Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 20, right: 20, bottom: 5),
+                                child: Card(
+                                  child: SizedBox(
+                                    height: 130,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                              child: item["isExam"]
+                                                  ? examsItem(item)
+                                                  : eventItem(item)),
+                                          TextButton(
+                                              onPressed: () => launchUrl(
+                                                  Uri.parse(item["link"]),
+                                                  mode: LaunchMode
+                                                      .externalApplication),
+                                              child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.calendar_month),
+                                                    Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .add,
+                                                      style: TextStyle(
+                                                          fontSize:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodySmall
+                                                                  ?.fontSize),
+                                                    )
+                                                  ]))
+                                        ],
                                       ),
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ))
-            ],
-          )),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ),
+              ))
+        ],
+      ),
     );
   }
 

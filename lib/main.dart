@@ -11,10 +11,11 @@ import 'package:klatab/pages/rooms.dart';
 import 'package:klatab/pages/time_table.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:universal_io/io.dart';
 
 // should be changeable
-var _lightColorScheme = lightColorScheme_pink;
-var _darkColorScheme = darkColorScheme_default;
+var _lightColorScheme = lightColorScheme_blue;
+var _darkColorScheme = darkColorScheme_blue;
 
 // should be today
 DateTime wantedWeek = DateTime.now();
@@ -62,6 +63,9 @@ Future<void> main() async {
     wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
     // setGrade();
   }
+  if (Platform.isLinux) {
+    _darkColorScheme = darkColorScheme_purple;
+  }
 
   timetable = await loadTimeTable(token, onNetworkError: () {});
   runApp(const MyApp());
@@ -98,12 +102,18 @@ class MyApp extends StatelessWidget {
         title: 'KlaTab',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            hoverColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            colorScheme: lightColorScheme ?? _lightColorScheme,
-            useMaterial3: true,
-            scaffoldBackgroundColor: Colors.transparent),
+          hoverColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          colorScheme: lightColorScheme ?? _lightColorScheme,
+          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.transparent,
+          tooltipTheme: const TooltipThemeData(
+              textStyle: TextStyle(color: Colors.transparent),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+              )),
+        ),
         darkTheme: ThemeData(
           hoverColor: Colors.transparent,
           highlightColor: Colors.transparent,
@@ -164,7 +174,7 @@ class _MainPageState extends State<MainPage> {
   Scaffold mainPage() => Scaffold(
       primary: true,
       bottomNavigationBar: NavigationBar(
-        // backgroundColor: Theme.of(context).colorScheme.background,
+        // backgroundColor: Theme.of(context).,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         height: 70,
         selectedIndex: index,
