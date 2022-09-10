@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/date_time_patterns.dart';
 import 'package:klatab/main.dart';
 import 'package:klatab/requests/rooms.dart';
 
@@ -87,9 +88,20 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
               day[hour + 1]["gruppe"] == 0 ||
               day[hour + 2]["gruppe"] == 0)) {
         // wtf how bad is this api, seriously why ?
-        day.removeWhere(
-            (element) => element["stunde"] == ii && element["gruppe"] == 0);
+        var h1 = day[hour];
+        var h2 = day[hour + 1];
+        var h3 = day[hour + 2];
+        if (h1["gruppe"] == 0) {
+          day.remove(h1);
+        } else {
+          day.remove(h1);
+          day.remove(h2);
+        }
         ii--;
+        // day.removeWhere((element) =>
+        //     element["stunde"] == ii &&
+        //     (element["gruppe"] == 0 && element["istVertretung"] == true));
+
         continue;
       }
 
