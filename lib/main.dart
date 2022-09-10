@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:klatab/color_schemes.g.dart';
 import 'package:klatab/pages/exams.dart';
 import 'package:klatab/pages/rooms.dart';
@@ -12,9 +14,10 @@ import 'package:klatab/pages/time_table.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:universal_io/io.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // should be changeable
-var _lightColorScheme = lightColorScheme_blue;
+var _lightColorScheme = lightColorScheme_red;
 var _darkColorScheme = darkColorScheme_blue;
 
 // should be today
@@ -167,9 +170,79 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     if (!loggedIn) {
       return loginPage();
+    } else if (MediaQuery.of(context).size < const Size(200, 200)) {
+      return wearOSPage();
+    } else {
+      return mainPage();
     }
-    return mainPage();
   }
+
+  Scaffold wearOSPage() => Scaffold(
+        primary: true,
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: Column(
+          children: [
+            Text(DateTime.now().toString().substring(11, 16)),
+            Text(DateFormat.EEEE(Platform.localeName)
+                .dateSymbols
+                .WEEKDAYS[today.weekday == 7 ? 0 : today.weekday]),
+            Expanded(
+              child: Container(
+                alignment: Alignment.center,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              children: const [
+                                Text("Fach"),
+                                Text("Lehrer"),
+                                Text("Raum"),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Java",
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                ),
+                                Text(
+                                  "Ro",
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                ),
+                                Text(
+                                  "207",
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      );
 
   Scaffold mainPage() => Scaffold(
       primary: true,
