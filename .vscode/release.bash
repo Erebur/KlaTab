@@ -14,6 +14,7 @@ mkdir  $site/$name
 
 cp $this/build/app/outputs/flutter-apk/app-release.apk $site/releases/$name.apk
 cp -r $this/build/web/*  $site/$name/
-# git add * 
-# git commit -a -m "update"
-# git push 
+
+git add * 
+git commit -a -m "update"
+git push 

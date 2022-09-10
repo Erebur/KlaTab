@@ -321,7 +321,7 @@ class _PageTimetableState extends State<PageTimetable> {
                                                         setState(() {});
                                                       },
                                                 text:
-                                                    "${hour["raum"]} ${hour["lehrer"]} ${hour["raum2"] != "" ? ' -  ${hour["raum"]} ${hour["lehrer"]}' : ''}\n",
+                                                    "${hour["raum"]} ${hour["lehrer"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]} ${hour["lehrer2"]}' : ''}\n",
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodySmall),
