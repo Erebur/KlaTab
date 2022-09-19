@@ -1,7 +1,7 @@
 {
   "timetable": "Stundenplan",
   "exams": "Termine",
-  "empty_rooms": "Freie Raume",
+  "empty_rooms": "Freie Räume",
   "time": "Zeit",
   "monday": "Montag",
   "tuesday": "Dienstag",
@@ -25,12 +25,12 @@
   "networkError": "wir konnten keine verbindung mit der Netzwerkwolke herstellen",
   "networkErrorDescription": "Die Daten aus der Wolke konnten nicht gezogen werden",
   "event": "Event",
-  "viewRooms": "Freie Raume anzeigen (Alpha)",
-  "viewRoomsDesc": "Zeigt freihe Raume in den Freistunden an\nHinweis: Raume der nächsten und vorherigen stunde werden vorgezogen",
+  "viewRooms": "Freie Räume anzeigen (Alpha)",
+  "viewRoomsDesc": "Zeigt freihe Räume in den Freistunden an\nHinweis: Räume der nächsten und vorherigen stunde werden vorgezogen",
   "group":"Gruppe",  
   "clasz":"Klasse",
   "groupInputs":"Klassen Einstellunen",
-  "wantedRooms":"Vorlieben für Freie Raume",
-  "mixEvents":"Termine Mixen",
+  "wantedRooms":"Vorlieben für Freie Räume",
+  "mixEvents":"Termine zur Prüfungsseite Hinzufügen",
   "mixEventsDesc":"Termine zur Prüfungsseite Hinzufügen"
 }

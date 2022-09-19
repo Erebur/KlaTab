@@ -30,5 +30,7 @@
   "group":"Group",
   "clasz":"Grade",
   "groupInputs":"Grade Settings",
-  "wantedRooms":"Free Rooms preferences"  
+  "wantedRooms":"Free Rooms preferences" ,
+  "mixEvents":"Show Events in Exams Tab",
+  "mixEventsDesc":"Events will be added to the Exams Tab"
 }

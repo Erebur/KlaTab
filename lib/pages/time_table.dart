@@ -68,8 +68,6 @@ class _PageTimetableState extends State<PageTimetable> {
                       SwitchListTile(
                         activeColor: Theme.of(context).colorScheme.primary,
                         title: Text(AppLocalizations.of(context)!.mixEvents),
-                        subtitle:
-                            Text(AppLocalizations.of(context)!.mixEventsDesc),
                         value: viewRooms,
                         onChanged: (value) {
                           setState(() =>  addTermine= !addTermine);
