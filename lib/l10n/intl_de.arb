@@ -30,5 +30,7 @@
   "group":"Gruppe",  
   "clasz":"Klasse",
   "groupInputs":"Klassen Einstellunen",
-  "wantedRooms":"Vorlieben für Freie Raume"
+  "wantedRooms":"Vorlieben für Freie Raume",
+  "mixEvents":"Termine Mixen",
+  "mixEventsDesc":"Termine zur Prüfungsseite Hinzufügen"
 }
