@@ -36,10 +36,10 @@ bool viewExams = true;
 bool viewNotes = true;
 bool viewRooms = false;
 bool weeklyOverview = false;
+bool addTermine = true;
 int group = 1;
 List wantedRoomsUserdefined = [206, 2052, 2051, 207, 208];
-// don't, seriously don't
-bool addTermine = true;
+
 String? token;
 String? grade;
 
@@ -55,6 +55,7 @@ Future<void> main() async {
     hiveBox.put('viewExams', viewExams);
     hiveBox.put('viewNotes', viewNotes);
     hiveBox.put('viewRooms', viewRooms);
+    hiveBox.put('addTermine', addTermine);
     hiveBox.put('weeklyOverview', weeklyOverview);
     hiveBox.put('group', group);
     hiveBox.put('wantedRoomsUserdefined', wantedRoomsUserdefined);
@@ -65,7 +66,12 @@ Future<void> main() async {
     // weeklyOverview = hiveBox.get("weeklyOverview");
     group = hiveBox.get("group");
     wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
-    // setGrade();
+    // if updates
+    try {
+      addTermine = hiveBox.get("addTermine");
+    }catch (e){
+      hiveBox.put('addTermine', addTermine);
+    }
   }
   if (Platform.isLinux) {
     _darkColorScheme = darkColorScheme_purple;

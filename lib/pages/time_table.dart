@@ -65,6 +65,15 @@ class _PageTimetableState extends State<PageTimetable> {
                           hiveBox.put('viewRooms', viewRooms);
                         },
                       ),
+                      SwitchListTile(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        title: Text(AppLocalizations.of(context)!.mixEvents),
+                        value: viewRooms,
+                        onChanged: (value) {
+                          setState(() =>  addTermine= !addTermine);
+                          hiveBox.put('addTermine', addTermine);
+                        },
+                      ),
                       ExpansionTile(
                           title:
                               Text(AppLocalizations.of(context)!.groupInputs),
