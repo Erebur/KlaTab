@@ -56,8 +56,10 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
     }
   }
 
-  _lastDay = monday;
-  _lastGrade = grade;
+  if (token != null) {
+    _lastDay = monday;
+    _lastGrade = grade;
+  }
 
   List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
   var days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"];

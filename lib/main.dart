@@ -14,14 +14,15 @@ import 'package:klatab/pages/time_table.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:universal_io/io.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 // should be changeable
 var _lightColorScheme = lightColorScheme_red;
 var _darkColorScheme = darkColorScheme_blue;
 
 // should be today
-DateTime wantedWeek = DateTime.now();
+DateTime wantedWeek = DateTime.now().weekday > 5
+    ? DateTime.now().add(Duration(days: 7 - (DateTime.now().weekday - 1)))
+    : DateTime.now();
 DateTime today = wantedWeek;
 late Box hiveBox;
 
@@ -283,12 +284,7 @@ class _MainPageState extends State<MainPage> {
                 onTap: () {
                   token = null;
                   hiveBox.delete("token");
-                  hiveBox.delete('viewExams');
-                  hiveBox.delete('viewNotes');
-                  hiveBox.delete('viewRooms');
-                  hiveBox.delete('weeklyOverview');
                   hiveBox.delete('group');
-                  hiveBox.delete('wantedRoomsUserdefined');
                   setState(() {
                     loggedIn = false;
                   });
