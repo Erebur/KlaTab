@@ -7,6 +7,7 @@ name=klatab
 cd $this
 flutter build apk
 flutter build web
+flutter build linux
 
 cd $site
 git pull
