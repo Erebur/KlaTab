@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:klatab/requests/exams.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:universal_io/io.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -68,9 +69,10 @@ class _PageTimetableState extends State<PageTimetable> {
                       SwitchListTile(
                         activeColor: Theme.of(context).colorScheme.primary,
                         title: Text(AppLocalizations.of(context)!.mixEvents),
+                        subtitle: Text(AppLocalizations.of(context)!.mixEventsDesc),
                         value: addTermine,
                         onChanged: (value) {
-                          setState(() =>  addTermine= !addTermine);
+                          setState(() => addTermine = !addTermine);
                           hiveBox.put('addTermine', addTermine);
                         },
                       ),
@@ -276,7 +278,8 @@ class _PageTimetableState extends State<PageTimetable> {
                                   : timetable)
                               .map((day) => DataRow(
                                   cells: day
-                                      .map((hour) => hourDataCell(context, hour))
+                                      .map(
+                                          (hour) => hourDataCell(context, hour))
                                       .toList()))
                               .toList(),
                         );

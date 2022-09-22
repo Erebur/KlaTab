@@ -26,7 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "calendar": MessageLookupByLibrary.simpleMessage("Kalender"),
         "clasz": MessageLookupByLibrary.simpleMessage("Klasse"),
         "compact": MessageLookupByLibrary.simpleMessage("Kompakt"),
-        "empty_rooms": MessageLookupByLibrary.simpleMessage("Freie Raume"),
+        "empty_rooms": MessageLookupByLibrary.simpleMessage("Freie Räume"),
         "event": MessageLookupByLibrary.simpleMessage("Event"),
         "exams": MessageLookupByLibrary.simpleMessage("Termine"),
         "friday": MessageLookupByLibrary.simpleMessage("Freitag"),
@@ -42,6 +42,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "login_res_fail":
             MessageLookupByLibrary.simpleMessage("Anmelden Fehlgeschlagen"),
         "logout": MessageLookupByLibrary.simpleMessage("Abmelden"),
+        "mixEvents": MessageLookupByLibrary.simpleMessage(
+            "Termine zur Prüfungsseite Hinzufügen"),
+        "mixEventsDesc": MessageLookupByLibrary.simpleMessage(
+            "änderung der aktuellen woche zum übernehmen benötigt"),
         "monday": MessageLookupByLibrary.simpleMessage("Montag"),
         "networkError": MessageLookupByLibrary.simpleMessage(
             "wir konnten keine verbindung mit der Netzwerkwolke herstellen"),
@@ -58,11 +62,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewNotesDesc": MessageLookupByLibrary.simpleMessage(
             "Notizen unter den Fächern können bei Vertretungsstunden (oder Selten auch bei Prüfungen) eingetragen sein"),
         "viewRooms": MessageLookupByLibrary.simpleMessage(
-            "Freie Raume anzeigen (Alpha)"),
+            "Freie Räume anzeigen (Alpha)"),
         "viewRoomsDesc": MessageLookupByLibrary.simpleMessage(
-            "Zeigt freihe Raume in den Freistunden an\nHinweis: Raume der nächsten und vorherigen stunde werden vorgezogen"),
+            "Zeigt freihe Räume in den Freistunden an\nHinweis: Räume der nächsten und vorherigen stunde werden vorgezogen"),
         "wantedRooms":
-            MessageLookupByLibrary.simpleMessage("Vorlieben für Freie Raume"),
+            MessageLookupByLibrary.simpleMessage("Vorlieben für Freie Räume"),
         "wednesday": MessageLookupByLibrary.simpleMessage("Mittwoch")
       };
 }

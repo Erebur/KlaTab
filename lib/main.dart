@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +16,7 @@ import 'package:universal_io/io.dart';
 
 // should be changeable
 var _lightColorScheme = lightColorScheme_red;
-var _darkColorScheme = darkColorScheme_blue;
+var _darkColorScheme = darkColorScheme_pink;
 
 // should be today
 DateTime wantedWeek = DateTime.now().weekday > 5
@@ -69,7 +68,7 @@ Future<void> main() async {
     // if updates
     try {
       addTermine = hiveBox.get("addTermine");
-    }catch (e){
+    } catch (e) {
       hiveBox.put('addTermine', addTermine);
     }
   }

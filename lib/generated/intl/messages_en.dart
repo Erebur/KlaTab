@@ -41,6 +41,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "login_res_fail":
             MessageLookupByLibrary.simpleMessage("Error logging in"),
         "logout": MessageLookupByLibrary.simpleMessage("Logout"),
+        "mixEvents":
+            MessageLookupByLibrary.simpleMessage("Show Events in Exams Tab"),
+        "mixEventsDesc": MessageLookupByLibrary.simpleMessage(
+            "changing of the current week required"),
         "monday": MessageLookupByLibrary.simpleMessage("Monday"),
         "networkError":
             MessageLookupByLibrary.simpleMessage("Connection not possible "),

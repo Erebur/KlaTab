@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/date_time_patterns.dart';
 import 'package:klatab/main.dart';
 import 'package:klatab/requests/rooms.dart';
 
@@ -52,6 +50,8 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
             // backgroundColor:
             //     Theme.of(context).colorScheme.background,
             fontSize: 14.0);
+        // List<List> lasttimetable = hiveBox.get("lasttimetable");
+        // return lasttimetable;
       }
     }
   }
@@ -192,7 +192,9 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
       }
     }
   }
-
+  // List<List> test = timetable;
+  // await hiveBox.put('lasttimetable', test);
+  print(timetable);
   return timetable;
 }
 

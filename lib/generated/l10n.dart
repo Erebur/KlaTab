@@ -369,6 +369,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Show Events in Exams Tab`
+  String get mixEvents {
+    return Intl.message(
+      'Show Events in Exams Tab',
+      name: 'mixEvents',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `changing of the current week required`
+  String get mixEventsDesc {
+    return Intl.message(
+      'changing of the current week required',
+      name: 'mixEventsDesc',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
