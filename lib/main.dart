@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:klatab/color_schemes.g.dart';
 import 'package:klatab/pages/exams.dart';
-import 'package:klatab/pages/rooms.dart';
 import 'package:klatab/pages/time_table.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -24,7 +23,7 @@ DateTime wantedWeek = DateTime.now().weekday > 5
     : DateTime.now();
 DateTime today = wantedWeek;
 late Box hiveBox;
-
+String title = "KlaTab";
 // maybe offline storage
 List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
 List exams = [];
@@ -152,6 +151,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   int index = 0;
   String username = "";
   String password = "";
@@ -159,7 +160,6 @@ class _MainPageState extends State<MainPage> {
   var screens = [
     const PageTimetable(),
     const PageExams(),
-    const PageFreeRooms()
   ];
 
   void networkError() {
@@ -262,41 +262,14 @@ class _MainPageState extends State<MainPage> {
         }),
         destinations: [
           NavigationDestination(
-            icon: const Icon(Icons.calendar_view_week_rounded),
+            icon: const Icon(Icons.view_timeline_outlined),
+            selectedIcon: const Icon(Icons.view_timeline_rounded),
             label: AppLocalizations.of(context)!.timetable,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.calendar_today),
+            icon: const Icon(Icons.calendar_today_outlined),
+            selectedIcon: const Icon(Icons.calendar_today_rounded),
             label: AppLocalizations.of(context)!.exams,
-          )
-          // ,
-          // NavigationDestination(
-          //   icon: const Icon(Icons.room_outlined),
-          //   label: AppLocalizations.of(context)!.empty_rooms,
-          // )
-        ],
-      ),
-      appBar: AppBar(
-        title: Text(
-          widget.title,
-        ),
-        actions: [
-          PopupMenuButton(
-            onSelected: (item) {},
-            color: Theme.of(context).colorScheme.background,
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                onTap: () {
-                  token = null;
-                  hiveBox.delete("token");
-                  hiveBox.delete('group');
-                  setState(() {
-                    loggedIn = false;
-                  });
-                },
-                child: Text(AppLocalizations.of(context)!.logout),
-              )
-            ],
           )
         ],
       ),
@@ -385,4 +358,146 @@ class _MainPageState extends State<MainPage> {
       Hive.box('myBox').put('token', tmp["token"]);
     }
   }
+}
+
+Future<void> settings(BuildContext context) async {
+  return await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            scrollable: true,
+            title: Text(AppLocalizations.of(context)!.settings),
+            content: Form(
+                child: Column(
+              children: [
+                SwitchListTile(
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  title: Text(AppLocalizations.of(context)!.viewNotes),
+                  subtitle: Text(AppLocalizations.of(context)!.viewNotesDesc),
+                  value: viewNotes,
+                  onChanged: (value) {
+                    setState(() => viewNotes = !viewNotes);
+                    hiveBox.put('viewNotes', viewNotes);
+                  },
+                ),
+                SwitchListTile(
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  title: Text(AppLocalizations.of(context)!.highlightExams),
+                  subtitle:
+                      Text(AppLocalizations.of(context)!.highlightExamsDesc),
+                  value: Hive.box("myBox").get("viewExams"),
+                  onChanged: (value) {
+                    setState(() => viewExams = !viewExams);
+                    hiveBox.put('viewExams', viewExams);
+                  },
+                ),
+                SwitchListTile(
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  title: Text(AppLocalizations.of(context)!.viewRooms),
+                  subtitle: Text(AppLocalizations.of(context)!.viewRoomsDesc),
+                  value: viewRooms,
+                  onChanged: (value) {
+                    setState(() => viewRooms = !viewRooms);
+                    hiveBox.put('viewRooms', viewRooms);
+                  },
+                ),
+                SwitchListTile(
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  title: Text(AppLocalizations.of(context)!.mixEvents),
+                  subtitle: Text(AppLocalizations.of(context)!.mixEventsDesc),
+                  value: addTermine,
+                  onChanged: (value) {
+                    setState(() => addTermine = !addTermine);
+                    hiveBox.put('addTermine', addTermine);
+                  },
+                ),
+                ExpansionTile(
+                    title: Text(AppLocalizations.of(context)!.groupInputs),
+                    children: [
+                      ListTile(
+                        title: Text(AppLocalizations.of(context)!.wantedRooms),
+                        subtitle: TextField(
+                          keyboardType: TextInputType.number,
+                          controller: TextEditingController(
+                              text: wantedRoomsUserdefined
+                                  .toString()
+                                  .replaceAll("[", "")
+                                  .replaceAll("]", "")
+                                  .replaceAll(" ", "")),
+                          onSubmitted: (value) async {
+                            setState(() => wantedRoomsUserdefined = value
+                                .split(",")
+                                .map((e) => int.parse(e))
+                                .toList());
+                            hiveBox.put('wantedRoomsUserdefined',
+                                wantedRoomsUserdefined);
+                          },
+                        ),
+                      ),
+                      ListTile(
+                        title: Text(AppLocalizations.of(context)!.group),
+                        subtitle: TextField(
+                          keyboardType: TextInputType.number,
+                          controller:
+                              TextEditingController(text: group.toString()),
+                          onSubmitted: (value) {
+                            setState(() => group = int.parse(value));
+                            hiveBox.put('group', group);
+                          },
+                        ),
+                      ),
+                      ListTile(
+                          title: Text(AppLocalizations.of(context)!.clasz),
+                          subtitle: TextField(
+                              controller: TextEditingController(text: grade),
+                              onSubmitted: (value) {
+                                setState(() {
+                                  grade = value;
+                                });
+                                hiveBox.put('grade', grade);
+                              }))
+                    ])
+              ],
+            )),
+          );
+        });
+      });
+}
+
+AppBar titleBar(BuildContext context, setState) {
+  return AppBar(
+    title: Text(
+      title,
+    ),
+    actions: [
+      PopupMenuButton(
+        onSelected: (item) {},
+        color: Theme.of(context).colorScheme.background,
+        itemBuilder: (context) => [
+          PopupMenuItem(
+            onTap: () {
+              token = null;
+              hiveBox.delete("token");
+              hiveBox.delete('group');
+              setState(() {
+                loggedIn = false;
+              });
+            },
+            child: Text(AppLocalizations.of(context)!.logout),
+          ),
+          PopupMenuItem(
+              child: Text(AppLocalizations.of(context)!.settings),
+              onTap: () {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  settings(context).then((value) => setState(
+                        () {},
+                      ));
+                });
+              })
+        ],
+      )
+    ],
+  );
 }
