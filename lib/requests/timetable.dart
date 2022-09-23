@@ -19,7 +19,11 @@ String? _lastGrade;
 
 Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
   bool online = true;
-  var monday = wantedWeek.subtract(Duration(days: wantedWeek.weekday - 1));
+  var monday = wantedWeek.subtract(Duration(
+      days: wantedWeek.weekday - 1,
+      hours: wantedWeek.hour,
+      minutes: wantedWeek.minute,
+      seconds: wantedWeek.second));
   if (token != null && grade == null) {
     setGrade();
   }
@@ -194,7 +198,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
   }
   // List<List> test = timetable;
   // await hiveBox.put('lasttimetable', test);
-  print(timetable);
+  // print(timetable);
   return timetable;
 }
 
