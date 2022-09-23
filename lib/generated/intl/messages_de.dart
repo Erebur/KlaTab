@@ -28,7 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "compact": MessageLookupByLibrary.simpleMessage("Kompakt"),
         "empty_rooms": MessageLookupByLibrary.simpleMessage("Freie Räume"),
         "event": MessageLookupByLibrary.simpleMessage("Event"),
-        "exams": MessageLookupByLibrary.simpleMessage("Termine"),
+        "exams": MessageLookupByLibrary.simpleMessage("Prüfungen"),
         "friday": MessageLookupByLibrary.simpleMessage("Freitag"),
         "group": MessageLookupByLibrary.simpleMessage("Gruppe"),
         "groupInputs":
