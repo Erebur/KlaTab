@@ -14,8 +14,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:universal_io/io.dart';
 
 // should be changeable
-var _lightColorScheme = lightColorScheme_red;
-var _darkColorScheme = darkColorScheme_pink;
+var _lightColorScheme = lightColorScheme_green;
+var _darkColorScheme = darkColorScheme_green;
 
 // should be today
 DateTime wantedWeek = DateTime.now().weekday > 5
@@ -71,10 +71,6 @@ Future<void> main() async {
       hiveBox.put('addTermine', addTermine);
     }
   }
-  if (Platform.isLinux) {
-    _darkColorScheme = darkColorScheme_purple;
-  }
-
   timetable = await loadTimeTable(token, onNetworkError: () {});
   runApp(const MyApp());
 }
@@ -135,7 +131,7 @@ class MyApp extends StatelessWidget {
                 color: Colors.transparent,
               )),
         ),
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.dark,
         home: const MainPage(title: 'KlaTab'),
       );
     });
