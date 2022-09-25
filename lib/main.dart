@@ -142,7 +142,7 @@ class _MyAppState extends State<MyApp> {
         supportedLocales: AppLocalizations.supportedLocales,
         title: 'KlaTab',
         debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.dark,
+        themeMode: ThemeMode.system,
         home: MainPage(title: 'KlaTab', restart: restart),
         shortcuts: <LogicalKeySet, Intent>{
           LogicalKeySet(LogicalKeyboardKey.arrowDown): const ScrollIntent(
@@ -185,7 +185,7 @@ class _MyAppState extends State<MyApp> {
                 color: (darkColorScheme ?? _darkColorScheme).background,
               )),
           dialogBackgroundColor:
-              (darkColorScheme ?? _darkColorScheme).background,
+              (lightColorScheme ?? _lightColorScheme).background,
         ),
         darkTheme: ThemeData(
             hoverColor: Colors.transparent,
