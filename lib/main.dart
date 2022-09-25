@@ -12,31 +12,32 @@ import 'package:klatab/pages/time_table.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:universal_io/io.dart';
-import 'package:list_picker/list_picker.dart';
 
 // should be changeable
 var _lightColorScheme = lightColorScheme_green;
 var _darkColorScheme = darkColorScheme_green;
 
-List lightColorSchemes = [
-  lightColorScheme_default,
-  lightColorScheme_green,
-  lightColorScheme_purple,
-  lightColorScheme_turquoise,
-  lightColorScheme_yellow,
-  lightColorScheme_blue,
-  lightColorScheme_red,
-  lightColorScheme_pink
-];
-List<ColorScheme> darkColorSchemes = [
-  darkColorScheme_default,
-  darkColorScheme_green,
-  darkColorScheme_purple,
-  darkColorScheme_turquoise,
-  darkColorScheme_yellow,
-  darkColorScheme_blue,
-  darkColorScheme_pink
-];
+Map<String, ColorScheme> lightColorSchemes = {
+  "default": lightColorScheme_default,
+  "green": lightColorScheme_green,
+  "purple": lightColorScheme_purple,
+  "turquoise": lightColorScheme_turquoise,
+  "yellow": lightColorScheme_yellow,
+  "blue": lightColorScheme_blue,
+  "pink": lightColorScheme_pink
+};
+Map<String, ColorScheme> darkColorSchemes = {
+  "default": darkColorScheme_default,
+  "green": darkColorScheme_green,
+  "purple": darkColorScheme_purple,
+  "turquoise": darkColorScheme_turquoise,
+  "yellow": darkColorScheme_yellow,
+  "blue": darkColorScheme_blue,
+  "pink": darkColorScheme_pink
+};
+
+String theme = "default";
+Function? restart;
 
 // should be today
 DateTime wantedWeek = DateTime.now().weekday > 5
@@ -78,9 +79,7 @@ Future<void> main() async {
     hiveBox.put('weeklyOverview', weeklyOverview);
     hiveBox.put('group', group);
     hiveBox.put('wantedRoomsUserdefined', wantedRoomsUserdefined);
-    hiveBox.put('darkColorScheme', darkColorSchemes.indexOf(_darkColorScheme));
-    hiveBox.put(
-        'lightColorScheme', lightColorSchemes.indexOf(_lightColorScheme));
+    hiveBox.put('ColorScheme', theme);
   } else {
     viewExams = hiveBox.get("viewExams");
     viewNotes = hiveBox.get("viewNotes");
@@ -92,14 +91,12 @@ Future<void> main() async {
     // if updates
     try {
       addTermine = hiveBox.get("addTermine");
-      _darkColorScheme = darkColorSchemes[hiveBox.get("darkColorScheme")];
-      _lightColorScheme = lightColorSchemes[hiveBox.get("lightColorScheme")];
+      theme = hiveBox.get("ColorScheme");
+      _darkColorScheme = darkColorSchemes[theme]!;
+      _lightColorScheme = lightColorSchemes[theme]!;
     } catch (e) {
       hiveBox.put('addTermine', addTermine);
-      hiveBox.put(
-          'darkColorScheme', darkColorSchemes.indexOf(_darkColorScheme));
-      hiveBox.put(
-          'lightColorScheme', lightColorSchemes.indexOf(_lightColorScheme));
+      hiveBox.put('ColorScheme', theme);
     }
   }
   timetable = await loadTimeTable(token, onNetworkError: () {});
@@ -117,9 +114,18 @@ void setGrade() {
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
-  // This widget is the root of your application.
+
+  @override
+  State<StatefulWidget> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  void restart({Function()? fn}) {
+    setState(() => fn?.call());
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -136,6 +142,34 @@ class MyApp extends StatelessWidget {
         supportedLocales: AppLocalizations.supportedLocales,
         title: 'KlaTab',
         debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.dark,
+        home: MainPage(title: 'KlaTab', restart: restart),
+        shortcuts: <LogicalKeySet, Intent>{
+          LogicalKeySet(LogicalKeyboardKey.arrowDown): const ScrollIntent(
+              direction: AxisDirection.down, type: ScrollIncrementType.line),
+          LogicalKeySet(LogicalKeyboardKey.arrowUp): const ScrollIntent(
+              direction: AxisDirection.up, type: ScrollIncrementType.line),
+          LogicalKeySet(LogicalKeyboardKey.arrowLeft): const ScrollIntent(
+              direction: AxisDirection.left, type: ScrollIncrementType.line),
+          LogicalKeySet(LogicalKeyboardKey.arrowRight): const ScrollIntent(
+              direction: AxisDirection.right, type: ScrollIncrementType.line),
+          LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.arrowDown):
+              const ScrollIntent(
+                  direction: AxisDirection.down,
+                  type: ScrollIncrementType.page),
+          LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.arrowUp):
+              const ScrollIntent(
+                  direction: AxisDirection.up, type: ScrollIncrementType.page),
+          LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.arrowLeft):
+              const ScrollIntent(
+                  direction: AxisDirection.left,
+                  type: ScrollIncrementType.page),
+          LogicalKeySet(
+                  LogicalKeyboardKey.shift, LogicalKeyboardKey.arrowRight):
+              const ScrollIntent(
+                  direction: AxisDirection.right,
+                  type: ScrollIncrementType.page),
+        },
         theme: ThemeData(
           hoverColor: Colors.transparent,
           highlightColor: Colors.transparent,
@@ -169,16 +203,16 @@ class MyApp extends StatelessWidget {
                 )),
             dialogBackgroundColor:
                 (darkColorScheme ?? _darkColorScheme).background),
-        themeMode: ThemeMode.dark,
-        home: const MainPage(title: 'KlaTab'),
       );
     });
   }
 }
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key, required this.title}) : super(key: key);
+  const MainPage({Key? key, required this.title, required this.restart})
+      : super(key: key);
   final String title;
+  final void Function({Function()? fn}) restart;
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -208,6 +242,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    restart = widget.restart;
     if (!loggedIn) {
       return loginPage();
     } else if (MediaQuery.of(context).size < const Size(200, 200)) {
@@ -217,6 +252,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+// testing
   Scaffold wearOSPage() => Scaffold(
         primary: true,
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -400,7 +436,6 @@ Future<void> settings(BuildContext context) async {
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
-            backgroundColor: Theme.of(context).colorScheme.background,
             scrollable: true,
             title: Text(AppLocalizations.of(context)!.settings),
             content: Form(
@@ -447,19 +482,69 @@ Future<void> settings(BuildContext context) async {
                     hiveBox.put('addTermine', addTermine);
                   },
                 ),
-                // SwitchListTile(
-                //   activeColor: Theme.of(context).colorScheme.primary,
-                //   title: Text("color"),
-                //   value: _darkColorScheme == darkColorScheme_default,
-                //   onChanged: (value) {
-                //     showPickerDialog(
-                //         context: context, label: "label", items: ["1", "2"]);
-                //     setState(() => _darkColorScheme =
-                //         (value ? darkColorSchemes[0] : darkColorSchemes[1]));
-                //     hiveBox.put('darkColorScheme',
-                //         darkColorSchemes.indexOf(_darkColorScheme));
-                //   },
-                // ),
+                // theme picker will go here
+                ListTile(
+                  title: TextField(
+                    readOnly: true,
+                    controller: TextEditingController(
+                        text: theme.substring(0, 1).toUpperCase() +
+                            theme.substring(1)),
+                    mouseCursor: MaterialStateMouseCursor.clickable,
+                    cursorColor: Theme.of(context).textTheme.bodyLarge?.color,
+                    decoration: InputDecoration(
+                      label: Text("Theme"),
+                      labelStyle: Theme.of(context).textTheme.labelLarge,
+                      suffixIcon: const Icon(Icons.arrow_drop_down),
+                    ),
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            scrollable: true,
+                            content: Form(
+                              child: Column(
+                                  children: darkColorSchemes.keys
+                                      .map((e) => ListTile(
+                                            title: TextButton(
+                                                style: ButtonStyle(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  overlayColor:
+                                                      MaterialStateProperty
+                                                          .resolveWith((states) =>
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .background),
+                                                  // backgroundColor: MaterialStateProperty.resolveWith(
+                                                  //     (states) => Theme.of(context).colorScheme.background)
+                                                ),
+                                                onPressed: () {
+                                                  theme = e;
+                                                  _darkColorScheme =
+                                                      darkColorSchemes[theme]!;
+                                                  _lightColorScheme =
+                                                      lightColorSchemes[theme]!;
+                                                  hiveBox.put(
+                                                      'ColorScheme', theme);
+                                                  setState((() {}));
+                                                  restart?.call();
+                                                  Navigator.of(context).pop(e);
+                                                },
+                                                child: Text(e
+                                                        .substring(0, 1)
+                                                        .toUpperCase() +
+                                                    e.substring(1))),
+                                          ))
+                                      .toList()),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
                 ExpansionTile(
                     title: Text(AppLocalizations.of(context)!.groupInputs),
                     children: [

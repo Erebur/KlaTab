@@ -38,9 +38,6 @@ class _PageTimetableState extends State<PageTimetable> {
                       size: Theme.of(context).textTheme.bodyLarge?.fontSize,
                     )),
                 TextButton(
-                    onLongPress: () async {
-                      // await settings(context).then((value) => setState(() {}));
-                    },
                     style: buttonStyleNoReaction(context),
                     onPressed: () async {
                       wantedWeek = today;
@@ -247,12 +244,10 @@ class _PageTimetableState extends State<PageTimetable> {
         ])));
   }
 
-  ButtonStyle buttonStyleNoReaction(BuildContext context) {
-    return ButtonStyle(
+  ButtonStyle buttonStyleNoReaction(BuildContext context) => ButtonStyle(
       overlayColor: MaterialStateProperty.resolveWith(
           (states) => Theme.of(context).colorScheme.background),
       // backgroundColor: MaterialStateProperty.resolveWith(
       //     (states) => Theme.of(context).colorScheme.background)
     );
-  }
 }
