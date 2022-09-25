@@ -1,8 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:klatab/requests/exams.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:universal_io/io.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -78,7 +76,8 @@ class _PageTimetableState extends State<PageTimetable> {
                 DataTable(
                     // columnSpacing: 30,
                     columns: <DataColumn>[
-                      DataColumn(label: Text(AppLocalizations.of(context)!.time)),
+                      DataColumn(
+                          label: Text(AppLocalizations.of(context)!.time)),
                     ],
                     rows: [
                       "08:00\n08:45",
@@ -120,56 +119,59 @@ class _PageTimetableState extends State<PageTimetable> {
                             ]))
                         .toList()),
                 Expanded(
-                  child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.all(10),
-                      child: FutureBuilder(
-                        future: loadTimeTable(token),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            timetable = (snapshot.data as List<List>);
-                          }
-                          return DataTable(
-                            // columnSpacing: 30,
-                            columns: [
-                              AppLocalizations.of(context)!.monday,
-                              AppLocalizations.of(context)!.tuesday,
-                              AppLocalizations.of(context)!.wednesday,
-                              AppLocalizations.of(context)!.thursday,
-                              AppLocalizations.of(context)!.friday
-                            ]
-                                .map((e) => DataColumn(
-                                    label: Text(e,
-                                        style: TextStyle(
-                                            color: DateFormat.EEEE(Platform
-                                                                .localeName)
-                                                            .dateSymbols
-                                                            .STANDALONEWEEKDAYS[
-                                                        wantedWeek.weekday == 7
-                                                            ? 0
-                                                            : wantedWeek
-                                                                .weekday] ==
-                                                    e
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.color))))
-                                .toList(),
-                            rows: (snapshot.hasData
-                                    ? (snapshot.data as List<List>)
-                                    : timetable)
-                                .map((day) => DataRow(
-                                    cells: day
-                                        .map(
-                                            (hour) => hourDataCell(context, hour))
-                                        .toList()))
-                                .toList(),
-                          );
-                        },
-                      )),
+                  child: Center(
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.all(10),
+                        child: FutureBuilder(
+                          future: loadTimeTable(token),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              timetable = (snapshot.data as List<List>);
+                            }
+                            return DataTable(
+                              // columnSpacing: 30,
+                              columns: [
+                                AppLocalizations.of(context)!.monday,
+                                AppLocalizations.of(context)!.tuesday,
+                                AppLocalizations.of(context)!.wednesday,
+                                AppLocalizations.of(context)!.thursday,
+                                AppLocalizations.of(context)!.friday
+                              ]
+                                  .map((e) => DataColumn(
+                                      label: Text(e,
+                                          style: TextStyle(
+                                              color: DateFormat.EEEE(Platform
+                                                                  .localeName)
+                                                              .dateSymbols
+                                                              .STANDALONEWEEKDAYS[
+                                                          wantedWeek.weekday ==
+                                                                  7
+                                                              ? 0
+                                                              : wantedWeek
+                                                                  .weekday] ==
+                                                      e
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.color))))
+                                  .toList(),
+                              rows: (snapshot.hasData
+                                      ? (snapshot.data as List<List>)
+                                      : timetable)
+                                  .map((day) => DataRow(
+                                      cells: day
+                                          .map((hour) =>
+                                              hourDataCell(context, hour))
+                                          .toList()))
+                                  .toList(),
+                            );
+                          },
+                        )),
+                  ),
                 ),
               ],
             ),
