@@ -12,10 +12,31 @@ import 'package:klatab/pages/time_table.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:universal_io/io.dart';
+import 'package:list_picker/list_picker.dart';
 
 // should be changeable
 var _lightColorScheme = lightColorScheme_green;
 var _darkColorScheme = darkColorScheme_green;
+
+List lightColorSchemes = [
+  lightColorScheme_default,
+  lightColorScheme_green,
+  lightColorScheme_purple,
+  lightColorScheme_turquoise,
+  lightColorScheme_yellow,
+  lightColorScheme_blue,
+  lightColorScheme_red,
+  lightColorScheme_pink
+];
+List<ColorScheme> darkColorSchemes = [
+  darkColorScheme_default,
+  darkColorScheme_green,
+  darkColorScheme_purple,
+  darkColorScheme_turquoise,
+  darkColorScheme_yellow,
+  darkColorScheme_blue,
+  darkColorScheme_pink
+];
 
 // should be today
 DateTime wantedWeek = DateTime.now().weekday > 5
@@ -57,6 +78,9 @@ Future<void> main() async {
     hiveBox.put('weeklyOverview', weeklyOverview);
     hiveBox.put('group', group);
     hiveBox.put('wantedRoomsUserdefined', wantedRoomsUserdefined);
+    hiveBox.put('darkColorScheme', darkColorSchemes.indexOf(_darkColorScheme));
+    hiveBox.put(
+        'lightColorScheme', lightColorSchemes.indexOf(_lightColorScheme));
   } else {
     viewExams = hiveBox.get("viewExams");
     viewNotes = hiveBox.get("viewNotes");
@@ -64,11 +88,18 @@ Future<void> main() async {
     // weeklyOverview = hiveBox.get("weeklyOverview");
     group = hiveBox.get("group");
     wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
+
     // if updates
     try {
       addTermine = hiveBox.get("addTermine");
+      _darkColorScheme = darkColorSchemes[hiveBox.get("darkColorScheme")];
+      _lightColorScheme = lightColorSchemes[hiveBox.get("lightColorScheme")];
     } catch (e) {
       hiveBox.put('addTermine', addTermine);
+      hiveBox.put(
+          'darkColorScheme', darkColorSchemes.indexOf(_darkColorScheme));
+      hiveBox.put(
+          'lightColorScheme', lightColorSchemes.indexOf(_lightColorScheme));
     }
   }
   timetable = await loadTimeTable(token, onNetworkError: () {});
@@ -112,25 +143,32 @@ class MyApp extends StatelessWidget {
           colorScheme: lightColorScheme ?? _lightColorScheme,
           useMaterial3: true,
           scaffoldBackgroundColor: Colors.transparent,
-          tooltipTheme: const TooltipThemeData(
-              textStyle: TextStyle(color: Colors.transparent),
+          tooltipTheme: TooltipThemeData(
+              waitDuration: const Duration(seconds: 2),
+              textStyle: TextStyle(
+                  color: (darkColorScheme ?? _darkColorScheme).onBackground),
               decoration: BoxDecoration(
-                color: Colors.transparent,
+                color: (darkColorScheme ?? _darkColorScheme).background,
               )),
+          dialogBackgroundColor:
+              (darkColorScheme ?? _darkColorScheme).background,
         ),
         darkTheme: ThemeData(
-          hoverColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          splashColor: Colors.transparent,
-          colorScheme: darkColorScheme ?? _darkColorScheme,
-          useMaterial3: true,
-          scaffoldBackgroundColor: Colors.transparent,
-          tooltipTheme: const TooltipThemeData(
-              textStyle: TextStyle(color: Colors.transparent),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-              )),
-        ),
+            hoverColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            colorScheme: darkColorScheme ?? _darkColorScheme,
+            useMaterial3: true,
+            scaffoldBackgroundColor: Colors.transparent,
+            tooltipTheme: TooltipThemeData(
+                waitDuration: const Duration(seconds: 2),
+                textStyle: TextStyle(
+                    color: (darkColorScheme ?? _darkColorScheme).onBackground),
+                decoration: BoxDecoration(
+                  color: (darkColorScheme ?? _darkColorScheme).background,
+                )),
+            dialogBackgroundColor:
+                (darkColorScheme ?? _darkColorScheme).background),
         themeMode: ThemeMode.dark,
         home: const MainPage(title: 'KlaTab'),
       );
@@ -409,6 +447,19 @@ Future<void> settings(BuildContext context) async {
                     hiveBox.put('addTermine', addTermine);
                   },
                 ),
+                // SwitchListTile(
+                //   activeColor: Theme.of(context).colorScheme.primary,
+                //   title: Text("color"),
+                //   value: _darkColorScheme == darkColorScheme_default,
+                //   onChanged: (value) {
+                //     showPickerDialog(
+                //         context: context, label: "label", items: ["1", "2"]);
+                //     setState(() => _darkColorScheme =
+                //         (value ? darkColorSchemes[0] : darkColorSchemes[1]));
+                //     hiveBox.put('darkColorScheme',
+                //         darkColorSchemes.indexOf(_darkColorScheme));
+                //   },
+                // ),
                 ExpansionTile(
                     title: Text(AppLocalizations.of(context)!.groupInputs),
                     children: [

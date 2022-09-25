@@ -44,8 +44,12 @@ dependencies:
   intl: ^0.17.0  
   universal_io: ^2.0.4
   flutter_launcher_icons: ^0.10.0
+  numberpicker: ^2.1.1
   flutter_localizations:
     sdk: flutter
+  selectable_list: ^0.1.1
+  flutter_number_picker: ^1.0.4
+  list_picker: ^1.0.0
 
 dev_dependencies:
   flutter_test:
