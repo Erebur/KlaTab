@@ -13,9 +13,8 @@ import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:universal_io/io.dart';
 
-// should be changeable
-var _lightColorScheme = lightColorScheme_green;
-var _darkColorScheme = darkColorScheme_green;
+var _lightColorScheme = lightColorScheme_default;
+var _darkColorScheme = darkColorScheme_default;
 
 Map<String, ColorScheme> lightColorSchemes = {
   "default": lightColorScheme_default,
@@ -36,7 +35,6 @@ Map<String, ColorScheme> darkColorSchemes = {
   "pink": darkColorScheme_pink
 };
 
-String theme = "default";
 Function? restart;
 
 // should be today
@@ -51,12 +49,13 @@ List<List> timetable = [[], [], [], [], [], [], [], [], [], [], []];
 List exams = [];
 Set rooms = {};
 
-// to be persisted
+// persisted
 bool viewExams = true;
 bool viewNotes = true;
 bool viewRooms = false;
 bool weeklyOverview = false;
 bool addTermine = true;
+String theme = "default";
 int group = 1;
 List wantedRoomsUserdefined = [206, 2052, 2051, 207, 208];
 
@@ -92,13 +91,15 @@ Future<void> main() async {
     try {
       addTermine = hiveBox.get("addTermine");
       theme = hiveBox.get("ColorScheme");
-      _darkColorScheme = darkColorSchemes[theme]!;
-      _lightColorScheme = lightColorSchemes[theme]!;
     } catch (e) {
       hiveBox.put('addTermine', addTermine);
       hiveBox.put('ColorScheme', theme);
     }
   }
+
+  _darkColorScheme = darkColorSchemes[theme]!;
+  _lightColorScheme = lightColorSchemes[theme]!;
+  // initializing timetable Grid
   timetable = await loadTimeTable(token, onNetworkError: () {});
   runApp(const MyApp());
 }
@@ -472,50 +473,15 @@ Future<void> settings(BuildContext context) async {
                     ),
                     onTap: () {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            scrollable: true,
-                            content: Form(
-                              child: Column(
-                                  children: darkColorSchemes.keys
-                                      .map((e) => ListTile(
-                                            title: TextButton(
-                                                style: ButtonStyle(
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  overlayColor:
-                                                      MaterialStateProperty
-                                                          .resolveWith((states) =>
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .background),
-                                                  // backgroundColor: MaterialStateProperty.resolveWith(
-                                                  //     (states) => Theme.of(context).colorScheme.background)
-                                                ),
-                                                onPressed: () {
-                                                  theme = e;
-                                                  _darkColorScheme =
-                                                      darkColorSchemes[theme]!;
-                                                  _lightColorScheme =
-                                                      lightColorSchemes[theme]!;
-                                                  hiveBox.put(
-                                                      'ColorScheme', theme);
-                                                  setState((() {}));
-                                                  restart?.call();
-                                                  Navigator.of(context).pop(e);
-                                                },
-                                                child: Text(e
-                                                        .substring(0, 1)
-                                                        .toUpperCase() +
-                                                    e.substring(1))),
-                                          ))
-                                      .toList()),
-                            ),
-                          );
-                        },
-                      );
+                      listDialog(context, setState, onTap: (e) {
+                        theme = e;
+                        _darkColorScheme = darkColorSchemes[theme]!;
+                        _lightColorScheme = lightColorSchemes[theme]!;
+                        hiveBox.put('ColorScheme', theme);
+                        setState((() {}));
+                        restart?.call();
+                        Navigator.of(context).pop(e);
+                      });
                     },
                   ),
                 ),
@@ -572,6 +538,42 @@ Future<void> settings(BuildContext context) async {
       });
 }
 
+void listDialog(BuildContext context, StateSetter setState,
+    {Function(String e)? onTap}) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        scrollable: true,
+        content: Form(
+          child: Column(
+              children: darkColorSchemes.keys
+                  .map((e) => ListTile(
+                        title: TextButton(
+                            style: ButtonStyle(
+                              alignment: Alignment.centerLeft,
+                              overlayColor: MaterialStateProperty.resolveWith(
+                                  (states) =>
+                                      Theme.of(context).colorScheme.background),
+                              // backgroundColor: MaterialStateProperty.resolveWith(
+                              //     (states) => Theme.of(context).colorScheme.background)
+                            ),
+                            onPressed: () {
+                              onTap?.call(e);
+                            },
+                            child: Text(
+                              e.substring(0, 1).toUpperCase() + e.substring(1),
+                              style: TextStyle(
+                                  color: darkColorSchemes[e]?.primary),
+                            )),
+                      ))
+                  .toList()),
+        ),
+      );
+    },
+  );
+}
+
 AppBar titleBar(BuildContext context, setState) {
   return AppBar(
     title: Text(
@@ -587,9 +589,8 @@ AppBar titleBar(BuildContext context, setState) {
               token = null;
               hiveBox.delete("token");
               hiveBox.delete('group');
-              setState(() {
-                loggedIn = false;
-              });
+              loggedIn = false;
+              restart!();
             },
             child: Text(AppLocalizations.of(context)!.logout),
           ),
