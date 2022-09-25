@@ -144,32 +144,6 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
         home: MainPage(title: 'KlaTab', restart: restart),
-        shortcuts: <LogicalKeySet, Intent>{
-          LogicalKeySet(LogicalKeyboardKey.arrowDown): const ScrollIntent(
-              direction: AxisDirection.down, type: ScrollIncrementType.line),
-          LogicalKeySet(LogicalKeyboardKey.arrowUp): const ScrollIntent(
-              direction: AxisDirection.up, type: ScrollIncrementType.line),
-          LogicalKeySet(LogicalKeyboardKey.arrowLeft): const ScrollIntent(
-              direction: AxisDirection.left, type: ScrollIncrementType.line),
-          LogicalKeySet(LogicalKeyboardKey.arrowRight): const ScrollIntent(
-              direction: AxisDirection.right, type: ScrollIncrementType.line),
-          LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.arrowDown):
-              const ScrollIntent(
-                  direction: AxisDirection.down,
-                  type: ScrollIncrementType.page),
-          LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.arrowUp):
-              const ScrollIntent(
-                  direction: AxisDirection.up, type: ScrollIncrementType.page),
-          LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.arrowLeft):
-              const ScrollIntent(
-                  direction: AxisDirection.left,
-                  type: ScrollIncrementType.page),
-          LogicalKeySet(
-                  LogicalKeyboardKey.shift, LogicalKeyboardKey.arrowRight):
-              const ScrollIntent(
-                  direction: AxisDirection.right,
-                  type: ScrollIncrementType.page),
-        },
         theme: ThemeData(
           hoverColor: Colors.transparent,
           highlightColor: Colors.transparent,
