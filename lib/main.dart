@@ -57,6 +57,7 @@ bool weeklyOverview = false;
 bool addTermine = true;
 String theme = "default";
 int group = 1;
+bool onlyGroups = false;
 List wantedRoomsUserdefined = [206, 2052, 2051, 207, 208];
 
 String? token;

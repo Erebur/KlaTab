@@ -180,67 +180,78 @@ class _PageTimetableState extends State<PageTimetable> {
     return DataCell(RichText(
         softWrap: false,
         text: TextSpan(text: "", children: [
-          TextSpan(
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  showDialog(
-                      context: context,
-                      builder: (context) => StatefulBuilder(
-                          builder: (context, setState) => AlertDialog(
-                                scrollable: true,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.background,
-                                title: const Text("Empty roooms"),
-                                content: Column(
-                                  children: [
-                                    // ListTile(
-                                    //   title: Text("Day: ${hour["allRooms"][0].toString().substring(0, 10)}"),
-                                    // ),
-                                    // ListTile(
-                                    //   title: Text("From: ${hour["allRooms"][1]}"),
-                                    // ),
-                                    // ListTile(
-                                    //   title: Text("Until: ${hour["allRooms"][2]}"),
-                                    // ),
-                                    FutureBuilder(
-                                      future: emptyRooms(
-                                          hour["allRooms"][0],
-                                          hour["allRooms"][1],
-                                          hour["allRooms"][2]),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasData) {
-                                          return Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              ...(snapshot.data as List)
-                                                  .map(
-                                                      (e) => Text(e.toString()))
-                                                  .toList()
-                                            ],
-                                          );
-                                        } else {
-                                          return const Text("");
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              )));
-                  setState(() {});
-                },
-              text:
-                  "${hour["raum"]} ${hour["lehrer"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]} ${hour["lehrer2"]}' : ''}\n",
-              style: Theme.of(context).textTheme.bodySmall),
-          TextSpan(
-              text:
-                  "${hour["fach"]} ${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${viewNotes && (hour["notiz"] != "" || hour["notiz2"] != "") ? '\n${hour["notiz"] != "" ? hour["notiz"] : hour["notiz2"]}' : ''}",
-              style: TextStyle(
-                  color: hour["istVertretung"] == true
-                      ? Theme.of(context).colorScheme.primary
-                      : hour["isExam"] && viewExams
-                          ? Theme.of(context).colorScheme.error
-                          : Theme.of(context).textTheme.bodyMedium?.color))
+          ...() {
+            if (onlyGroups) {
+              return [TextSpan()];
+            } else {
+              return [
+                TextSpan(
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = (() => showRooms(hour)),
+                    text:
+                        "${hour["raum"]} ${hour["lehrer"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]} ${hour["lehrer2"]}' : ''}\n",
+                    style: Theme.of(context).textTheme.bodySmall),
+                TextSpan(
+                    text: hour["fach"],
+                    style: TextStyle(
+                        color: hour["istVertretung"] == true
+                            ? Theme.of(context).colorScheme.primary
+                            : hour["isExam"] && viewExams
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color)),
+                TextSpan(
+                    text: (hour["fach2"] as String).isNotEmpty ? "  |  " : "",
+                    style: TextStyle(
+                        color: hour["istVertretung"] == true &&
+                                hour["istVertretung2"] == true
+                            ? Theme.of(context).colorScheme.primary
+                            : hour["isExam"] && viewExams
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color)),
+                TextSpan(
+                    text: ((hour["fach2"] as String).isNotEmpty
+                            ? hour["fach2"]
+                            : "") +
+                        "\n",
+                    style: TextStyle(
+                        color: hour["istVertretung2"] == true
+                            ? Theme.of(context).colorScheme.primary
+                            : hour["isExam"] && viewExams
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color)),
+                TextSpan(
+                    text: hour["notiz"] != "" ? hour["notiz"] : hour["notiz2"],
+                    style: TextStyle(
+                        color: hour["istVertretung"] == true ||
+                                hour["istVertretung2"] == true
+                            ? Theme.of(context).colorScheme.primary
+                            : hour["isExam"] && viewExams
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color))
+              ];
+            }
+          }()
+          // TextSpan(
+          //     text:
+          //         "${hour["fach"]}${hour["fach2"] != "" && hour["fach2"] != hour["fach"] ? ' |  ${hour["fach2"]}' : ""}${viewNotes && (hour["notiz"] != "" || hour["notiz2"] != "") ? '\n${hour["notiz"] != "" ? hour["notiz"] : hour["notiz2"]}' : ''}",
+          //     style: TextStyle(
+          //         color: hour["istVertretung"] == true
+          //             ? Theme.of(context).colorScheme.primary
+          //             : hour["isExam"] && viewExams
+          //                 ? Theme.of(context).colorScheme.error
+          //                 : Theme.of(context).textTheme.bodyMedium?.color))
         ])));
   }
 
@@ -250,4 +261,47 @@ class _PageTimetableState extends State<PageTimetable> {
         // backgroundColor: MaterialStateProperty.resolveWith(
         //     (states) => Theme.of(context).colorScheme.background)
       );
+
+  void showRooms(hour) {
+    showDialog(
+        context: context,
+        builder: (context) => StatefulBuilder(
+            builder: (context, setState) => AlertDialog(
+                  scrollable: true,
+                  backgroundColor: Theme.of(context).colorScheme.background,
+                  title: const Text("Empty roooms"),
+                  content: Column(
+                    children: [
+                      // ListTile(
+                      //   title: Text("Day: ${hour["allRooms"][0].toString().substring(0, 10)}"),
+                      // ),
+                      // ListTile(
+                      //   title: Text("From: ${hour["allRooms"][1]}"),
+                      // ),
+                      // ListTile(
+                      //   title: Text("Until: ${hour["allRooms"][2]}"),
+                      // ),
+                      FutureBuilder(
+                        future: emptyRooms(hour["allRooms"][0],
+                            hour["allRooms"][1], hour["allRooms"][2]),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                ...(snapshot.data as List)
+                                    .map((e) => Text(e.toString()))
+                                    .toList()
+                              ],
+                            );
+                          } else {
+                            return const Text("");
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                )));
+    setState(() {});
+  }
 }
