@@ -245,9 +245,9 @@ class _PageTimetableState extends State<PageTimetable> {
   }
 
   ButtonStyle buttonStyleNoReaction(BuildContext context) => ButtonStyle(
-      overlayColor: MaterialStateProperty.resolveWith(
-          (states) => Theme.of(context).colorScheme.background),
-      // backgroundColor: MaterialStateProperty.resolveWith(
-      //     (states) => Theme.of(context).colorScheme.background)
-    );
+        overlayColor: MaterialStateProperty.resolveWith(
+            (states) => Theme.of(context).colorScheme.background),
+        // backgroundColor: MaterialStateProperty.resolveWith(
+        //     (states) => Theme.of(context).colorScheme.background)
+      );
 }
