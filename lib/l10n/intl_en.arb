@@ -29,8 +29,11 @@
   "viewRoomsDesc": "Shows Free rooms in the lunch break\nNote: Rooms of next and previous hour will be prefered",
   "group":"Group",
   "clasz":"Grade",
-  "groupInputs":"Grade Settings",
+  "groupInputs":"Advanced",
   "wantedRooms":"Free Rooms preferences" ,
   "mixEvents":"Show Events in Exams Tab",
-  "mixEventsDesc":"changing of the current week required"
+  "mixEventsDesc":"changing of the current week required",
+  "onlyGroups":"Current Group only",
+  "onlyGroupsDesc":"Only show entrys for your Group",
+  "theme":"Theme"
 }

@@ -350,10 +350,10 @@ class S {
     );
   }
 
-  /// `Grade Settings`
+  /// `Advanced`
   String get groupInputs {
     return Intl.message(
-      'Grade Settings',
+      'Advanced',
       name: 'groupInputs',
       desc: '',
       args: [],
@@ -385,6 +385,36 @@ class S {
     return Intl.message(
       'changing of the current week required',
       name: 'mixEventsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current Group only`
+  String get onlyGroups {
+    return Intl.message(
+      'Current Group only',
+      name: 'onlyGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Only show entrys for your Group`
+  String get onlyGroupsDesc {
+    return Intl.message(
+      'Only show entrys for your Group',
+      name: 'onlyGroupsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Theme`
+  String get theme {
+    return Intl.message(
+      'Theme',
+      name: 'theme',
       desc: '',
       args: [],
     );

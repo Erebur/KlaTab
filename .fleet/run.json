@@ -1,0 +1,12 @@
+{
+  "configurations": [
+    {
+      "type": "command",
+      "name": "flutter Run",
+      "program": "/bin/flutter",
+      "args": [
+        "run"
+      ]
+    }
+  ]
+}

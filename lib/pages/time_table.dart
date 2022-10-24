@@ -181,10 +181,35 @@ class _PageTimetableState extends State<PageTimetable> {
         softWrap: false,
         text: TextSpan(text: "", children: [
           ...() {
-            if (onlyGroups) {
-              return [TextSpan()];
-            } else {
-              return [
+            return onlyGroups ? [
+                TextSpan(
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = (() => showRooms(hour)),
+                    text: "${hour["new_room"]} ${hour["new_teacher"]}\n",
+                    style: Theme.of(context).textTheme.bodySmall),
+                TextSpan(
+                    text: hour["new_subject"],
+                    style: TextStyle(
+                        color: hour["new_substitution"] == true
+                            ? Theme.of(context).colorScheme.primary
+                            : hour["isExam"] && viewExams
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color)),
+                TextSpan(
+                    text: "\n" + hour["new_note"],
+                    style: TextStyle(
+                        color: hour["new_substitution"] == true
+                            ? Theme.of(context).colorScheme.primary
+                            : hour["isExam"] && viewExams
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color))
+              ] : [
                 TextSpan(
                     recognizer: TapGestureRecognizer()
                       ..onTap = (() => showRooms(hour)),
@@ -241,7 +266,6 @@ class _PageTimetableState extends State<PageTimetable> {
                                     .bodyMedium
                                     ?.color))
               ];
-            }
           }()
           // TextSpan(
           //     text:

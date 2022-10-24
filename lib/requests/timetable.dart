@@ -128,6 +128,31 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
       }
 
       timetable[ii].add({
+        "new_subject": group == 1
+            ? currentHour["fachKuerzel"]
+            : currentHourNextGroup["fachKuerzel"] != ""
+                ? currentHourNextGroup["fachKuerzel"]
+                : currentHour["fachKuerzel"],
+        "new_room": group == 1
+            ? currentHour["raumId"]
+            : currentHourNextGroup["raumId"] != ""
+                ? currentHourNextGroup["raumId"]
+                : currentHour["raumId"],
+        "new_teacher": group == 1
+            ? currentHour["mitarbeiterKuerzel"]
+            : currentHourNextGroup["mitarbeiterKuerzel"] != ""
+                ? currentHourNextGroup["mitarbeiterKuerzel"]
+                : currentHour["mitarbeiterKuerzel"],
+        "new_substitution": group == 1
+            ? currentHour["istVertretung"]
+            : currentHourNextGroup["istVertretung"] != ""
+                ? currentHourNextGroup["istVertretung"]
+                : currentHour["istVertretung"],
+        "new_note": group == 1
+            ? currentHour["notiz"]
+            : currentHourNextGroup["notiz"] != ""
+                ? currentHourNextGroup["notiz"]
+                : currentHour["notiz"],
         "fach": currentHour["fachKuerzel"],
         "lehrer": currentHour["mitarbeiterKuerzel"],
         "raum": currentHour["raumId"],
@@ -190,7 +215,10 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
             ..["fach2"] = ""
             ..["lehrer2"] = ""
             ..["raum2"] = exam["art"]
-            ..["isExam"] = true;
+            ..["isExam"] = true
+            ..["new_subject"] = exam["fach"]
+            ..["new_teacher"] = exam["lehrer"]
+            ..["new_room"] = exam["raum"].toString();
         }
       }
     }

@@ -31,7 +31,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "exams": MessageLookupByLibrary.simpleMessage("Exams"),
         "friday": MessageLookupByLibrary.simpleMessage("Friday"),
         "group": MessageLookupByLibrary.simpleMessage("Group"),
-        "groupInputs": MessageLookupByLibrary.simpleMessage("Grade Settings"),
+        "groupInputs": MessageLookupByLibrary.simpleMessage("Advanced"),
         "highlightExams":
             MessageLookupByLibrary.simpleMessage("Highlight Exams"),
         "highlightExamsDesc": MessageLookupByLibrary.simpleMessage(
@@ -50,8 +50,13 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Connection not possible "),
         "networkErrorDescription":
             MessageLookupByLibrary.simpleMessage("Unable to connect to server"),
+        "onlyGroups":
+            MessageLookupByLibrary.simpleMessage("Current Group only"),
+        "onlyGroupsDesc": MessageLookupByLibrary.simpleMessage(
+            "Only show entrys for your Group"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+        "theme": MessageLookupByLibrary.simpleMessage("Theme"),
         "thursday": MessageLookupByLibrary.simpleMessage("Thursday"),
         "time": MessageLookupByLibrary.simpleMessage("Time"),
         "timetable": MessageLookupByLibrary.simpleMessage("Timetable"),

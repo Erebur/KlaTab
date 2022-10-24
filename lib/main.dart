@@ -71,38 +71,33 @@ Future<void> main() async {
   hiveBox = await Hive.openBox("myBox");
   token = hiveBox.get('token');
   loggedIn = token != null;
-  if (!loggedIn) {
-    hiveBox.put('viewExams', viewExams);
-    hiveBox.put('viewNotes', viewNotes);
-    hiveBox.put('viewRooms', viewRooms);
-    hiveBox.put('addTermine', addTermine);
-    hiveBox.put('weeklyOverview', weeklyOverview);
-    hiveBox.put('group', group);
-    hiveBox.put('wantedRoomsUserdefined', wantedRoomsUserdefined);
-    hiveBox.put('ColorScheme', theme);
-  } else {
-    viewExams = hiveBox.get("viewExams");
-    viewNotes = hiveBox.get("viewNotes");
-    viewRooms = hiveBox.get("viewRooms");
-    // weeklyOverview = hiveBox.get("weeklyOverview");
-    group = hiveBox.get("group");
-    wantedRoomsUserdefined = hiveBox.get("wantedRoomsUserdefined");
 
-    // if updates
-    try {
-      addTermine = hiveBox.get("addTermine");
-      theme = hiveBox.get("ColorScheme");
-    } catch (e) {
-      hiveBox.put('addTermine', addTermine);
-      hiveBox.put('ColorScheme', theme);
-    }
-  }
+  viewExams = hiveHelper("viewExams", viewExams);
+  viewNotes = hiveHelper("viewNotes", viewNotes);
+  viewRooms = hiveHelper("viewRooms", viewRooms);
+  addTermine = hiveHelper("addTermine", addTermine);
+
+  weeklyOverview = hiveHelper("weeklyOverview", weeklyOverview);
+  group = hiveHelper("group", group);
+  wantedRoomsUserdefined =
+      hiveHelper("wantedRoomsUserdefined", wantedRoomsUserdefined);
+  onlyGroups = hiveHelper("onlyGroups", onlyGroups);
+  theme = hiveHelper("ColorScheme", theme);
 
   _darkColorScheme = darkColorSchemes[theme]!;
   _lightColorScheme = lightColorSchemes[theme]!;
   // initializing timetable Grid
   timetable = await loadTimeTable(token, onNetworkError: () {});
   runApp(const MyApp());
+}
+
+hiveHelper(String s, value) {
+  if (hiveBox.containsKey(s)) {
+    return hiveBox.get(s);
+  } else {
+    hiveBox.put(s, value);
+    return value;
+  }
 }
 
 void setGrade() {
@@ -458,33 +453,15 @@ Future<void> settings(BuildContext context) async {
                     hiveBox.put('addTermine', addTermine);
                   },
                 ),
-                // theme picker will go here
-                ListTile(
-                  title: TextField(
-                    readOnly: true,
-                    controller: TextEditingController(
-                        text: theme.substring(0, 1).toUpperCase() +
-                            theme.substring(1)),
-                    mouseCursor: MaterialStateMouseCursor.clickable,
-                    cursorColor: Theme.of(context).textTheme.bodyLarge?.color,
-                    decoration: InputDecoration(
-                      label: Text("Theme"),
-                      labelStyle: Theme.of(context).textTheme.labelLarge,
-                      suffixIcon: const Icon(Icons.arrow_drop_down),
-                    ),
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      listDialog(context, setState, onTap: (e) {
-                        theme = e;
-                        _darkColorScheme = darkColorSchemes[theme]!;
-                        _lightColorScheme = lightColorSchemes[theme]!;
-                        hiveBox.put('ColorScheme', theme);
-                        setState((() {}));
-                        restart?.call();
-                        Navigator.of(context).pop(e);
-                      });
-                    },
-                  ),
+                SwitchListTile(
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  title: Text(AppLocalizations.of(context)!.onlyGroups),
+                  subtitle: Text(AppLocalizations.of(context)!.onlyGroupsDesc),
+                  value: onlyGroups,
+                  onChanged: (value) {
+                    setState(() => onlyGroups = !onlyGroups);
+                    hiveBox.put('onlyGroups', onlyGroups);
+                  },
                 ),
                 ExpansionTile(
                     title: Text(AppLocalizations.of(context)!.groupInputs),
@@ -530,7 +507,35 @@ Future<void> settings(BuildContext context) async {
                                   grade = value;
                                 });
                                 hiveBox.put('grade', grade);
-                              }))
+                              })),
+                      ListTile(
+                        title: TextField(
+                          readOnly: true,
+                          controller: TextEditingController(
+                              text: theme.substring(0, 1).toUpperCase() +
+                                  theme.substring(1)),
+                          mouseCursor: MaterialStateMouseCursor.clickable,
+                          cursorColor:
+                              Theme.of(context).textTheme.bodyLarge?.color,
+                          decoration: InputDecoration(
+                            label: Text(AppLocalizations.of(context)!.theme),
+                            labelStyle: Theme.of(context).textTheme.labelLarge,
+                            suffixIcon: const Icon(Icons.arrow_drop_down),
+                          ),
+                          onTap: () {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            listDialog(context, setState, onTap: (e) {
+                              theme = e;
+                              _darkColorScheme = darkColorSchemes[theme]!;
+                              _lightColorScheme = lightColorSchemes[theme]!;
+                              hiveBox.put('ColorScheme', theme);
+                              setState((() {}));
+                              restart?.call();
+                              Navigator.of(context).pop(e);
+                            });
+                          },
+                        ),
+                      )
                     ])
               ],
             )),

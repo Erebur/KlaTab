@@ -29,8 +29,11 @@
   "viewRoomsDesc": "Zeigt freihe Räume in den Freistunden an\nHinweis: Räume der nächsten und vorherigen stunde werden vorgezogen",
   "group":"Gruppe",  
   "clasz":"Klasse",
-  "groupInputs":"Klassen Einstellunen",
+  "groupInputs":"Erweitert",
   "wantedRooms":"Vorlieben für Freie Räume",
   "mixEvents":"Termine zur Prüfungsseite Hinzufügen",
-  "mixEventsDesc":"änderung der aktuellen woche zum übernehmen benötigt"
+  "mixEventsDesc":"änderung der aktuellen woche zum übernehmen benötigt",
+  "onlyGroups":"nuraktuelle Gruppe",
+  "onlyGroupsDesc":"Zeigt nur einträge für aktuelle Gruppe",
+  "theme":"Thema"
 }

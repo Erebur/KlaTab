@@ -31,8 +31,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "exams": MessageLookupByLibrary.simpleMessage("Prüfungen"),
         "friday": MessageLookupByLibrary.simpleMessage("Freitag"),
         "group": MessageLookupByLibrary.simpleMessage("Gruppe"),
-        "groupInputs":
-            MessageLookupByLibrary.simpleMessage("Klassen Einstellunen"),
+        "groupInputs": MessageLookupByLibrary.simpleMessage("Erweitert"),
         "highlightExams":
             MessageLookupByLibrary.simpleMessage("Prüfungen Hervorheben"),
         "highlightExamsDesc": MessageLookupByLibrary.simpleMessage(
@@ -51,9 +50,14 @@ class MessageLookup extends MessageLookupByLibrary {
             "wir konnten keine verbindung mit der Netzwerkwolke herstellen"),
         "networkErrorDescription": MessageLookupByLibrary.simpleMessage(
             "Die Daten aus der Wolke konnten nicht gezogen werden"),
+        "onlyGroups":
+            MessageLookupByLibrary.simpleMessage("nuraktuelle Gruppe"),
+        "onlyGroupsDesc": MessageLookupByLibrary.simpleMessage(
+            "Zeigt nur einträge für aktuelle Gruppe"),
         "password": MessageLookupByLibrary.simpleMessage("Passwort"),
         "settings": MessageLookupByLibrary.simpleMessage("Einstellungen"),
-        "thursday": MessageLookupByLibrary.simpleMessage("Donerstag"),
+        "theme": MessageLookupByLibrary.simpleMessage("Thema"),
+        "thursday": MessageLookupByLibrary.simpleMessage("Donnerstag"),
         "time": MessageLookupByLibrary.simpleMessage("Zeit"),
         "timetable": MessageLookupByLibrary.simpleMessage("Stundenplan"),
         "tuesday": MessageLookupByLibrary.simpleMessage("Dienstag"),
