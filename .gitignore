@@ -48,3 +48,4 @@ app.*.map.json
 
 /.vscode/release.bash
 /.vscode/tasks.json
+.vscode/settings.json
