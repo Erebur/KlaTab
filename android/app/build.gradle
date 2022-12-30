@@ -43,14 +43,16 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "net.erebur.klatab"
+        minSdk 33
+        targetSdk 33
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        resConfigs("en", "de")
+        signingConfig signingConfigs.debug
+        versionNameSuffix flutterVersionName
     }
 
     buildTypes {
@@ -60,6 +62,7 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    buildToolsVersion '33.0.0'
 }
 
 flutter {
