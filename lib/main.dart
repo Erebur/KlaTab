@@ -53,6 +53,7 @@ Set rooms = {};
 bool viewExams = true;
 bool viewNotes = true;
 bool viewRooms = false;
+bool noDynamicColor = false;
 bool weeklyOverview = false;
 bool addTermine = true;
 String theme = "default";
@@ -68,7 +69,7 @@ bool loggedIn = false;
 
 Future<void> main() async {
   await Hive.initFlutter();
-  hiveBox = await Hive.openBox("myBox");
+  hiveBox = await Hive.openBox(title);
   token = hiveBox.get('token');
   loggedIn = token != null;
 
@@ -87,7 +88,7 @@ Future<void> main() async {
   _darkColorScheme = darkColorSchemes[theme]!;
   _lightColorScheme = lightColorSchemes[theme]!;
   // initializing timetable Grid
-  timetable = await loadTimeTable(token, onNetworkError: () {});
+  timetable = await loadTimeTable(token, true);
   runApp(const MyApp());
 }
 
@@ -134,6 +135,10 @@ class _MyAppState extends State<MyApp> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
     return DynamicColorBuilder(builder: (lightColorScheme, darkColorScheme) {
+      if (noDynamicColor) {
+        darkColorScheme = _darkColorScheme;
+        lightColorScheme = _lightColorScheme;
+      }
       return MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -381,14 +386,17 @@ class _MainPageState extends State<MainPage> {
       result = jsonDecode(post.body);
     } catch (e) {}
     var tmp = jsonDecode(post.body);
-    Fluttertoast.showToast(
-        msg: (result != null && result) || result == null
-            ? AppLocalizations.of(context)!.login_res
-            : AppLocalizations.of(context)!.login_res_fail,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        fontSize: 14.0);
+    try {
+      Fluttertoast.showToast(
+          msg: (result != null && result) || result == null
+              ? AppLocalizations.of(context)!.login_res
+              : AppLocalizations.of(context)!.login_res_fail,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          fontSize: 14.0);
+      // ignore: empty_catches
+    } catch (e) {}
 
     if (tmp["token"] != null) {
       setState(() {
@@ -396,7 +404,7 @@ class _MainPageState extends State<MainPage> {
         loggedIn = true;
         setGrade();
       });
-      Hive.box('myBox').put('token', tmp["token"]);
+      Hive.box(title).put('token', tmp["token"]);
     }
   }
 }
@@ -427,7 +435,7 @@ Future<void> settings(BuildContext context) async {
                   title: Text(AppLocalizations.of(context)!.highlightExams),
                   subtitle:
                       Text(AppLocalizations.of(context)!.highlightExamsDesc),
-                  value: Hive.box("myBox").get("viewExams"),
+                  value: Hive.box(title).get("viewExams"),
                   onChanged: (value) {
                     setState(() => viewExams = !viewExams);
                     hiveBox.put('viewExams', viewExams);
