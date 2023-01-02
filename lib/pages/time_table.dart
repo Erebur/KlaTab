@@ -121,7 +121,7 @@ class _PageTimetableState extends State<PageTimetable> {
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.all(10),
                         child: FutureBuilder(
-                          future: loadTimeTable(token),
+                          future: loadTimeTable(token, false),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               timetable = (snapshot.data as List<List>);
@@ -181,91 +181,96 @@ class _PageTimetableState extends State<PageTimetable> {
         softWrap: false,
         text: TextSpan(text: "", children: [
           ...() {
-            return onlyGroups ? [
-                TextSpan(
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = (() => showRooms(hour)),
-                    text: "${hour["new_room"]} ${hour["new_teacher"]}\n",
-                    style: Theme.of(context).textTheme.bodySmall),
-                TextSpan(
-                    text: hour["new_subject"],
-                    style: TextStyle(
-                        color: hour["new_substitution"] == true
-                            ? Theme.of(context).colorScheme.primary
-                            : hour["isExam"] && viewExams
-                                ? Theme.of(context).colorScheme.error
-                                : Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.color)),
-                TextSpan(
-                    text: "\n" + hour["new_note"],
-                    style: TextStyle(
-                        color: hour["new_substitution"] == true
-                            ? Theme.of(context).colorScheme.primary
-                            : hour["isExam"] && viewExams
-                                ? Theme.of(context).colorScheme.error
-                                : Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.color))
-              ] : [
-                TextSpan(
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = (() => showRooms(hour)),
-                    text:
-                        "${hour["raum"]} ${hour["lehrer"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]} ${hour["lehrer2"]}' : ''}\n",
-                    style: Theme.of(context).textTheme.bodySmall),
-                TextSpan(
-                    text: hour["fach"],
-                    style: TextStyle(
-                        color: hour["istVertretung"] == true
-                            ? Theme.of(context).colorScheme.primary
-                            : hour["isExam"] && viewExams
-                                ? Theme.of(context).colorScheme.error
-                                : Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.color)),
-                TextSpan(
-                    text: (hour["fach2"] as String).isNotEmpty ? "  |  " : "",
-                    style: TextStyle(
-                        color: hour["istVertretung"] == true &&
-                                hour["istVertretung2"] == true
-                            ? Theme.of(context).colorScheme.primary
-                            : hour["isExam"] && viewExams
-                                ? Theme.of(context).colorScheme.error
-                                : Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.color)),
-                TextSpan(
-                    text: ((hour["fach2"] as String).isNotEmpty
-                            ? hour["fach2"]
-                            : "") +
-                        "\n",
-                    style: TextStyle(
-                        color: hour["istVertretung2"] == true
-                            ? Theme.of(context).colorScheme.primary
-                            : hour["isExam"] && viewExams
-                                ? Theme.of(context).colorScheme.error
-                                : Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.color)),
-                TextSpan(
-                    text: hour["notiz"] != "" ? hour["notiz"] : hour["notiz2"],
-                    style: TextStyle(
-                        color: hour["istVertretung"] == true ||
-                                hour["istVertretung2"] == true
-                            ? Theme.of(context).colorScheme.primary
-                            : hour["isExam"] && viewExams
-                                ? Theme.of(context).colorScheme.error
-                                : Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.color))
-              ];
+            return onlyGroups
+                ? [
+                    TextSpan(
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = (() => showRooms(hour)),
+                        text: "${hour["new_room"]} ${hour["new_teacher"]}\n",
+                        style: Theme.of(context).textTheme.bodySmall),
+                    TextSpan(
+                        text: hour["new_subject"],
+                        style: TextStyle(
+                            color: hour["new_substitution"] == true
+                                ? Theme.of(context).colorScheme.primary
+                                : hour["isExam"] && viewExams
+                                    ? Theme.of(context).colorScheme.error
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color)),
+                    TextSpan(
+                        text: "\n" + hour["new_note"],
+                        style: TextStyle(
+                            color: hour["new_substitution"] == true
+                                ? Theme.of(context).colorScheme.primary
+                                : hour["isExam"] && viewExams
+                                    ? Theme.of(context).colorScheme.error
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color))
+                  ]
+                : [
+                    TextSpan(
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = (() => showRooms(hour)),
+                        text:
+                            "${hour["raum"]} ${hour["lehrer"]} ${hour["raum2"] != "" ? ' -  ${hour["raum2"]} ${hour["lehrer2"]}' : ''}\n",
+                        style: Theme.of(context).textTheme.bodySmall),
+                    TextSpan(
+                        text: hour["fach"],
+                        style: TextStyle(
+                            color: hour["istVertretung"] == true
+                                ? Theme.of(context).colorScheme.primary
+                                : hour["isExam"] && viewExams
+                                    ? Theme.of(context).colorScheme.error
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color)),
+                    TextSpan(
+                        text:
+                            (hour["fach2"] as String).isNotEmpty ? "  |  " : "",
+                        style: TextStyle(
+                            color: hour["istVertretung"] == true &&
+                                    hour["istVertretung2"] == true
+                                ? Theme.of(context).colorScheme.primary
+                                : hour["isExam"] && viewExams
+                                    ? Theme.of(context).colorScheme.error
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color)),
+                    TextSpan(
+                        text: ((hour["fach2"] as String).isNotEmpty
+                                ? hour["fach2"]
+                                : "") +
+                            "\n",
+                        style: TextStyle(
+                            color: hour["istVertretung2"] == true
+                                ? Theme.of(context).colorScheme.primary
+                                : hour["isExam"] && viewExams
+                                    ? Theme.of(context).colorScheme.error
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color)),
+                    TextSpan(
+                        text: hour["notiz"] != ""
+                            ? hour["notiz"]
+                            : hour["notiz2"],
+                        style: TextStyle(
+                            color: hour["istVertretung"] == true ||
+                                    hour["istVertretung2"] == true
+                                ? Theme.of(context).colorScheme.primary
+                                : hour["isExam"] && viewExams
+                                    ? Theme.of(context).colorScheme.error
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color))
+                  ];
           }()
           // TextSpan(
           //     text:

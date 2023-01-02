@@ -49,21 +49,19 @@ Future<List> loadExams() async {
               "raum": item["raum"],
               "art": item["art"],
               "bemerkung": item["bemerkung"],
-              "start":
-                  DateTime.parse(item["datum"]).add(stunden[item["von"] - 1][0])
-              // .subtract(DateTime.now().timeZoneOffset)
-              ,
+              "start": DateTime.parse(item["datum"])
+                  .add(stunden[item["von"] - 1][0])
+                  .subtract(DateTime.now().timeZoneOffset),
               "start_hour": item["von"],
-              "end":
-                  DateTime.parse(item["datum"]).add(stunden[item["bis"] - 1][1])
-              // .subtract(DateTime.now().timeZoneOffset)
-              ,
+              "end": DateTime.parse(item["datum"])
+                  .add(stunden[item["bis"] - 1][1])
+                  .subtract(DateTime.now().timeZoneOffset),
               "end_hour": item["bis"],
               "link":
                   "https://www.google.com/calendar/render?action=TEMPLATE&text=${item["fach"]}+${item["art"]}&details=Lehrer%3A+${item["lehrer"]}&location=Raum%3A+${item["raum"]}&dates=${DateTime.parse(item["datum"]).add(stunden[item["von"] - 1][0]).toUtc().toIso8601String().replaceAll("-", "").replaceAll(":", "").replaceAll(".000", "")}%2F${DateTime.parse(item["datum"]).add(stunden[item["bis"] - 1][1]).toUtc().toIso8601String().replaceAll("-", "").replaceAll(":", "").replaceAll(".000", "")}",
             })
         .toList();
-         
+
     if (addTermine) {
       var response = await http.get(
           Uri.parse(

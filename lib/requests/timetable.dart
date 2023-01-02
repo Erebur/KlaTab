@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -17,22 +18,15 @@ Map week = {
 DateTime? _lastDay;
 String? _lastGrade;
 
-Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
-  bool online = true;
+Future<List<List>> loadTimeTable(token, dryRun) async {
   var monday = wantedWeek.subtract(Duration(
       days: wantedWeek.weekday - 1,
       hours: wantedWeek.hour,
       minutes: wantedWeek.minute,
       seconds: wantedWeek.second));
-  if (token != null && grade == null) {
-    setGrade();
-  }
-  if (token != null &&
-      (!(_lastDay != null &&
-              monday.toString().substring(0, 11) ==
-                  _lastDay.toString().substring(0, 11)) ||
-          (_lastGrade != null && _lastGrade != grade))) {
-    http.Response response;
+
+  http.Response response;
+  if (!dryRun) {
     try {
       response = await http.get(
           Uri.parse(
@@ -41,23 +35,25 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
             "authorization": "Basic $token",
             "undefinedaccept": "application/json"
           });
+      if (viewExams) {
+        exams = await loadExams();
+      }
       week = jsonDecode(response.body);
     } catch (e) {
-      onNetworkError!.call();
-      online = false;
-      if (token != null) {
-        Fluttertoast.showToast(
-            msg: "Not able to load Timetable",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            // backgroundColor:
-            //     Theme.of(context).colorScheme.background,
-            fontSize: 14.0);
-        // List<List> lasttimetable = hiveBox.get("lasttimetable");
-        // return lasttimetable;
-      }
+      Fluttertoast.showToast(
+          msg: "Not able to load Timetable",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          fontSize: 14.0);
+      // TODO: load last timetable from hive
+      // List<List> lasttimetable = hiveBox.get("lasttimetable");
+      // return lasttimetable;
     }
+  }
+
+  if (token != null && grade == null) {
+    setGrade();
   }
 
   if (token != null) {
@@ -197,8 +193,8 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
       }
     }
   }
+
   if (viewExams) {
-    exams = await loadExams();
     // add exams
     for (var exam in exams.where((element) => element["isExam"])) {
       if ((exam["start"] as DateTime).isAfter(monday) &&
@@ -225,7 +221,7 @@ Future<List<List>> loadTimeTable(token, {Function()? onNetworkError}) async {
   }
   // List<List> test = timetable;
   // await hiveBox.put('lasttimetable', test);
-  // print(timetable);
+
   return timetable;
 }
 
