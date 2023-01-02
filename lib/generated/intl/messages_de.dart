@@ -35,7 +35,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "highlightExams":
             MessageLookupByLibrary.simpleMessage("Prüfungen Hervorheben"),
         "highlightExamsDesc": MessageLookupByLibrary.simpleMessage(
-            "Sollten Prüfungen Statfinden werden sie in den entsprechenden Stunden angezeigt"),
+            "Sollten Prüfungen Stattfinden werden sie in den entsprechenden Stunden angezeigt"),
         "login": MessageLookupByLibrary.simpleMessage("Anmelden"),
         "login_res": MessageLookupByLibrary.simpleMessage("Angemeldet"),
         "login_res_fail":
@@ -44,16 +44,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "mixEvents": MessageLookupByLibrary.simpleMessage(
             "Termine zur Prüfungsseite Hinzufügen"),
         "mixEventsDesc": MessageLookupByLibrary.simpleMessage(
-            "änderung der aktuellen woche zum übernehmen benötigt"),
+            "Änderung der aktuellen Woche zum übernehmen benötigt"),
         "monday": MessageLookupByLibrary.simpleMessage("Montag"),
         "networkError": MessageLookupByLibrary.simpleMessage(
-            "wir konnten keine verbindung mit der Netzwerkwolke herstellen"),
+            "wir konnten keine Verbindung mit der Netzwerkwolke herstellen"),
         "networkErrorDescription": MessageLookupByLibrary.simpleMessage(
             "Die Daten aus der Wolke konnten nicht gezogen werden"),
         "onlyGroups":
-            MessageLookupByLibrary.simpleMessage("nuraktuelle Gruppe"),
+            MessageLookupByLibrary.simpleMessage("nur aktuelle Gruppe"),
         "onlyGroupsDesc": MessageLookupByLibrary.simpleMessage(
-            "Zeigt nur einträge für aktuelle Gruppe"),
+            "Zeigt nur Einträge für aktuelle Gruppe"),
         "password": MessageLookupByLibrary.simpleMessage("Passwort"),
         "settings": MessageLookupByLibrary.simpleMessage("Einstellungen"),
         "theme": MessageLookupByLibrary.simpleMessage("Thema"),
