@@ -61,7 +61,20 @@ class _PageTimetableState extends State<PageTimetable> {
                     icon: Icon(
                       Icons.arrow_forward_rounded,
                       size: Theme.of(context).textTheme.bodyLarge?.fontSize,
-                    ))
+                    )),
+                if (offline)
+                  IconButton(
+                      hoverColor: Theme.of(context).colorScheme.background,
+                      splashColor: Theme.of(context).colorScheme.background,
+                      highlightColor: Theme.of(context).colorScheme.background,
+                      onPressed: () {
+                        loadTimeTable(context, token, false).then(
+                            (value) => {timetable = value, setState(() {})});
+                      },
+                      icon: Icon(
+                        Icons.refresh_rounded,
+                        size: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                      ))
               ],
             ),
           ),
@@ -121,7 +134,7 @@ class _PageTimetableState extends State<PageTimetable> {
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.all(10),
                         child: FutureBuilder(
-                          future: loadTimeTable(token, false),
+                          future: loadTimeTable(context, token, false),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               timetable = (snapshot.data as List<List>);
