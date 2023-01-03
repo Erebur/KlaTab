@@ -62,6 +62,8 @@ class _PageTimetableState extends State<PageTimetable> {
                       Icons.arrow_forward_rounded,
                       size: Theme.of(context).textTheme.bodyLarge?.fontSize,
                     )),
+                const Spacer(),
+                // FIXME: button apears after loading twice
                 if (offline)
                   IconButton(
                       hoverColor: Theme.of(context).colorScheme.background,
@@ -72,7 +74,7 @@ class _PageTimetableState extends State<PageTimetable> {
                             (value) => {timetable = value, setState(() {})});
                       },
                       icon: Icon(
-                        Icons.refresh_rounded,
+                        Icons.signal_wifi_connected_no_internet_4_rounded,
                         size: Theme.of(context).textTheme.bodyLarge?.fontSize,
                       ))
               ],

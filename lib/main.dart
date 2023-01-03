@@ -53,7 +53,6 @@ Set rooms = {};
 bool viewExams = true;
 bool viewNotes = true;
 bool viewRooms = false;
-bool noDynamicColor = false;
 bool weeklyOverview = false;
 bool addTermine = true;
 String theme = "default";
@@ -61,11 +60,15 @@ int group = 1;
 bool onlyGroups = false;
 List wantedRoomsUserdefined = [206, 2052, 2051, 207, 208];
 
+// TODO: implement these
+bool noDynamicColor = false;
+
 String? token;
 String? grade;
 
 // auto generated
 bool loggedIn = false;
+bool offline = false;
 
 Future<void> main() async {
   await Hive.initFlutter();
@@ -88,7 +91,7 @@ Future<void> main() async {
   _darkColorScheme = darkColorSchemes[theme]!;
   _lightColorScheme = lightColorSchemes[theme]!;
   // initializing timetable Grid
-  timetable = await loadTimeTable(token, true);
+  timetable = await loadTimeTable(null, token, true);
   runApp(const MyApp());
 }
 
@@ -108,7 +111,7 @@ void setGrade() {
     grade = tmp["typValue"];
     hiveBox.put('grade', grade);
   } catch (e) {
-    print(e);
+    debugPrint(e.toString());
   }
 }
 
@@ -410,6 +413,7 @@ class _MainPageState extends State<MainPage> {
 }
 
 Future<void> settings(BuildContext context) async {
+  // TODO: add toggle for caching
   return await showDialog(
       context: context,
       builder: (context) {

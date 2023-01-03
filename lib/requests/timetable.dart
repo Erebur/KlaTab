@@ -5,9 +5,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:klatab/main.dart';
 import 'package:klatab/requests/rooms.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'exams.dart';
 
+// german because the api is german
 Map week = {
   "montag": [],
   "dienstag": [],
@@ -18,17 +20,16 @@ Map week = {
 DateTime? _lastDay;
 String? _lastGrade;
 
-Future<List<List>> loadTimeTable(token, dryRun) async {
+Future<List<List>> loadTimeTable(context, token, dryRun) async {
   var monday = wantedWeek.subtract(Duration(
       days: wantedWeek.weekday - 1,
       hours: wantedWeek.hour,
       minutes: wantedWeek.minute,
       seconds: wantedWeek.second));
 
-  http.Response response;
   if (!dryRun) {
     try {
-      response = await http.get(
+      http.Response response = await http.get(
           Uri.parse(
               "https://ux4.edvschule-plattling.de/klatab-reader/stundenplan/?typ=klasse&typValue=$grade&datum=${monday.toString().substring(0, 10)}"),
           headers: {
@@ -39,16 +40,24 @@ Future<List<List>> loadTimeTable(token, dryRun) async {
         exams = await loadExams();
       }
       week = jsonDecode(response.body);
+      offline = false;
     } catch (e) {
-      Fluttertoast.showToast(
-          msg: "Not able to load Timetable",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          fontSize: 14.0);
-      // TODO: load last timetable from hive
-      // List<List> lasttimetable = hiveBox.get("lasttimetable");
-      // return lasttimetable;
+      offline = true;
+      Map? cache =
+          hiveBox.get('cached_week_${monday.toString().substring(0, 10)}');
+      if (cache != null) {
+        week = cache['week'];
+        exams = cache['exams'];
+      } else {
+        week = {
+          "montag": [],
+          "dienstag": [],
+          "mittwoch": [],
+          "donnerstag": [],
+          "freitag": []
+        };
+        exams = [];
+      }
     }
   }
 
@@ -219,8 +228,11 @@ Future<List<List>> loadTimeTable(token, dryRun) async {
       }
     }
   }
-  // List<List> test = timetable;
-  // await hiveBox.put('lasttimetable', test);
+
+  if ((week["montag"]! as List).isNotEmpty || exams.isNotEmpty && !offline) {
+    await hiveBox.put('cached_week_${monday.toString().substring(0, 10)}',
+        {"monday": monday, "week": week, "exams": exams});
+  }
 
   return timetable;
 }
