@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +13,7 @@ import 'package:klatab/pages/time_table.dart';
 import 'package:klatab/requests/timetable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:universal_io/io.dart';
+import 'dart:js' as js;
 
 var _lightColorScheme = lightColorScheme_default;
 var _darkColorScheme = darkColorScheme_default;
@@ -601,6 +603,21 @@ AppBar titleBar(BuildContext context, setState) {
         onSelected: (item) {},
         color: Theme.of(context).colorScheme.background,
         itemBuilder: (context) => [
+          if (kIsWeb)
+            PopupMenuItem(
+                child: Text(AppLocalizations.of(context)!.toWebsite),
+                onTap: () {
+                  js.context.callMethod('open', ['https://erebur.net/']);
+                }),
+          PopupMenuItem(
+              child: Text(AppLocalizations.of(context)!.settings),
+              onTap: () {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  settings(context).then((value) => setState(
+                        () {},
+                      ));
+                });
+              }),
           PopupMenuItem(
             onTap: () {
               token = null;
@@ -611,15 +628,6 @@ AppBar titleBar(BuildContext context, setState) {
             },
             child: Text(AppLocalizations.of(context)!.logout),
           ),
-          PopupMenuItem(
-              child: Text(AppLocalizations.of(context)!.settings),
-              onTap: () {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  settings(context).then((value) => setState(
-                        () {},
-                      ));
-                });
-              })
         ],
       )
     ],

@@ -419,6 +419,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Homepage`
+  String get toWebsite {
+    return Intl.message(
+      'Homepage',
+      name: 'toWebsite',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

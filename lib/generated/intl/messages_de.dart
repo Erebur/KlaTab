@@ -60,6 +60,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "thursday": MessageLookupByLibrary.simpleMessage("Donnerstag"),
         "time": MessageLookupByLibrary.simpleMessage("Zeit"),
         "timetable": MessageLookupByLibrary.simpleMessage("Stundenplan"),
+        "toWebsite": MessageLookupByLibrary.simpleMessage("Startseite"),
         "tuesday": MessageLookupByLibrary.simpleMessage("Dienstag"),
         "username": MessageLookupByLibrary.simpleMessage("Benutzername"),
         "viewNotes": MessageLookupByLibrary.simpleMessage("Notizen Anzeigen"),

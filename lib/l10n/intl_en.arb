@@ -35,5 +35,6 @@
   "mixEventsDesc":"changing of the current week required",
   "onlyGroups":"Current Group only",
   "onlyGroupsDesc":"Only show entrys for your Group",
-  "theme":"Theme"
+  "theme":"Theme",
+  "toWebsite":"Homepage"
 }

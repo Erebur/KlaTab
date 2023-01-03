@@ -35,5 +35,6 @@
   "mixEventsDesc":"Änderung der aktuellen Woche zum übernehmen benötigt",
   "onlyGroups":"nur aktuelle Gruppe",
   "onlyGroupsDesc":"Zeigt nur Einträge für aktuelle Gruppe",
-  "theme":"Thema"
+  "theme":"Thema",
+  "toWebsite":"Startseite"
 }
