@@ -61,7 +61,7 @@ bool onlyGroups = false;
 List wantedRoomsUserdefined = [206, 2052, 2051, 207, 208];
 
 // TODO: implement these
-bool noDynamicColor = false;
+bool dynamicColor = false;
 
 String? token;
 String? grade;
@@ -138,10 +138,7 @@ class _MyAppState extends State<MyApp> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
     return DynamicColorBuilder(builder: (lightColorScheme, darkColorScheme) {
-      if (noDynamicColor) {
-        darkColorScheme = _darkColorScheme;
-        lightColorScheme = _lightColorScheme;
-      }
+      dynamicColor = lightColorScheme != null && darkColorScheme != null;
       return MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -520,34 +517,36 @@ Future<void> settings(BuildContext context) async {
                                 });
                                 hiveBox.put('grade', grade);
                               })),
-                      ListTile(
-                        title: TextField(
-                          readOnly: true,
-                          controller: TextEditingController(
-                              text: theme.substring(0, 1).toUpperCase() +
-                                  theme.substring(1)),
-                          mouseCursor: MaterialStateMouseCursor.clickable,
-                          cursorColor:
-                              Theme.of(context).textTheme.bodyLarge?.color,
-                          decoration: InputDecoration(
-                            label: Text(AppLocalizations.of(context)!.theme),
-                            labelStyle: Theme.of(context).textTheme.labelLarge,
-                            suffixIcon: const Icon(Icons.arrow_drop_down),
+                      if (!dynamicColor)
+                        ListTile(
+                          title: TextField(
+                            readOnly: true,
+                            controller: TextEditingController(
+                                text: theme.substring(0, 1).toUpperCase() +
+                                    theme.substring(1)),
+                            mouseCursor: MaterialStateMouseCursor.clickable,
+                            cursorColor:
+                                Theme.of(context).textTheme.bodyLarge?.color,
+                            decoration: InputDecoration(
+                              label: Text(AppLocalizations.of(context)!.theme),
+                              labelStyle:
+                                  Theme.of(context).textTheme.labelLarge,
+                              suffixIcon: const Icon(Icons.arrow_drop_down),
+                            ),
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              listDialog(context, setState, onTap: (e) {
+                                theme = e;
+                                _darkColorScheme = darkColorSchemes[theme]!;
+                                _lightColorScheme = lightColorSchemes[theme]!;
+                                hiveBox.put('ColorScheme', theme);
+                                setState((() {}));
+                                restart?.call();
+                                Navigator.of(context).pop(e);
+                              });
+                            },
                           ),
-                          onTap: () {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            listDialog(context, setState, onTap: (e) {
-                              theme = e;
-                              _darkColorScheme = darkColorSchemes[theme]!;
-                              _lightColorScheme = lightColorSchemes[theme]!;
-                              hiveBox.put('ColorScheme', theme);
-                              setState((() {}));
-                              restart?.call();
-                              Navigator.of(context).pop(e);
-                            });
-                          },
-                        ),
-                      )
+                        )
                     ])
               ],
             )),
